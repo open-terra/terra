@@ -26,14 +26,14 @@ namespace Terra
             this->y = y;
         }
 
-        static inline double DistanceSquared(Vector2 &l, Vector2 &r)
+        static inline double DistanceSquared(const Vector2 &l, const Vector2 &r)
         {
             double dx = l.x - r.x;
             double dy = l.y - r.y;
             return (dx * dx) + (dy * dy);
         }
 
-        static inline double Distance(Vector2 &l, Vector2 &r)
+        static inline double Distance(const Vector2 &l, const Vector2 &r)
         {
             double dx = l.x - r.x;
             double dy = l.y - r.y;

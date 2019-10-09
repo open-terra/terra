@@ -48,7 +48,7 @@ int64_t HashGrid::At(const Terra::Vector2 &point)
     ];
 }
 
-std::vector<int64_t> HashGrid::Neighbours(const Terra::Vector2& point, const double radius)
+std::vector<int64_t> HashGrid::Neighbours(const Terra::Vector2& point)
 {
     std::vector<int64_t> indexs;
 

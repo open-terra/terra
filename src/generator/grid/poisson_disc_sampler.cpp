@@ -2,11 +2,11 @@
 
 using namespace Terra::Generator::Grid;
 
-PoissonDiscSampler::PoissonDiskSampler()
+PoissonDiscSampler::PoissonDiscSampler()
 {
 }
 
-PoissonDiscSampler::PoissonDiskSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples)
+PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::Generator::Grid::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples)
 {
     this->radius = radius;
     this->sizeX = sizeX;
@@ -54,7 +54,7 @@ int64_t PoissonDiscSampler::Sample()
             double r = std::sqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
             // Calculate the position of the point on the circle
             
-            auto p = this->points[i];
+            auto p = this->points->at(i);
             Terra::Vector2 point
             (
                 p.x + (r * std::cos(theta)),
@@ -64,10 +64,10 @@ int64_t PoissonDiscSampler::Sample()
             if (bx0 <= point.x && point.x <= bx1 && by0 <= point.y && point.y <= by1) // Is within max extents
             {
                 bool valid = true;
-                for (const int64_t index : this->grid->Neighbours(point))
+                for (int64_t index : this->grid->Neighbours(point))
                 {
                     // If the point is to close to neighbour this point should be ignored
-                    if (Terra::Vector2::DistanceSquared(point, this->points[index]) <= inner)
+                    if (Terra::Vector2::DistanceSquared(point, this->points->at(index)) <= inner)
                     {
                         valid = false;
                         break;
@@ -88,7 +88,7 @@ int64_t PoissonDiscSampler::Sample()
 
             if (j == this->samples)
             {
-                active.erase(i);
+                active.erase(active.begin() + i);
             }
         }
     }

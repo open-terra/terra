@@ -5,8 +5,8 @@
 #include <random>
 #include <vector>
 
-#include "Types/Vector2.hpp"
-#include "Types/HashGrid.hpp"
+#include "src/types/vector_2.hpp"
+#include "src/generator/grid/hash_grid.hpp"
 
 namespace Terra::Generator::Grid
 {
@@ -22,12 +22,12 @@ namespace Terra::Generator::Grid
         int64_t samples;
 
         std::vector<Terra::Vector2>* points;
-		Terra::HashGrid* grid;
+		Terra::Generator::Grid::HashGrid* grid;
 
 	public:
         PoissonDiscSampler();
 
-        PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples = 30);
+        PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::Generator::Grid::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples = 30);
 
         int64_t Sample();
     };

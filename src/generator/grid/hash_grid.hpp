@@ -37,6 +37,6 @@ namespace Terra::Generator::Grid
         inline void Set(const Terra::Vector2 &point, int64_t index);
         inline int64_t At(const Terra::Vector2 &point);
 
-        inline std::vector<int64_t> Neighbours(const Terra::Vector2& point, const double radius);
+        inline std::vector<int64_t> Neighbours(const Terra::Vector2& point);
     };
 }

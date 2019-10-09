@@ -1,6 +1,6 @@
-#include "OpenSimplex.hpp"
+#include "open_simplex.hpp"
 
-#include "Utils/FastFloor.hpp"
+#include "utils/fast_floor.hpp"
 
 using namespace Terra::Generator::Noise;
 
