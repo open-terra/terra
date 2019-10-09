@@ -5,10 +5,10 @@
 #include <iostream>
 #include <vector>
 
-#include "src/types/vector_2.hpp"
+#include "../types/vector_2.hpp"
 
-#include "src/generator/grid/hash_grid.hpp"
-#include "src/generator/grid/poisson_disc_sampler.hpp"
+#include "../grid/hash_grid.hpp"
+#include "../grid/poisson_disc_sampler.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -17,9 +17,9 @@ int main(int argc, char* argv[])
 	const double scale = 40960.0 / size; // scale of a pixel in metres
 
 	std::vector<Terra::Vector2> points;
-	Terra::Generator::Grid::HashGrid grid(size, size, radius);
+	Terra::Grid::HashGrid grid(size, size, radius);
 
-    Terra::Generator::Grid::PoissonDiscSampler sampler(points, grid, size, size, radius, 100);
+    Terra::Grid::PoissonDiscSampler sampler(points, grid, size, size, radius, 100);
 	sampler.Sample();
 
 	std::cout << u8"Created " << points.size() << u8"points.";

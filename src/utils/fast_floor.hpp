@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 namespace Utils
 {
     template <typename T>
