@@ -1,3 +1,26 @@
+# Project files
+Makefile
+*.make
+*.xcodeproj
+*.xcworkspace
+*.swp
+*.sdf
+*.sln
+*.suo
+*.ncb
+*.vcproj*
+*.vcxproj*
+*.VC.opendb
+*.VC.db
+*.opensdf
+*.workspace
+*.project
+*.tags
+*.sublime-*
+.cproject
+.settings
+.buildpath
+
 # Compiled Object files
 *.slo
 *.lo
@@ -26,3 +49,7 @@
 *.exe
 *.out
 *.app
+
+# VS
+.vs/*
+.vscode/*
