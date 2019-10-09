@@ -1,0 +1,16 @@
+sudo: false
+
+# Enable C++ support
+language: cpp
+
+# Use Linux by default
+os: linux
+
+# Compiler selection
+compiler: gcc
+
+# Build steps
+script:
+  - mkdir build
+  - cd build
+  - cmake .. && make
