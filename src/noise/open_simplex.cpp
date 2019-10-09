@@ -1,8 +1,8 @@
 #include "open_simplex.hpp"
 
-#include "utils/fast_floor.hpp"
+#include "../utils/fast_floor.hpp"
 
-using namespace Terra::Generator::Noise;
+using namespace Terra::Noise;
 
 OpenSimplex::OpenSimplex(int64_t seed)
 {

@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace Terra::Generator::Noise
+namespace Terra::Noise
 {
     class OpenSimplex
     {

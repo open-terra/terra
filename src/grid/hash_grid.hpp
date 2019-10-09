@@ -6,10 +6,10 @@
 #include <memory>
 #include <vector>
 
-#include "types/vector_2.hpp"
-#include "utils/utils.hpp"
+#include "../types/vector_2.hpp"
+#include "../utils/utils.hpp"
 
-namespace Terra::Generator::Grid
+namespace Terra::Grid
 {
     class HashGrid
     {
