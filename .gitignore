@@ -53,3 +53,5 @@ Makefile
 # VS
 .vs/*
 .vscode/*
+
+build/*
