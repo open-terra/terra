@@ -2,8 +2,8 @@
   <img src="info/terra-banner.png">
 </p>
 <p align="center">
-  <a href="https://travis-ci.org/open-terra/libterra">
-      <img src="https://img.shields.io/travis/open-terra/libterra/master.svg?style=flat-square" alt="Travis Build Status">
+  <a href="https://travis-ci.org/open-terra/terra">
+      <img src="https://img.shields.io/travis/open-terra/terra/master.svg?style=flat-square" alt="Travis Build Status">
   </a>
   <br>
   <strong>A opensource terrain simulation library.</strong>
