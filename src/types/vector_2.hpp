@@ -26,6 +26,14 @@ namespace Terra
             this->y = y;
         }
 
+        Vector2& operator=(const Vector2& other)
+        {
+            this->x = other.x;
+            this->y = other.y;
+
+            return *this;
+        }
+
         static inline double DistanceSquared(const Vector2 &l, const Vector2 &r)
         {
             double dx = l.x - r.x;
