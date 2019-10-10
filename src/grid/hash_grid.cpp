@@ -27,7 +27,7 @@ void HashGrid::Set(const Terra::Vector2 &point, int64_t index)
     int64_t x = Utils::FastFloor<int64_t>(point.x) / this->bucketSize;
     int64_t y = Utils::FastFloor<int64_t>(point.y) / this->bucketSize;
 
-    int64_t hash = std::max(x * gridSizeX, 0ll) + std::max(y, 0ll);
+    int64_t hash = std::max<int64_t>(x * gridSizeX, 0) + std::max<int64_t>(y, 0);
     if(this->hashtable[hash] > -1)
     {
         throw double_index_error();
@@ -43,8 +43,8 @@ int64_t HashGrid::At(const Terra::Vector2 &point)
 
     return this->hashtable
     [
-        std::max(x * gridSizeX, 0ll) +
-        std::max(y, 0ll)
+        std::max<int64_t>(x * gridSizeX, 0) +
+        std::max<int64_t>(y, 0)
     ];
 }
 
