@@ -12,14 +12,14 @@
 
 int main(int argc, char* argv[])
 {
-	const int64_t size = 1024;
-	const double radius = 2.5;//size / (2.0 * size);
-	const double scale = 40960.0 / size; // scale of a pixel in metres
+	const int64_t size_x = 1000;
+	const int64_t size_y = 500;
+	const double radius = 10.0;
 
 	std::vector<Terra::Vector2> points;
-	Terra::Grid::HashGrid grid(size, size, radius);
+	Terra::Grid::HashGrid grid(size_x, size_y, radius);
 
-    Terra::Grid::PoissonDiscSampler sampler(points, grid, size, size, radius, 100);
+    Terra::Grid::PoissonDiscSampler sampler(points, grid, size_x, size_y, radius, 100);
 	sampler.Sample();
 
 	std::cout << u8"Created " << points.size() << u8"points.";
