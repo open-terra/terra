@@ -6,6 +6,9 @@ language: cpp
 # Use Linux by default
 os: linux
 
+# Use Ubuntu 18.04 for GCC 7.4.0
+dist: bionic
+
 # Compiler selection
 compiler: gcc
 
