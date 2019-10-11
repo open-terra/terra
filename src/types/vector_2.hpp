@@ -48,4 +48,11 @@ namespace Terra
             return std::sqrt((dx * dx) + (dy * dy));
         }
     };
+
+    void swap(Terra::Vector2& a, Terra::Vector2& b)
+    {
+        auto c = a;
+        a = b;
+        b = c;
+    }
 }

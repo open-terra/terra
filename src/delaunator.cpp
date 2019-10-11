@@ -190,7 +190,7 @@ Delaunator::Delaunator(const std::vector<Terra::Vector2>& in_coords) :
         }
     }
 
-    const auto i0v = coords[i0];
+    auto i0v = coords[i0];
 
     min_dist = std::numeric_limits<double>::max();
 
@@ -206,7 +206,7 @@ Delaunator::Delaunator(const std::vector<Terra::Vector2>& in_coords) :
         }
     }
 
-    const auto i1v = coords[i1];
+    auto i1v = coords[i1];
 
     double min_radius = std::numeric_limits<double>::max();
 
@@ -227,12 +227,12 @@ Delaunator::Delaunator(const std::vector<Terra::Vector2>& in_coords) :
         throw std::runtime_error("not triangulation");
     }
 
-    const auto i2v = coords[i2];
+    auto i2v = coords[i2];
 
     if (orient(i0, i1, i2))
     {
         std::swap(i1, i2);
-        std::swap(i1, i2);
+        std::swap(i1v, i2v);
     }
 
     m_centre = circumcentre(i0, i1, i2);
