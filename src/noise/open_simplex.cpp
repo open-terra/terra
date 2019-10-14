@@ -19,13 +19,13 @@ OpenSimplex::OpenSimplex(int64_t seed)
     for (int16_t i = 255; i >= 0; i--)
     {
         seed = seed * 6364136223846793005LL + 1442695040888963407LL;
-        int16_t r = (int16_t)((seed + 31ll) % (i + 1));
+        int16_t r = static_cast<int16_t>((seed + 31ll) % (i + 1));
         if (r < 0)
         {
             r += (i + 1);
         }
         this->perm[i] = source[r];
-        this->permGradIndex3D[i] = (int16_t)((perm[i] % (512 / 3)) * 3);
+        this->permGradIndex3D[i] = static_cast<int16_t>((perm[i] % (512 / 3)) * 3);
         source[r] = source[i];
     }
 }
@@ -42,7 +42,7 @@ double OpenSimplex::Noise(double x, double y)
     int ysb = Utils::FastFloor<int>(ys);
 
     /* Skew out to get actual coordinates of rhombus origin. We'll need these later. */
-    double squishOffset = (xsb + ysb) * SQUISH_CONSTANT_2D;
+    double squishOffset = static_cast<double>(xsb + ysb) * SQUISH_CONSTANT_2D;
     double xb = xsb + squishOffset;
     double yb = ysb + squishOffset;
 
@@ -277,7 +277,7 @@ double OpenSimplex::Noise(double x, double y, double z)
             }
         }
         else { /* (0,0,0) is not one of the closest two tetrahedral vertices. */
-            c = (int8_t)(aPoint | bPoint); /* Our two extra vertices are determined by the closest two. */
+            c = static_cast<int8_t>(aPoint | bPoint); /* Our two extra vertices are determined by the closest two. */
 
             if ((c & 0x01) == 0) {
                 xsv_ext0 = xsb;
@@ -415,7 +415,7 @@ double OpenSimplex::Noise(double x, double y, double z)
             }
         }
         else { /* (1,1,1) is not one of the closest two tetrahedral vertices. */
-            c = (int8_t)(aPoint & bPoint); /* Our two extra vertices are determined by the closest two. */
+            c = static_cast<int8_t>(aPoint & bPoint); /* Our two extra vertices are determined by the closest two. */
 
             if ((c & 0x01) != 0) {
                 xsv_ext0 = xsb + 1;
@@ -563,7 +563,7 @@ double OpenSimplex::Noise(double x, double y, double z)
                 zsv_ext0 = zsb + 1;
 
                 /* Other extra point is based on the shared axis. */
-                c = (int8_t)(aPoint & bPoint);
+                c = static_cast<int8_t>(aPoint & bPoint);
                 if ((c & 0x01) != 0) {
                     dx_ext1 = dx0 - 2 - 2 * SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 - 2 * SQUISH_CONSTANT_3D;
@@ -600,7 +600,7 @@ double OpenSimplex::Noise(double x, double y, double z)
                 zsv_ext0 = zsb;
 
                 /* Other extra point is based on the omitted axis. */
-                c = (int8_t)(aPoint | bPoint);
+                c = static_cast<int8_t>(aPoint | bPoint);
                 if ((c & 0x01) == 0) {
                     dx_ext1 = dx0 + 1 - SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 - 1 - SQUISH_CONSTANT_3D;
@@ -924,7 +924,7 @@ double OpenSimplex::Noise(double x, double y, double z, double w)
             }
         }
         else { /* (0,0,0,0) is not one of the closest two pentachoron vertices. */
-            c = (int8_t)(aPoint | bPoint); /* Our three extra vertices are determined by the closest two. */
+            c = static_cast<int8_t>(aPoint | bPoint); /* Our three extra vertices are determined by the closest two. */
 
             if ((c & 0x01) == 0) {
                 xsv_ext0 = xsv_ext2 = xsb;
@@ -1134,7 +1134,7 @@ double OpenSimplex::Noise(double x, double y, double z, double w)
             }
         }
         else { /* (1,1,1,1) is not one of the closest two pentachoron vertices. */
-            c = (int8_t)(aPoint & bPoint); /* Our three extra vertices are determined by the closest two. */
+            c = static_cast<int8_t>(aPoint & bPoint); /* Our three extra vertices are determined by the closest two. */
 
             if ((c & 0x01) != 0) {
                 xsv_ext0 = xsv_ext2 = xsb + 1;
@@ -1359,8 +1359,8 @@ double OpenSimplex::Noise(double x, double y, double z, double w)
         /* Where each of the two closest points are determines how the extra three vertices are calculated. */
         if (aIsBiggerSide == bIsBiggerSide) {
             if (aIsBiggerSide) { /* Both closest points on the bigger side */
-                c1 = (int8_t)(aPoint | bPoint);
-                c2 = (int8_t)(aPoint & bPoint);
+                c1 = static_cast<int8_t>(aPoint | bPoint);
+                c2 = static_cast<int8_t>(aPoint & bPoint);
                 if ((c1 & 0x01) == 0) {
                     xsv_ext0 = xsb;
                     xsv_ext1 = xsb - 1;
@@ -1448,7 +1448,7 @@ double OpenSimplex::Noise(double x, double y, double z, double w)
                 dw_ext2 = dw0;
 
                 /* Other two points are based on the omitted axes. */
-                c = (int8_t)(aPoint | bPoint);
+                c = static_cast<int8_t>(aPoint | bPoint);
 
                 if ((c & 0x01) == 0) {
                     xsv_ext0 = xsb - 1;
@@ -1818,8 +1818,8 @@ double OpenSimplex::Noise(double x, double y, double z, double w)
         /* Where each of the two closest points are determines how the extra three vertices are calculated. */
         if (aIsBiggerSide == bIsBiggerSide) {
             if (aIsBiggerSide) { /* Both closest points on the bigger side */
-                c1 = (int8_t)(aPoint & bPoint);
-                c2 = (int8_t)(aPoint | bPoint);
+                c1 = static_cast<int8_t>(aPoint & bPoint);
+                c2 = static_cast<int8_t>(aPoint | bPoint);
 
                 /* Two contributions are permutations of (0,0,0,1) and (0,0,0,2) based on c1 */
                 xsv_ext0 = xsv_ext1 = xsb;
@@ -1897,7 +1897,7 @@ double OpenSimplex::Noise(double x, double y, double z, double w)
                 dw_ext2 = dw0 - 1 - 4 * SQUISH_CONSTANT_4D;
 
                 /* Other two points are based on the shared axes. */
-                c = (int8_t)(aPoint & bPoint);
+                c = static_cast<int8_t>(aPoint & bPoint);
 
                 if ((c & 0x01) != 0) {
                     xsv_ext0 = xsb + 2;
