@@ -29,7 +29,7 @@ namespace Terra
 
         Vector2(std::initializer_list<double> values)
         {
-            if (values.size != 2)
+            if (values.size() != 2)
             {
                 throw std::invalid_argument("initializer list should only contain 2 values");
             }
