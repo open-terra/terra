@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <exception>
 
 namespace Terra
 {
@@ -24,6 +25,18 @@ namespace Terra
         {
             this->x = x;
             this->y = y;
+        }
+
+        Vector2(std::initializer_list<double> values)
+        {
+            if (values.size != 2)
+            {
+                throw std::invalid_argument("initializer list should only contain 2 values");
+            }
+
+            const double* ptr = values.begin();
+            this->x = *ptr;
+            this->y = *(ptr + 1);
         }
 
         Vector2& operator=(const Vector2& other)
