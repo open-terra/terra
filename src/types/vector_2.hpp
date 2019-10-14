@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <exception>
 
 namespace Terra
 {
@@ -26,6 +27,26 @@ namespace Terra
             this->y = y;
         }
 
+        Vector2(std::initializer_list<double> values)
+        {
+            if (values.size != 2)
+            {
+                throw std::invalid_argument("initializer list should only contain 2 values");
+            }
+
+            const double* ptr = values.begin();
+            this->x = *ptr;
+            this->y = *(ptr + 1);
+        }
+
+        Vector2& operator=(const Vector2& other)
+        {
+            this->x = other.x;
+            this->y = other.y;
+
+            return *this;
+        }
+
         static inline double DistanceSquared(const Vector2 &l, const Vector2 &r)
         {
             double dx = l.x - r.x;
@@ -40,4 +61,11 @@ namespace Terra
             return std::sqrt((dx * dx) + (dy * dy));
         }
     };
+
+    void swap(Terra::Vector2& a, Terra::Vector2& b)
+    {
+        auto c = a;
+        a = b;
+        b = c;
+    }
 }
