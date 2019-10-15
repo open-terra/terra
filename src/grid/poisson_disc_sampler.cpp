@@ -6,7 +6,7 @@ PoissonDiscSampler::PoissonDiscSampler()
 {
 }
 
-PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::Grid::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples)
+PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples)
 {
     this->radius = radius;
     this->sizeX = sizeX;

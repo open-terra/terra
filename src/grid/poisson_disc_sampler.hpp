@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "../types/vector_2.hpp"
-#include "../grid/hash_grid.hpp"
+#include "../types/hash_grid.hpp"
 
 namespace Terra::Grid
 {
@@ -22,11 +22,11 @@ namespace Terra::Grid
         int64_t samples;
 
         std::vector<Terra::Vector2>* points;
-		Terra::Grid::HashGrid* grid;
+		Terra::HashGrid* grid;
 
 	public:
         PoissonDiscSampler();
-        PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::Grid::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples = 30);
+        PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples = 30);
 
         int64_t Sample();
     };

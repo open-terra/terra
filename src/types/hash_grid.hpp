@@ -9,7 +9,7 @@
 #include "../types/vector_2.hpp"
 #include "../utils/utils.hpp"
 
-namespace Terra::Grid
+namespace Terra
 {
     class HashGrid
     {

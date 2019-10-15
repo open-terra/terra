@@ -1,6 +1,6 @@
 #include "hash_grid.hpp"
 
-using namespace Terra::Grid;
+using namespace Terra;
 
 HashGrid::HashGrid()
 {
