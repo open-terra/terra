@@ -1,4 +1,7 @@
-# Poisson Disk Sample
+<p align="center">
+    <h1>Poisson Disc Sample</h1>
+</p>
+
 A Poisson-Disk sample is a random set of evenly spaced points in a arbitrary dimension, this creates a more natural blue noise pattern.
 
 My implementation is based on that of Jason Davies which intern uses research from Robert Bridson to have a _O(n)_ algorithm.
