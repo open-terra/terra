@@ -31,12 +31,12 @@ namespace Terra
         std::unique_ptr<int64_t[]> hashtable;
 
     public:
-        HashGrid();
-        HashGrid(int64_t sizeX, int64_t sizeY, double radius);
+        constexpr HashGrid();
+        constexpr HashGrid(int64_t sizeX, int64_t sizeY, double radius);
 
-        inline void Set(const Terra::Vector2 &point, int64_t index);
-        inline int64_t At(const Terra::Vector2 &point);
+        constexpr void Set(const Terra::Vector2 &point, int64_t index);
+        constexpr int64_t At(const Terra::Vector2 &point);
 
-        inline std::vector<int64_t> Neighbours(const Terra::Vector2& point);
+        constexpr std::vector<int64_t> Neighbours(const Terra::Vector2& point);
     };
 }

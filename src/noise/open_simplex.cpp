@@ -4,7 +4,7 @@
 
 using namespace Terra::Noise;
 
-OpenSimplex::OpenSimplex(int64_t seed)
+constexpr OpenSimplex::OpenSimplex(int64_t seed)
 {
     std::array<int16_t, 256> source;
     for (int i = 0; i < 256; i++)
@@ -30,7 +30,7 @@ OpenSimplex::OpenSimplex(int64_t seed)
     }
 }
 
-double OpenSimplex::Noise(double x, double y)
+constexpr double OpenSimplex::Noise(double x, double y)
 {
     /* Place input coordinates onto grid. */
     double stretchOffset = (x + y) * STRETCH_CONSTANT_2D;
@@ -159,7 +159,7 @@ double OpenSimplex::Noise(double x, double y)
     return value / NORM_CONSTANT_2D;
 }
 
-double OpenSimplex::Noise(double x, double y, double z)
+constexpr double OpenSimplex::Noise(double x, double y, double z)
 {
     /* Place input coordinates on simplectic honeycomb. */
     double stretchOffset = (x + y + z) * STRETCH_CONSTANT_3D;
@@ -764,7 +764,7 @@ double OpenSimplex::Noise(double x, double y, double z)
     return value / NORM_CONSTANT_3D;
 }
 
-double OpenSimplex::Noise(double x, double y, double z, double w)
+constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 {
     double uins;
     double dx1, dy1, dz1, dw1;
@@ -2191,14 +2191,14 @@ double OpenSimplex::Noise(double x, double y, double z, double w)
     return value / NORM_CONSTANT_4D;
 }
 
-double OpenSimplex::Extrapolate2(int xsb, int ysb, double dx, double dy)
+constexpr double OpenSimplex::Extrapolate2(int xsb, int ysb, double dx, double dy)
 {
     int index = this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] & 0x0E;
     return  gradients2D[index] * dx +
             gradients2D[index + 1] * dy;
 }
 
-double OpenSimplex::Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz)
+constexpr double OpenSimplex::Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz)
 {
     int index = this->permGradIndex3D[(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF];
     return  this->gradients3D[index] * dx +
@@ -2206,7 +2206,7 @@ double OpenSimplex::Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy
             this->gradients3D[index + 2] * dz;
 }
 
-double OpenSimplex::Extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw)
+constexpr double OpenSimplex::Extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw)
 {
     int index = this->perm[(this->perm[(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF] + wsb) & 0xFF] & 0xFC;
     return  this->gradients4D[index] * dx +

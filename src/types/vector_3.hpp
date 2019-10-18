@@ -8,32 +8,12 @@ namespace cp
     {
         double x, y, z;
 
-        Vector3()
-        {
-        }
+        constexpr Vector3() : x(0.0), y(0.0), z(0.0) {}
+        constexpr Vector3(double value) : x(value), y(value), z(value) {}
+        constexpr Vector3(double x, double y) : x(x), y(y), z(0.0) {}
+        constexpr Vector3(double x, double y, double z) : x(x), y(y), z(z) {}
 
-        Vector3(double value)
-        {
-            this->x = value;
-            this->y = value;
-            this->z = value;
-        }
-
-        Vector3(double x, double y)
-        {
-            this->x = x;
-            this->y = y;
-            this->z = 0.0;
-        }
-
-        Vector3(double x, double y, double z)
-        {
-            this->x = x;
-            this->y = y;
-            this->z = z;
-        }
-
-        static inline double DistanceSquared(Vector3 &l, Vector3 &r)
+        static constexpr double DistanceSquared(Vector3 &l, Vector3 &r)
         {
             double dx = l.x - r.x;
             double dy = l.y - r.y;
@@ -41,7 +21,7 @@ namespace cp
             return (dx * dx) + (dy * dy) + (dz * dz);
         }
 
-        static inline double Distance(Vector3 &l, Vector3 &r)
+        static constexpr double Distance(Vector3 &l, Vector3 &r)
         {
             double dx = l.x - r.x;
             double dy = l.y - r.y;

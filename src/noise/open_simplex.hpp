@@ -80,15 +80,15 @@ namespace Terra::Noise
         std::array<int16_t, 256> permGradIndex3D;
 
     public:
-        OpenSimplex(int64_t seed);
+        constexpr OpenSimplex(int64_t seed);
 
-        double Noise(double x, double y);
-        double Noise(double x, double y, double z);
-        double Noise(double x, double y, double z, double w);
+        constexpr double Noise(double x, double y);
+        constexpr double Noise(double x, double y, double z);
+        constexpr double Noise(double x, double y, double z, double w);
 
     private:
-        double Extrapolate2(int xsb, int ysb, double dx, double dy);
-        double Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz);
-        double Extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw);
+        constexpr double Extrapolate2(int xsb, int ysb, double dx, double dy);
+        constexpr double Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz);
+        constexpr double Extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw);
     };
 }

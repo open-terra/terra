@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-#include <exception>
+#include <stdexcept>
 
 namespace Terra
 {
@@ -9,25 +9,13 @@ namespace Terra
     {
         double x, y;
 
-        Vector2()
-        {
-			this->x = 0.0;
-			this->y = 0.0;
-        }
+        constexpr Vector2() : x(0.0), y(0.0) {}
 
-        Vector2(double value)
-        {
-            this->x = value;
-            this->y = value;
-        }
+        constexpr Vector2(double value) : x(value), y(value) {}
 
-        Vector2(double x, double y)
-        {
-            this->x = x;
-            this->y = y;
-        }
+        constexpr Vector2(double x, double y) : x(x), y(y) {}
 
-        Vector2(std::initializer_list<double> values)
+        constexpr Vector2(std::initializer_list<double> values) : x(0), y(0)
         {
             if (values.size() != 2)
             {
@@ -39,7 +27,7 @@ namespace Terra
             this->y = *(ptr + 1);
         }
 
-        Vector2& operator=(const Vector2& other)
+        constexpr Vector2& operator=(const Vector2& other)
         {
             this->x = other.x;
             this->y = other.y;
@@ -47,14 +35,14 @@ namespace Terra
             return *this;
         }
 
-        static inline double DistanceSquared(const Vector2 &l, const Vector2 &r)
+        static constexpr double DistanceSquared(const Vector2 &l, const Vector2 &r)
         {
             double dx = l.x - r.x;
             double dy = l.y - r.y;
             return (dx * dx) + (dy * dy);
         }
 
-        static inline double Distance(const Vector2 &l, const Vector2 &r)
+        static constexpr double Distance(const Vector2 &l, const Vector2 &r)
         {
             double dx = l.x - r.x;
             double dy = l.y - r.y;
@@ -62,7 +50,7 @@ namespace Terra
         }
     };
 
-    void swap(Terra::Vector2& a, Terra::Vector2& b)
+    constexpr void swap(Terra::Vector2& a, Terra::Vector2& b)
     {
         auto c = a;
         a = b;
