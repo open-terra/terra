@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cmath>
 #include <stdexcept>
+
+#include "../utils/fast_sqrt.hpp"
 
 namespace Terra
 {
@@ -46,7 +47,7 @@ namespace Terra
         {
             double dx = l.x - r.x;
             double dy = l.y - r.y;
-            return std::sqrt((dx * dx) + (dy * dy));
+            return Utils::FastSqrt((dx * dx) + (dy * dy));
         }
     };
 

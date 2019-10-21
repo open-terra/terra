@@ -1,5 +1,7 @@
 #include "poisson_disc_sampler.hpp"
 
+#include "../utils/fast_sqrt.hpp"
+
 using namespace Terra::Grid;
 
 PoissonDiscSampler::PoissonDiscSampler()
@@ -45,13 +47,13 @@ int64_t PoissonDiscSampler::Sample()
 
     while (!active.empty())
     {
-        int64_t i = normal(gen) * (active.size() - 1); // Get a random index from the list of active points
+        int64_t i = Utils::FastRound<int64_t>(normal(gen) * static_cast<double>(active.size() - 1)); // Get a random index from the list of active points
 
         for (int64_t j = 0; j < this->samples; j++) // Loop till a valid point is found or the sample limit is reached
         {
             // Create new point around current index
             double theta = normal(gen) * 2.0 * pi; // Random radian on the circumference of the circle
-            double r = std::sqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
+            double r = Utils::FastSqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
             // Calculate the position of the point on the circle
             
             auto p = this->points->at(i);

@@ -63,7 +63,7 @@ double inner = this->radius * this->radius;
 double outer = (4 * inner) - inner;
 
 double theta = normal(gen) * 2 * pi; // Random radian on the circumference of the circle
-double r = std::sqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
+double r = Utils::FastSqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
 cp::Vector3 point(  points[i].x + (r * std::cos(theta)),
                     points[i].y + (r * std::sin(theta)));
 ```

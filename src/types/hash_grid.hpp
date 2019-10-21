@@ -21,7 +21,7 @@ namespace Terra
             }
         };
 
-        const double sqrt1_2 = 1 / std::sqrt(2.0);
+        const double sqrt1_2 = 1 / Utils::FastSqrt(2.0);
 
         int64_t gridSizeX;
         int64_t gridSizeY;
@@ -31,12 +31,12 @@ namespace Terra
         std::unique_ptr<int64_t[]> hashtable;
 
     public:
-        constexpr HashGrid();
-        constexpr HashGrid(int64_t sizeX, int64_t sizeY, double radius);
+        HashGrid();
+        HashGrid(int64_t sizeX, int64_t sizeY, double radius);
 
-        constexpr void Set(const Terra::Vector2 &point, int64_t index);
-        constexpr int64_t At(const Terra::Vector2 &point);
+        inline void Set(const Terra::Vector2 &point, int64_t index);
+        inline int64_t At(const Terra::Vector2 &point);
 
-        constexpr std::vector<int64_t> Neighbours(const Terra::Vector2& point);
+        inline std::vector<int64_t> Neighbours(const Terra::Vector2& point);
     };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include "../utils/fast_sqrt.hpp"
 
 namespace cp
 {
@@ -26,7 +26,7 @@ namespace cp
             double dx = l.x - r.x;
             double dy = l.y - r.y;
             double dz = l.z - r.z;
-            return std::sqrt((dx * dx) + (dy * dy) + (dz * dz));
+            return Utils::FastSqrt((dx * dx) + (dy * dy) + (dz * dz));
         }
     };
 }

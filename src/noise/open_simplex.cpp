@@ -6,8 +6,8 @@ using namespace Terra::Noise;
 
 constexpr OpenSimplex::OpenSimplex(int64_t seed)
 {
-    std::array<int16_t, 256> source;
-    for (int i = 0; i < 256; i++)
+    std::array<int16_t, 256> source = {};
+    for (int16_t i = 0; i < 256; i++)
     {
         source[i] = i;
     }
@@ -58,18 +58,18 @@ constexpr double OpenSimplex::Noise(double x, double y)
     double dy0 = y - yb;
 
     /* We'll be defining these inside the next block and using them afterwards. */
-    double dx_ext, dy_ext;
-    int xsv_ext, ysv_ext;
+    double dx_ext = 0.0, dy_ext = 0.0;
+    int xsv_ext = 0, ysv_ext = 0;
 
-    double dx1;
-    double dy1;
-    double attn1;
-    double dx2;
-    double dy2;
-    double attn2;
-    double zins;
-    double attn0;
-    double attn_ext;
+    double dx1 = 0.0;
+    double dy1 = 0.0;
+    double attn1 = 0.0;
+    double dx2 = 0.0;
+    double dy2 = 0.0;
+    double attn2 = 0.0;
+    double zins = 0.0;
+    double attn0 = 0.0;
+    double attn_ext = 0.0;
 
     double value = 0;
 
@@ -192,27 +192,27 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     double dz0 = z - zb;
 
     /* We'll be defining these inside the next block and using them afterwards. */
-    double dx_ext0, dy_ext0, dz_ext0;
-    double dx_ext1, dy_ext1, dz_ext1;
-    int xsv_ext0, ysv_ext0, zsv_ext0;
-    int xsv_ext1, ysv_ext1, zsv_ext1;
+    double dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0;
+    double dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0;
+    int xsv_ext0 = 0, ysv_ext0 = 0, zsv_ext0 = 0;
+    int xsv_ext1 = 0, ysv_ext1 = 0, zsv_ext1 = 0;
 
-    double wins;
-    int8_t c, c1, c2;
-    int8_t aPoint, bPoint;
-    double aScore, bScore;
-    int aIsFurtherSide;
-    int bIsFurtherSide;
-    double p1, p2, p3;
-    double score;
-    double attn0, attn1, attn2, attn3, attn4, attn5, attn6;
-    double dx1, dy1, dz1;
-    double dx2, dy2, dz2;
-    double dx3, dy3, dz3;
-    double dx4, dy4, dz4;
-    double dx5, dy5, dz5;
-    double dx6, dy6, dz6;
-    double attn_ext0, attn_ext1;
+    double wins = 0.0;
+    int8_t c = 0, c1 = 0, c2 = 0;
+    int8_t aPoint = 0, bPoint = 0;
+    double aScore = 0.0, bScore = 0.0;
+    int aIsFurtherSide = 0;
+    int bIsFurtherSide = 0;
+    double p1 = 0.0, p2 = 0.0, p3 = 0.0;
+    double score = 0.0;
+    double attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0, attn5 = 0.0, attn6 = 0.0;
+    double dx1 = 0.0, dy1 = 0.0, dz1 = 0.0;
+    double dx2 = 0.0, dy2 = 0.0, dz2 = 0.0;
+    double dx3 = 0.0, dy3 = 0.0, dz3 = 0.0;
+    double dx4 = 0.0, dy4 = 0.0, dz4 = 0.0;
+    double dx5 = 0.0, dy5 = 0.0, dz5 = 0.0;
+    double dx6 = 0.0, dy6 = 0.0, dz6 = 0.0;
+    double attn_ext0 = 0.0, attn_ext1 = 0.0;
 
     double value = 0;
     if (inSum <= 1) { /* We're inside the tetrahedron (3-Simplex) at (0,0,0) */
@@ -766,27 +766,27 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
 
 constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 {
-    double uins;
-    double dx1, dy1, dz1, dw1;
-    double dx2, dy2, dz2, dw2;
-    double dx3, dy3, dz3, dw3;
-    double dx4, dy4, dz4, dw4;
-    double dx5, dy5, dz5, dw5;
-    double dx6, dy6, dz6, dw6;
-    double dx7, dy7, dz7, dw7;
-    double dx8, dy8, dz8, dw8;
-    double dx9, dy9, dz9, dw9;
-    double dx10, dy10, dz10, dw10;
-    double attn0, attn1, attn2, attn3, attn4;
-    double attn5, attn6, attn7, attn8, attn9, attn10;
-    double attn_ext0, attn_ext1, attn_ext2;
-    int8_t c, c1, c2;
-    int8_t aPoint, bPoint;
-    double aScore, bScore;
-    int aIsBiggerSide;
-    int bIsBiggerSide;
-    double p1, p2, p3, p4;
-    double score;
+    double uins = 0.0;
+    double dx1 = 0.0, dy1 = 0.0, dz1 = 0.0, dw1 = 0.0;
+    double dx2 = 0.0, dy2 = 0.0, dz2 = 0.0, dw2 = 0.0;
+    double dx3 = 0.0, dy3 = 0.0, dz3 = 0.0, dw3 = 0.0;
+    double dx4 = 0.0, dy4 = 0.0, dz4 = 0.0, dw4 = 0.0;
+    double dx5 = 0.0, dy5 = 0.0, dz5 = 0.0, dw5 = 0.0;
+    double dx6 = 0.0, dy6 = 0.0, dz6 = 0.0, dw6 = 0.0;
+    double dx7 = 0.0, dy7 = 0.0, dz7 = 0.0, dw7 = 0.0;
+    double dx8 = 0.0, dy8 = 0.0, dz8 = 0.0, dw8 = 0.0;
+    double dx9 = 0.0, dy9 = 0.0, dz9 = 0.0, dw9 = 0.0;
+    double dx10 = 0.0, dy10 = 0.0, dz10 = 0.0, dw10 = 0.0;
+    double attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0;
+    double attn5 = 0.0, attn6 = 0.0, attn7 = 0.0, attn8 = 0.0, attn9 = 0.0, attn10 = 0.0;
+    double attn_ext0 = 0.0, attn_ext1 = 0.0, attn_ext2 = 0.0;
+    int8_t c = 0, c1 = 0, c2 = 0;
+    int8_t aPoint = 0, bPoint = 0;
+    double aScore = 0.0, bScore = 0.0;
+    int aIsBiggerSide = 0;
+    int bIsBiggerSide = 0;
+    double p1 = 0.0, p2 = 0.0, p3 = 0.0, p4 = 0.0;
+    double score = 0.0;
 
     /* Place input coordinates on simplectic honeycomb. */
     double stretchOffset = (x + y + z + w) * STRETCH_CONSTANT_4D;
@@ -824,12 +824,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     double dw0 = w - wb;
 
     /* We'll be defining these inside the next block and using them afterwards. */
-    double dx_ext0, dy_ext0, dz_ext0, dw_ext0;
-    double dx_ext1, dy_ext1, dz_ext1, dw_ext1;
-    double dx_ext2, dy_ext2, dz_ext2, dw_ext2;
-    int xsv_ext0, ysv_ext0, zsv_ext0, wsv_ext0;
-    int xsv_ext1, ysv_ext1, zsv_ext1, wsv_ext1;
-    int xsv_ext2, ysv_ext2, zsv_ext2, wsv_ext2;
+    double dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0, dw_ext0 = 0.0;
+    double dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0, dw_ext1 = 0.0;
+    double dx_ext2 = 0.0, dy_ext2 = 0.0, dz_ext2 = 0.0, dw_ext2 = 0.0;
+    int xsv_ext0 = 0, ysv_ext0 = 0, zsv_ext0 = 0, wsv_ext0 = 0;
+    int xsv_ext1 = 0, ysv_ext1 = 0, zsv_ext1 = 0, wsv_ext1 = 0;
+    int xsv_ext2 = 0, ysv_ext2 = 0, zsv_ext2 = 0, wsv_ext2 = 0;
 
     double value = 0;
     if (inSum <= 1) { /* We're inside the pentachoron (4-Simplex) at (0,0,0,0) */
