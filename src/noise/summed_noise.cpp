@@ -7,7 +7,7 @@ constexpr SummedNoise<T>::SummedNoise(int64_t seed, size_t octaves, double lunac
     noise(T(seed)),
     octaves(octaves),
     lunacracity(lunacracity),
-    persistence(persistence),
+    persistence(persistence)
 {
 }
 
@@ -16,7 +16,7 @@ constexpr SummedNoise<T>::SummedNoise(T& noise, size_t octaves, double lunacraci
     noise(noise),
     octaves(octaves),
     lunacracity(lunacracity),
-    persistence(persistence),
+    persistence(persistence)
 {
 }
 

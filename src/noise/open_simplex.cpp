@@ -4,7 +4,9 @@
 
 using namespace Terra::Noise;
 
-constexpr OpenSimplex::OpenSimplex(int64_t seed)
+constexpr OpenSimplex::OpenSimplex(int64_t seed) :
+    perm(),
+    permGradIndex3D()
 {
     std::array<int16_t, 256> source = {};
     for (int16_t i = 0; i < 256; i++)
