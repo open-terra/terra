@@ -1,5 +1,6 @@
+#include "voronoi.hpp"
+
 #include <stdio.h>
-#include "Voronoi.hpp"
 
 using namespace Terra;
 
