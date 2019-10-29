@@ -1,0 +1,14 @@
+version: 1.0.{build}
+image: Visual Studio 2019
+configuration: Debug
+clone_depth: 50
+
+before_build:
+  - mkdir build
+  - cd build
+  - cmake -G "Visual Studio 16 2019" ..
+
+build:
+  project: build/Terra.sln
+  parallel: true
+  verbosity: minimal
