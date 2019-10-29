@@ -229,13 +229,13 @@ Delaunator::Delaunator(const std::vector<Terra::Vector2>& in_coords) :
 
     auto i2v = coords[i2];
 
-    if (orient(i0, i1, i2))
+    if (orient(i0v, i1v, i2v))
     {
         std::swap(i1, i2);
         std::swap(i1v, i2v);
     }
 
-    m_centre = circumcentre(i0, i1, i2);
+    m_centre = circumcentre(i0v, i1v, i2v);
 
     // sort the points by distance from the seed triangle circumcentre
     std::sort(ids.begin(), ids.end(), compare{ coords, m_centre });

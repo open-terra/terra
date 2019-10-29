@@ -49,12 +49,61 @@ namespace Terra
             double dy = l.y - r.y;
             return Utils::FastSqrt((dx * dx) + (dy * dy));
         }
+
+        static constexpr double Norm(const Terra::Vector2& p)
+        {
+            return (p.x * p.x) + (p.y * p.y);
+        }
+
+        static constexpr double VectorProduct(const Terra::Vector2 &l, const Terra::Vector2 &r)
+        {
+            return (l.x * r.y) - (l.y * r.x);
+        }
+ 
+        static constexpr double ScalarProduct(const Terra::Vector2 &l, const Terra::Vector2 &r)
+        {
+            return (l.x * r.x) + (l.y * r.y);
+        }
+
+        static constexpr int32_t Compare(const Terra::Vector2& l, const Terra::Vector2& r)
+        {
+            return (l.y != r.y) ? (l.y < r.y ? -1 : 1) : (l.x < r.x ? -1 : 1);
+        }
+
+        constexpr Vector2 operator+(const Vector2 &p) const
+        {
+            return Vector2(this->x + p.x, this->y + p.y);
+        }
+
+        constexpr Vector2 operator-(const Vector2 &p) const
+        {
+            return Vector2(this->x - p.x, this->y - p.y);
+        }
+
+        constexpr Vector2 operator*(const double t) const
+        {
+            return Vector2(this->x * t, this->y * t);
+        }
     };
 
-    constexpr void swap(Terra::Vector2& a, Terra::Vector2& b)
+    constexpr bool operator==(const Vector2& lhs, const Vector2& rhs)
     {
-        auto c = a;
-        a = b;
-        b = c;
+        return (lhs.x == rhs.x) && (lhs.y == rhs.y);
+    }
+    constexpr bool operator!=(const Vector2& lhs, const Vector2& rhs) { return !(lhs == rhs); }
+
+    constexpr bool operator< (const Vector2& lhs, const Vector2& rhs)
+    {
+        return (lhs.y == rhs.y) ? (lhs.x < rhs.x) : lhs.y < rhs.y;
+    }
+    constexpr bool operator> (const Vector2& lhs, const Vector2& rhs) { return rhs < lhs; }
+    constexpr bool operator<=(const Vector2& lhs, const Vector2& rhs) { return !(lhs > rhs); }
+    constexpr bool operator>=(const Vector2& lhs, const Vector2& rhs) { return !(lhs < rhs); }
+
+    constexpr void swap(Terra::Vector2& l, Terra::Vector2& r)
+    {
+        auto c = l;
+        l = r;
+        r = c;
     }
 }
