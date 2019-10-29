@@ -5,10 +5,10 @@
 #include <iostream>
 #include <vector>
 
-#include "../types/vector_2.hpp"
+#include "../src/types/vector_2.hpp"
 
-#include "../types/hash_grid.hpp"
-#include "../grid/poisson_disc_sampler.hpp"
+#include "../src/types/hash_grid.hpp"
+#include "../src/grid/poisson_disc_sampler.hpp"
 
 int main(int argc, char* argv[])
 {
