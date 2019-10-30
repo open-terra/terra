@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include "../src/utils/utils.hpp"
+#include "utils/utils.hpp"
 
 using namespace Utils;
 

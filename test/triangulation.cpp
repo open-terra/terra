@@ -4,9 +4,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../types/vector_2.hpp"
-
-#include "../delaunator.hpp"
+#include "types/vector_2.hpp"
+#include "delaunator.hpp"
 
 /*
 Honey comb to be triangulated
