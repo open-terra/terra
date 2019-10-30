@@ -94,7 +94,7 @@ inline const Terra::Vector2 PoissonDiscSampler::GenerateAround(Terra::Vector2& p
     );
 }
 
-constexpr bool PoissonDiscSampler::IsValid(Terra::Vector2& p)
+inline bool PoissonDiscSampler::IsValid(Terra::Vector2& p)
 {
     if (!this->bounds.WithinExtent(p)) // Is within max extents
     {

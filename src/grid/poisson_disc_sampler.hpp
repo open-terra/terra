@@ -47,6 +47,6 @@ namespace Terra::Grid
 
     private:
         inline const Terra::Vector2 GenerateAround(Terra::Vector2& p);
-        constexpr bool IsValid(Terra::Vector2& p);
+        inline bool IsValid(Terra::Vector2& p);
     };
 }
