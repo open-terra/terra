@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 
 # Enable C++ support
 language: cpp
@@ -12,8 +12,12 @@ dist: bionic
 # Compiler selection
 compiler: gcc
 
+before_install:
+  - ./install-catch2.sh
+
 # Build steps
 script:
   - mkdir build
   - cd build
   - cmake .. && make
+  - ctest

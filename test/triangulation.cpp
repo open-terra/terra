@@ -4,9 +4,10 @@
 #include <iostream>
 #include <vector>
 
-#include "../types/vector_2.hpp"
+#include <catch2/catch.hpp>
 
-#include "../delaunator.hpp"
+#include "types/vector_2.hpp"
+#include "delaunator.hpp"
 
 /*
 Honey comb to be triangulated
@@ -29,12 +30,8 @@ static const std::vector<Terra::Vector2> vertices =
     { 3.0, 0.0 }, { 4.0, 0.0 },
 };
 
-int main(int argc, char* argv[])
+TEST_CASE("can triangulate correctly", "[Delaunator]")
 {
     Terra::Delaunator delaunator(vertices);
-    std::cout << "tri count:" << delaunator.triangles.size() << std::endl;
-    for (int i = 0; i + 2 < delaunator.triangles.size(); i += 3)
-    {
-        std::cout << "tri: { " << delaunator.triangles[i] << ", " << delaunator.triangles[i + 1] << ", " << delaunator.triangles[i + 2] << " }";
-    }
+    REQUIRE(delaunator.triangles.size() > 0);
 }

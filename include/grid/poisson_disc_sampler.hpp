@@ -46,7 +46,7 @@ namespace Terra::Grid
         int64_t Sample();
 
     private:
-        inline const Terra::Vector2 GenerateAround(Terra::Vector2& p);
-        inline bool IsValid(Terra::Vector2& p);
+        const Terra::Vector2 GenerateAround(Terra::Vector2& p);
+        bool IsValid(Terra::Vector2& p);
     };
 }

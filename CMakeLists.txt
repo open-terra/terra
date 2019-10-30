@@ -13,6 +13,9 @@ set(CMAKE_CXX_STANDARD 17)
 # Use C99
 set(CMAKE_C_STANDARD 11)
 
+# Catch2 needed for testing
+find_package(Catch2 CONFIG REQUIRED)
+
 # Do stuff depending on the compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Wpedantic -Wunused-value -Wold-style-cast -std=c++17")
@@ -26,3 +29,4 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include(src/terra.cmake)
+include(test/tests.cmake)

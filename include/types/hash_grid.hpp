@@ -32,9 +32,9 @@ namespace Terra
         HashGrid();
         HashGrid(int64_t sizeX, int64_t sizeY, double radius);
 
-        inline void Set(const Terra::Vector2 &point, int64_t index);
-        inline int64_t At(const Terra::Vector2 &point);
+        void Set(const Terra::Vector2 &point, int64_t index);
+        int64_t At(const Terra::Vector2 &point);
 
-        inline std::vector<int64_t> Neighbours(const Terra::Vector2& point);
+        std::vector<int64_t> Neighbours(const Terra::Vector2& point);
     };
 }
