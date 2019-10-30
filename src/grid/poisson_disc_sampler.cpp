@@ -4,25 +4,37 @@
 
 using namespace Terra::Grid;
 
-PoissonDiscSampler::PoissonDiscSampler()
+PoissonDiscSampler::PoissonDiscSampler() :
+    radius(0.0),
+    sizeX(0),
+    sizeY(0),
+    samples(0),
+    points(),
+    grid(),
+    inner(0.0),
+    outer(0.0),
+    count(0),
+    bounds(),
+    rd(),
+    gen(),
+    normal()
 {
 }
 
 PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples) :
+    radius(radius),
+    sizeX(sizeX),
+    sizeY(sizeY),
+    samples(samples),
+    points(&points),
+    grid(&grid),
+    count(0),
     rd(),
     gen(rd()),
     normal(0.0, 1.0)
 {
-    this->radius = radius;
-    this->sizeX = sizeX;
-    this->sizeY = sizeY;
-    this->samples = samples;
-    this->points = &points;
-    this->grid = &grid;
-
     inner = this->radius * this->radius;
     outer = 3 * inner;
-    count = 0;
 
     bounds = Rect(this->radius, this->radius, this->sizeX - this->radius, this->sizeY - this->radius);
 }
