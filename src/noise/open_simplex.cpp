@@ -1,6 +1,6 @@
-#include "open_simplex.hpp"
+#include "noise/open_simplex.hpp"
 
-#include "../utils/fast_floor.hpp"
+#include "utils/fast_floor.hpp"
 
 using namespace Terra::Noise;
 

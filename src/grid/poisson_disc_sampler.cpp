@@ -1,6 +1,6 @@
-#include "poisson_disc_sampler.hpp"
+#include "grid/poisson_disc_sampler.hpp"
 
-#include "../utils/fast_sqrt.hpp"
+#include "utils/fast_sqrt.hpp"
 
 using namespace Terra::Grid;
 

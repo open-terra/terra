@@ -24,4 +24,5 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2")
 endif()
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include(src/terra.cmake)
