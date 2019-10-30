@@ -8,7 +8,10 @@ PoissonDiscSampler::PoissonDiscSampler()
 {
 }
 
-PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples)
+PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples) :
+    rd(),
+    gen(rd()),
+    normal(0.0, 1.0)
 {
     this->radius = radius;
     this->sizeX = sizeX;
@@ -16,33 +19,25 @@ PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terr
     this->samples = samples;
     this->points = &points;
     this->grid = &grid;
+
+    inner = this->radius * this->radius;
+    outer = 3 * inner;
+    count = 0;
+
+    bounds = Rect(this->radius, this->radius, this->sizeX - this->radius, this->sizeY - this->radius);
 }
 
 int64_t PoissonDiscSampler::Sample()
 {
-    double inner = this->radius * this->radius;
-    double outer = (4 * this->radius * this->radius) - inner;
-    int64_t count = 0;
-
-    std::vector<int64_t> active;
-
-    double bx0 = this->radius;
-    double by0 = this->radius;
-    double bx1 = this->sizeX - this->radius;
-    double by1 = this->sizeY - this->radius;
-
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<double> normal(0.0, 1.0); // Random double between 0.0 and 1.0
-
     { // create the initial point
-        std::uniform_real_distribution<double> dis(0.0, (double)std::min(sizeX, sizeY)); // Random double within the grid
+        std::uniform_real_distribution<double> dis(0.0, static_cast<double>(std::min(sizeX, sizeY))); // Random double within the grid
 
         Vector2 point(Terra::Vector2(dis(gen), dis(gen)));
         this->points->push_back(point);
         active.push_back(0);
 
         this->grid->Set(point, count);
+        count++;
     }
 
     while (!active.empty())
@@ -52,48 +47,56 @@ int64_t PoissonDiscSampler::Sample()
         for (int64_t j = 0; j < this->samples; j++) // Loop till a valid point is found or the sample limit is reached
         {
             // Create new point around current index
-            double theta = normal(gen) * 2.0 * pi; // Random radian on the circumference of the circle
-            double r = Utils::FastSqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
-            // Calculate the position of the point on the circle
-            
-            auto p = this->points->at(i);
-            Terra::Vector2 point
-            (
-                p.x + (r * std::cos(theta)),
-                p.y + (r * std::sin(theta))
-            );
-
-            if (bx0 <= point.x && point.x <= bx1 && by0 <= point.y && point.y <= by1) // Is within max extents
+            Terra::Vector2 point = this->GenerateAround(this->points->at(i));
+            if (this->IsValid(point))
             {
-                bool valid = true;
-                for (int64_t index : this->grid->Neighbours(point))
-                {
-                    // If the point is to close to neighbour this point should be ignored
-                    if (Terra::Vector2::DistanceSquared(point, this->points->at(index)) <= inner)
-                    {
-                        valid = false;
-                        break;
-                    }
-                }
+                // The point is valid add it to points then add the index to the active list
+                this->points->push_back(point);
+                active.push_back(count);
+                this->grid->Set(point, count);
+                count++;
 
-                if (valid)
-                {
-                    // The point is valid add it to points then add the index to the active list
-                    this->points->push_back(point);
-                    count++;
-                    active.push_back(count);
-                    this->grid->Set(point, count);
-
-                    break;
-                }
+                break;
             }
 
             if (j == this->samples)
             {
-                active.erase(active.begin() + i);
+                this->active.erase(active.begin() + i);
             }
         }
     }
 
-    return count + 1;
+    return count;
+}
+
+inline Terra::Vector2& PoissonDiscSampler::GenerateAround(Terra::Vector2& p)
+{
+    double theta = this->normal(this->gen) * 2.0 * this->pi; // Random radian on the circumference of the circle
+    double r = Utils::FastSqrt((this->normal(gen) * this->outer) + this->inner); // Random radius of the circle between r^2 and 4r
+    // Calculate the position of the point on the circle
+    
+    return Terra::Vector2
+    (
+        p.x + (r * std::cos(theta)),
+        p.y + (r * std::sin(theta))
+    );
+}
+
+constexpr bool PoissonDiscSampler::IsValid(Terra::Vector2& p)
+{
+    if (!this->bounds.WithinExtent(p)) // Is within max extents
+    {
+        return false;
+    }
+
+    for (int64_t index : this->grid->Neighbours(p))
+    {
+        // If the point is to close to neighbour this point should be ignored
+        if (Terra::Vector2::DistanceSquared(p, this->points->at(index)) <= inner)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
