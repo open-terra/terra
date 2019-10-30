@@ -69,7 +69,7 @@ int64_t PoissonDiscSampler::Sample()
     return count;
 }
 
-inline Terra::Vector2& PoissonDiscSampler::GenerateAround(Terra::Vector2& p)
+inline const Terra::Vector2 PoissonDiscSampler::GenerateAround(Terra::Vector2& p)
 {
     double theta = this->normal(this->gen) * 2.0 * this->pi; // Random radian on the circumference of the circle
     double r = Utils::FastSqrt((this->normal(gen) * this->outer) + this->inner); // Random radius of the circle between r^2 and 4r
