@@ -21,14 +21,12 @@ namespace Terra
             }
         };
 
-        const double sqrt1_2 = 1 / Utils::FastSqrt(2.0);
-
         int64_t gridSizeX;
         int64_t gridSizeY;
         int64_t neighbours;
         double bucketSize;
 
-        std::unique_ptr<int64_t[]> hashtable;
+        std::vector<int64_t> hashtable;
 
     public:
         HashGrid();
