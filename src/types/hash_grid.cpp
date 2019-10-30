@@ -1,4 +1,4 @@
-#include "types/hash_grid.hpp"
+#include "terra/types/hash_grid.hpp"
 
 using namespace Terra;
 

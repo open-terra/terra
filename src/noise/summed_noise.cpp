@@ -1,4 +1,4 @@
-#include "noise/summed_noise.hpp"
+#include "terra/noise/summed_noise.hpp"
 
 using namespace Terra::Noise;
 
