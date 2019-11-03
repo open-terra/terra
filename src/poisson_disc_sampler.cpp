@@ -1,8 +1,8 @@
-#include "terra/grid/poisson_disc_sampler.hpp"
+#include "terra/poisson_disc_sampler.hpp"
 
 #include "terra/utils/fast_sqrt.hpp"
 
-using namespace Terra::Grid;
+using namespace Terra;
 
 PoissonDiscSampler::PoissonDiscSampler() :
     radius(0.0),

@@ -5,11 +5,11 @@
 #include <random>
 #include <vector>
 
-#include "../types/vector_2.hpp"
-#include "../types/rect.hpp"
-#include "../types/hash_grid.hpp"
+#include "types/vector_2.hpp"
+#include "types/rect.hpp"
+#include "types/hash_grid.hpp"
 
-namespace Terra::Grid
+namespace Terra
 {
     class PoissonDiscSampler
     {

@@ -7,9 +7,9 @@
 
 #include <catch2/catch.hpp>
 
-#include "types/vector_2.hpp"
-#include "types/hash_grid.hpp"
-#include "grid/poisson_disc_sampler.hpp"
+#include "terra/types/vector_2.hpp"
+#include "terra/types/hash_grid.hpp"
+#include "terra/poisson_disc_sampler.hpp"
 
 TEST_CASE("can sample points correctly", "[PoissonDiscSampler]")
 {
@@ -20,7 +20,7 @@ TEST_CASE("can sample points correctly", "[PoissonDiscSampler]")
 	std::vector<Terra::Vector2> points;
 	Terra::HashGrid grid(size_x, size_y, radius);
 
-    Terra::Grid::PoissonDiscSampler sampler(points, grid, size_x, size_y, radius, 100);
+    Terra::PoissonDiscSampler sampler(points, grid, size_x, size_y, radius, 100);
 
 	REQUIRE(sampler.Sample() >= 2500);
 }

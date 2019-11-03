@@ -6,8 +6,8 @@
 
 #include <catch2/catch.hpp>
 
-#include "types/vector_2.hpp"
-#include "delaunator.hpp"
+#include "terra/types/vector_2.hpp"
+#include "terra/delaunator.hpp"
 
 /*
 Honey comb to be triangulated
