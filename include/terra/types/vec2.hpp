@@ -12,4 +12,4 @@ namespace terra
         l = r;
         r = c;
     }
-}
+} // namespace terra

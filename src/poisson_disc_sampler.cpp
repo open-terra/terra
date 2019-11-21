@@ -8,44 +8,37 @@
 using namespace terra;
 
 poisson_disc_sampler::poisson_disc_sampler() :
-    radius(0.0),
-    size_x(0),
-    size_y(0),
-    samples(0),
-    points(),
-    grid(),
-    inner(0.0),
-    outer(0.0),
-    count(0),
-    bounds(),
-    rd(),
-    gen(),
-    normal()
+    radius(0.0), size_x(0), size_y(0), samples(0), points(), grid(), inner(0.0),
+    outer(0.0), count(0), bounds(), rd(), gen(), normal()
 {
 }
 
-poisson_disc_sampler::poisson_disc_sampler(std::vector<terra::vec2>& points, terra::hash_grid& grid, int64_t size_x, int64_t size_y, double radius, int64_t samples) :
+poisson_disc_sampler::poisson_disc_sampler(std::vector<terra::vec2>& points,
+                                           terra::hash_grid& grid,
+                                           int64_t size_x,
+                                           int64_t size_y,
+                                           double radius,
+                                           int64_t samples) :
     radius(radius),
-    size_x(size_x),
-    size_y(size_y),
-    samples(samples),
-    points(&points),
-    grid(&grid),
-    count(0),
-    rd(),
-    gen(rd()),
-    normal(0.0, 1.0)
+    size_x(size_x), size_y(size_y), samples(samples), points(&points),
+    grid(&grid), count(0), rd(), gen(rd()), normal(0.0, 1.0)
 {
     inner = this->radius * this->radius;
     outer = 3 * inner;
 
-    bounds = rect(this->radius, this->radius, this->size_x - this->radius, this->size_y - this->radius);
+    bounds = rect(this->radius,
+                  this->radius,
+                  this->size_x - this->radius,
+                  this->size_y - this->radius);
 }
 
 int64_t poisson_disc_sampler::sample()
 {
     { // create the initial point
-        std::uniform_real_distribution<double> dis(0.0, static_cast<double>(std::min(size_x, size_y))); // Random double within the grid
+        std::uniform_real_distribution<double> dis(
+            0.0,
+            static_cast<double>(
+                std::min(size_x, size_y))); // Random double within the grid
 
         vec2 point(terra::vec2(dis(gen), dis(gen)));
         this->points->push_back(point);
@@ -57,15 +50,22 @@ int64_t poisson_disc_sampler::sample()
 
     while (!active.empty())
     {
-        int64_t i = utils::fast_round<int64_t>(normal(gen) * static_cast<double>(active.size() - 1)); // Get a random index from the list of active points
+        int64_t i = utils::fast_round<int64_t>(
+            normal(gen) *
+            static_cast<double>(
+                active.size() -
+                1)); // Get a random index from the list of active points
 
-        for (int64_t j = 0; j < this->samples; j++) // Loop till a valid point is found or the sample limit is reached
+        for (int64_t j = 0; j < this->samples;
+             j++) // Loop till a valid point is found or the sample limit is
+                  // reached
         {
             // Create new point around current index
             terra::vec2 point = this->generate_around(this->points->at(i));
             if (this->is_valid(point))
             {
-                // The point is valid add it to points then add the index to the active list
+                // The point is valid add it to points then add the index to the
+                // active list
                 this->points->push_back(point);
                 active.push_back(count);
                 this->grid->set(point, count);
@@ -86,15 +86,15 @@ int64_t poisson_disc_sampler::sample()
 
 const terra::vec2 poisson_disc_sampler::generate_around(terra::vec2& p)
 {
-    double theta = this->normal(this->gen) * 2.0 * this->pi; // Random radian on the circumference of the circle
-    double r = utils::fast_sqrt((this->normal(gen) * this->outer) + this->inner); // Random radius of the circle between r^2 and 4r
+    double theta = this->normal(this->gen) * 2.0 *
+                   this->pi; // Random radian on the circumference of the circle
+    double r = utils::fast_sqrt(
+        (this->normal(gen) * this->outer) +
+        this->inner); // Random radius of the circle between r^2 and 4r
     // Calculate the position of the point on the circle
-    
-    return terra::vec2
-    (
-        p.x + (r * std::cos(theta)),
-        p.y + (r * std::sin(theta))
-    );
+
+    return terra::vec2(p.x + (r * std::cos(theta)),
+                       p.y + (r * std::sin(theta)));
 }
 
 bool poisson_disc_sampler::is_valid(terra::vec2& p)

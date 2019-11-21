@@ -28,9 +28,9 @@ namespace terra
         bool removed;
     };
 
-    class delaunator 
+    class delaunator
     {
-    public:
+       public:
         const std::vector<terra::vec2>& coords;
         std::vector<size_t> triangles;
         std::vector<size_t> halfedges;
@@ -43,7 +43,7 @@ namespace terra
 
         double get_hull_area();
 
-    private:
+       private:
         std::vector<size_t> m_hash;
         terra::vec2 m_centre;
         size_t m_hash_size;
@@ -51,7 +51,12 @@ namespace terra
 
         size_t legalize(size_t a);
         size_t hash_key(const terra::vec2& vec) const;
-        size_t add_triangle(size_t i0, size_t i1, size_t i2, size_t a, size_t b, size_t c);
+        size_t add_triangle(size_t i0,
+                            size_t i1,
+                            size_t i2,
+                            size_t a,
+                            size_t b,
+                            size_t c);
         void link(size_t a, size_t b);
     };
-}
+} // namespace terra

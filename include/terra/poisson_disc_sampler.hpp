@@ -7,14 +7,14 @@
 
 #include "types/vec2.hpp"
 
-#include "types/rect.hpp"
 #include "types/hash_grid.hpp"
+#include "types/rect.hpp"
 
 namespace terra
 {
     class poisson_disc_sampler
     {
-	private:
+       private:
         const double pi = 3.14159265358979323846;
 
         double radius;
@@ -37,16 +37,21 @@ namespace terra
         std::vector<int64_t> active;
 
         std::vector<terra::vec2>* points;
-		terra::hash_grid* grid;
+        terra::hash_grid* grid;
 
-	public:
+       public:
         poisson_disc_sampler();
-        poisson_disc_sampler(std::vector<terra::vec2>& points, terra::hash_grid& grid, int64_t size_x, int64_t size_y, double radius, int64_t samples = 30);
+        poisson_disc_sampler(std::vector<terra::vec2>& points,
+                             terra::hash_grid& grid,
+                             int64_t size_x,
+                             int64_t size_y,
+                             double radius,
+                             int64_t samples = 30);
 
         int64_t sample();
 
-    private:
+       private:
         const terra::vec2 generate_around(terra::vec2& p);
         bool is_valid(terra::vec2& p);
     };
-}
+} // namespace terra

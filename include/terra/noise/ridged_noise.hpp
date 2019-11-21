@@ -10,12 +10,16 @@ namespace terra::noise
     template<class T>
     class ridged_noise
     {
-    private:
+       private:
         T& noise;
 
-    public:
-        constexpr ridged_noise(int64_t seed) : noise(T(seed)) {}
-        constexpr ridged_noise(T& noise) : noise(noise) {}
+       public:
+        constexpr ridged_noise(int64_t seed) : noise(T(seed))
+        {
+        }
+        constexpr ridged_noise(T& noise) : noise(noise)
+        {
+        }
 
         constexpr double noise(double x, double y)
         {
@@ -30,4 +34,4 @@ namespace terra::noise
             return 1.0 - utils::fast_abs(noise.noise(x, y, z, w));
         }
     };
-}
+} // namespace terra::noise

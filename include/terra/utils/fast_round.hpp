@@ -5,9 +5,9 @@
 
 namespace utils
 {
-    template <typename T>
+    template<typename T>
     constexpr T fast_round(double x)
     {
-        return x > 0.0 ? fast_floor<T>(x + 0.5)  : fast_ceil<T>(x - 0.5);
+        return x > 0.0 ? fast_floor<T>(x + 0.5) : fast_ceil<T>(x - 0.5);
     }
-}
+} // namespace utils
