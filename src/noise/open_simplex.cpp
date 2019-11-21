@@ -2,11 +2,9 @@
 
 #include "terra/utils/fast_floor.hpp"
 
-using namespace Terra::Noise;
+using namespace terra::noise;
 
-constexpr OpenSimplex::OpenSimplex(int64_t seed) :
-    perm(),
-    permGradIndex3D()
+constexpr open_simplex::open_simplex(int64_t seed) : perm(), permGradIndex3D()
 {
     std::array<int16_t, 256> source = {};
     for (int16_t i = 0; i < 256; i++)
@@ -27,23 +25,26 @@ constexpr OpenSimplex::OpenSimplex(int64_t seed) :
             r += (i + 1);
         }
         this->perm[i] = source[r];
-        this->permGradIndex3D[i] = static_cast<int16_t>((perm[i] % (512 / 3)) * 3);
+        this->permGradIndex3D[i] =
+            static_cast<int16_t>((perm[i] % (512 / 3)) * 3);
         source[r] = source[i];
     }
 }
 
-constexpr double OpenSimplex::Noise(double x, double y)
+constexpr double open_simplex::noise(double x, double y)
 {
     /* Place input coordinates onto grid. */
     double stretchOffset = (x + y) * STRETCH_CONSTANT_2D;
     double xs = x + stretchOffset;
     double ys = y + stretchOffset;
 
-    /* Floor to get grid coordinates of rhombus (stretched square) super-cell origin. */
-    int xsb = Utils::FastFloor<int>(xs);
-    int ysb = Utils::FastFloor<int>(ys);
+    /* Floor to get grid coordinates of rhombus (stretched square) super-cell
+     * origin. */
+    int xsb = utils::fast_floor<int>(xs);
+    int ysb = utils::fast_floor<int>(ys);
 
-    /* Skew out to get actual coordinates of rhombus origin. We'll need these later. */
+    /* Skew out to get actual coordinates of rhombus origin. We'll need these
+     * later. */
     double squishOffset = static_cast<double>(xsb + ysb) * SQUISH_CONSTANT_2D;
     double xb = xsb + squishOffset;
     double yb = ysb + squishOffset;
@@ -52,14 +53,16 @@ constexpr double OpenSimplex::Noise(double x, double y)
     double xins = xs - xsb;
     double yins = ys - ysb;
 
-    /* Sum those together to get a value that determines which region we're in. */
+    /* Sum those together to get a value that determines which region we're in.
+     */
     double inSum = xins + yins;
 
     /* Positions relative to origin point. */
     double dx0 = x - xb;
     double dy0 = y - yb;
 
-    /* We'll be defining these inside the next block and using them afterwards. */
+    /* We'll be defining these inside the next block and using them afterwards.
+     */
     double dx_ext = 0.0, dy_ext = 0.0;
     int xsv_ext = 0, ysv_ext = 0;
 
@@ -79,60 +82,72 @@ constexpr double OpenSimplex::Noise(double x, double y)
     dx1 = dx0 - 1 - SQUISH_CONSTANT_2D;
     dy1 = dy0 - 0 - SQUISH_CONSTANT_2D;
     attn1 = 2 - dx1 * dx1 - dy1 * dy1;
-    if (attn1 > 0) {
+    if (attn1 > 0)
+    {
         attn1 *= attn1;
-        value += attn1 * attn1 * this->Extrapolate2(xsb + 1, ysb + 0, dx1, dy1);
+        value += attn1 * attn1 * this->extrapolate2(xsb + 1, ysb + 0, dx1, dy1);
     }
 
     /* Contribution (0,1) */
     dx2 = dx0 - 0 - SQUISH_CONSTANT_2D;
     dy2 = dy0 - 1 - SQUISH_CONSTANT_2D;
     attn2 = 2 - dx2 * dx2 - dy2 * dy2;
-    if (attn2 > 0) {
+    if (attn2 > 0)
+    {
         attn2 *= attn2;
-        value += attn2 * attn2 * this->Extrapolate2(xsb + 0, ysb + 1, dx2, dy2);
+        value += attn2 * attn2 * this->extrapolate2(xsb + 0, ysb + 1, dx2, dy2);
     }
 
-    if (inSum <= 1) { /* We're inside the triangle (2-Simplex) at (0,0) */
+    if (inSum <= 1)
+    { /* We're inside the triangle (2-Simplex) at (0,0) */
         zins = 1 - inSum;
-        if (zins > xins || zins > yins) { /* (0,0) is one of the closest two triangular vertices */
-            if (xins > yins) {
+        if (zins > xins || zins > yins)
+        { /* (0,0) is one of the closest two triangular vertices */
+            if (xins > yins)
+            {
                 xsv_ext = xsb + 1;
                 ysv_ext = ysb - 1;
                 dx_ext = dx0 - 1;
                 dy_ext = dy0 + 1;
             }
-            else {
+            else
+            {
                 xsv_ext = xsb - 1;
                 ysv_ext = ysb + 1;
                 dx_ext = dx0 + 1;
                 dy_ext = dy0 - 1;
             }
         }
-        else { /* (1,0) and (0,1) are the closest two vertices. */
+        else
+        { /* (1,0) and (0,1) are the closest two vertices. */
             xsv_ext = xsb + 1;
             ysv_ext = ysb + 1;
             dx_ext = dx0 - 1 - 2 * SQUISH_CONSTANT_2D;
             dy_ext = dy0 - 1 - 2 * SQUISH_CONSTANT_2D;
         }
     }
-    else { /* We're inside the triangle (2-Simplex) at (1,1) */
+    else
+    { /* We're inside the triangle (2-Simplex) at (1,1) */
         zins = 2 - inSum;
-        if (zins < xins || zins < yins) { /* (0,0) is one of the closest two triangular vertices */
-            if (xins > yins) {
+        if (zins < xins || zins < yins)
+        { /* (0,0) is one of the closest two triangular vertices */
+            if (xins > yins)
+            {
                 xsv_ext = xsb + 2;
                 ysv_ext = ysb + 0;
                 dx_ext = dx0 - 2 - 2 * SQUISH_CONSTANT_2D;
                 dy_ext = dy0 + 0 - 2 * SQUISH_CONSTANT_2D;
             }
-            else {
+            else
+            {
                 xsv_ext = xsb + 0;
                 ysv_ext = ysb + 2;
                 dx_ext = dx0 + 0 - 2 * SQUISH_CONSTANT_2D;
                 dy_ext = dy0 - 2 - 2 * SQUISH_CONSTANT_2D;
             }
         }
-        else { /* (1,0) and (0,1) are the closest two vertices. */
+        else
+        { /* (1,0) and (0,1) are the closest two vertices. */
             dx_ext = dx0;
             dy_ext = dy0;
             xsv_ext = xsb;
@@ -146,22 +161,25 @@ constexpr double OpenSimplex::Noise(double x, double y)
 
     /* Contribution (0,0) or (1,1) */
     attn0 = 2 - dx0 * dx0 - dy0 * dy0;
-    if (attn0 > 0) {
+    if (attn0 > 0)
+    {
         attn0 *= attn0;
-        value += attn0 * attn0 * this->Extrapolate2(xsb, ysb, dx0, dy0);
+        value += attn0 * attn0 * this->extrapolate2(xsb, ysb, dx0, dy0);
     }
 
     /* Extra Vertex */
     attn_ext = 2 - dx_ext * dx_ext - dy_ext * dy_ext;
-    if (attn_ext > 0) {
+    if (attn_ext > 0)
+    {
         attn_ext *= attn_ext;
-        value += attn_ext * attn_ext * this->Extrapolate2(xsv_ext, ysv_ext, dx_ext, dy_ext);
+        value += attn_ext * attn_ext *
+                 this->extrapolate2(xsv_ext, ysv_ext, dx_ext, dy_ext);
     }
 
     return value / NORM_CONSTANT_2D;
 }
 
-constexpr double OpenSimplex::Noise(double x, double y, double z)
+constexpr double open_simplex::noise(double x, double y, double z)
 {
     /* Place input coordinates on simplectic honeycomb. */
     double stretchOffset = (x + y + z) * STRETCH_CONSTANT_3D;
@@ -169,23 +187,27 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     double ys = y + stretchOffset;
     double zs = z + stretchOffset;
 
-    /* Floor to get simplectic honeycomb coordinates of rhombohedron (stretched cube) super-cell origin. */
-    int xsb = Utils::FastFloor<int>(xs);
-    int ysb = Utils::FastFloor<int>(ys);
-    int zsb = Utils::FastFloor<int>(zs);
+    /* Floor to get simplectic honeycomb coordinates of rhombohedron (stretched
+     * cube) super-cell origin. */
+    int xsb = utils::fast_floor<int>(xs);
+    int ysb = utils::fast_floor<int>(ys);
+    int zsb = utils::fast_floor<int>(zs);
 
-    /* Skew out to get actual coordinates of rhombohedron origin. We'll need these later. */
+    /* Skew out to get actual coordinates of rhombohedron origin. We'll need
+     * these later. */
     double squishOffset = (xsb + ysb + zsb) * SQUISH_CONSTANT_3D;
     double xb = xsb + squishOffset;
     double yb = ysb + squishOffset;
     double zb = zsb + squishOffset;
 
-    /* Compute simplectic honeycomb coordinates relative to rhombohedral origin. */
+    /* Compute simplectic honeycomb coordinates relative to rhombohedral origin.
+     */
     double xins = xs - xsb;
     double yins = ys - ysb;
     double zins = zs - zsb;
 
-    /* Sum those together to get a value that determines which region we're in. */
+    /* Sum those together to get a value that determines which region we're in.
+     */
     double inSum = xins + yins + zins;
 
     /* Positions relative to origin point. */
@@ -193,7 +215,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     double dy0 = y - yb;
     double dz0 = z - zb;
 
-    /* We'll be defining these inside the next block and using them afterwards. */
+    /* We'll be defining these inside the next block and using them afterwards.
+     */
     double dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0;
     double dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0;
     int xsv_ext0 = 0, ysv_ext0 = 0, zsv_ext0 = 0;
@@ -207,7 +230,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     int bIsFurtherSide = 0;
     double p1 = 0.0, p2 = 0.0, p3 = 0.0;
     double score = 0.0;
-    double attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0, attn5 = 0.0, attn6 = 0.0;
+    double attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0,
+           attn5 = 0.0, attn6 = 0.0;
     double dx1 = 0.0, dy1 = 0.0, dz1 = 0.0;
     double dx2 = 0.0, dy2 = 0.0, dz2 = 0.0;
     double dx3 = 0.0, dy3 = 0.0, dz3 = 0.0;
@@ -217,101 +241,125 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     double attn_ext0 = 0.0, attn_ext1 = 0.0;
 
     double value = 0;
-    if (inSum <= 1) { /* We're inside the tetrahedron (3-Simplex) at (0,0,0) */
+    if (inSum <= 1)
+    { /* We're inside the tetrahedron (3-Simplex) at (0,0,0) */
 
         /* Determine which two of (0,0,1), (0,1,0), (1,0,0) are closest. */
         aPoint = 0x01;
         aScore = xins;
         bPoint = 0x02;
         bScore = yins;
-        if (aScore >= bScore && zins > bScore) {
+        if (aScore >= bScore && zins > bScore)
+        {
             bScore = zins;
             bPoint = 0x04;
         }
-        else if (aScore < bScore && zins > aScore) {
+        else if (aScore < bScore && zins > aScore)
+        {
             aScore = zins;
             aPoint = 0x04;
         }
 
-        /* Now we determine the two lattice points not part of the tetrahedron that may contribute.
-           This depends on the closest two tetrahedral vertices, including (0,0,0) */
+        /* Now we determine the two lattice points not part of the tetrahedron
+           that may contribute. This depends on the closest two tetrahedral
+           vertices, including (0,0,0) */
         wins = 1 - inSum;
-        if (wins > aScore || wins > bScore) { /* (0,0,0) is one of the closest two tetrahedral vertices. */
-            c = (bScore > aScore ? bPoint : aPoint); /* Our other closest vertex is the closest out of a and b. */
+        if (wins > aScore || wins > bScore)
+        { /* (0,0,0) is one of the closest two tetrahedral vertices. */
+            c = (bScore > aScore ? bPoint
+                                 : aPoint); /* Our other closest vertex is the
+                                               closest out of a and b. */
 
-            if ((c & 0x01) == 0) {
+            if ((c & 0x01) == 0)
+            {
                 xsv_ext0 = xsb - 1;
                 xsv_ext1 = xsb;
                 dx_ext0 = dx0 + 1;
                 dx_ext1 = dx0;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsb + 1;
                 dx_ext0 = dx_ext1 = dx0 - 1;
             }
 
-            if ((c & 0x02) == 0) {
+            if ((c & 0x02) == 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysb;
                 dy_ext0 = dy_ext1 = dy0;
-                if ((c & 0x01) == 0) {
+                if ((c & 0x01) == 0)
+                {
                     ysv_ext1 -= 1;
                     dy_ext1 += 1;
                 }
-                else {
+                else
+                {
                     ysv_ext0 -= 1;
                     dy_ext0 += 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysb + 1;
                 dy_ext0 = dy_ext1 = dy0 - 1;
             }
 
-            if ((c & 0x04) == 0) {
+            if ((c & 0x04) == 0)
+            {
                 zsv_ext0 = zsb;
                 zsv_ext1 = zsb - 1;
                 dz_ext0 = dz0;
                 dz_ext1 = dz0 + 1;
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsb + 1;
                 dz_ext0 = dz_ext1 = dz0 - 1;
             }
         }
-        else { /* (0,0,0) is not one of the closest two tetrahedral vertices. */
-            c = static_cast<int8_t>(aPoint | bPoint); /* Our two extra vertices are determined by the closest two. */
+        else
+        { /* (0,0,0) is not one of the closest two tetrahedral vertices. */
+            c = static_cast<int8_t>(
+                aPoint | bPoint); /* Our two extra vertices are determined by
+                                     the closest two. */
 
-            if ((c & 0x01) == 0) {
+            if ((c & 0x01) == 0)
+            {
                 xsv_ext0 = xsb;
                 xsv_ext1 = xsb - 1;
                 dx_ext0 = dx0 - 2 * SQUISH_CONSTANT_3D;
                 dx_ext1 = dx0 + 1 - SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsb + 1;
                 dx_ext0 = dx0 - 1 - 2 * SQUISH_CONSTANT_3D;
                 dx_ext1 = dx0 - 1 - SQUISH_CONSTANT_3D;
             }
 
-            if ((c & 0x02) == 0) {
+            if ((c & 0x02) == 0)
+            {
                 ysv_ext0 = ysb;
                 ysv_ext1 = ysb - 1;
                 dy_ext0 = dy0 - 2 * SQUISH_CONSTANT_3D;
                 dy_ext1 = dy0 + 1 - SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysb + 1;
                 dy_ext0 = dy0 - 1 - 2 * SQUISH_CONSTANT_3D;
                 dy_ext1 = dy0 - 1 - SQUISH_CONSTANT_3D;
             }
 
-            if ((c & 0x04) == 0) {
+            if ((c & 0x04) == 0)
+            {
                 zsv_ext0 = zsb;
                 zsv_ext1 = zsb - 1;
                 dz_ext0 = dz0 - 2 * SQUISH_CONSTANT_3D;
                 dz_ext1 = dz0 + 1 - SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsb + 1;
                 dz_ext0 = dz0 - 1 - 2 * SQUISH_CONSTANT_3D;
                 dz_ext1 = dz0 - 1 - SQUISH_CONSTANT_3D;
@@ -320,9 +368,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
 
         /* Contribution (0,0,0) */
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
-        if (attn0 > 0) {
+        if (attn0 > 0)
+        {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate3(xsb + 0, ysb + 0, zsb + 0, dx0, dy0, dz0);
+            value +=
+                attn0 * attn0 *
+                this->extrapolate3(xsb + 0, ysb + 0, zsb + 0, dx0, dy0, dz0);
         }
 
         /* Contribution (1,0,0) */
@@ -330,9 +381,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy1 = dy0 - 0 - SQUISH_CONSTANT_3D;
         dz1 = dz0 - 0 - SQUISH_CONSTANT_3D;
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
-        if (attn1 > 0) {
+        if (attn1 > 0)
+        {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
+            value +=
+                attn1 * attn1 *
+                this->extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
         }
 
         /* Contribution (0,1,0) */
@@ -340,9 +394,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy2 = dy0 - 1 - SQUISH_CONSTANT_3D;
         dz2 = dz1;
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
-        if (attn2 > 0) {
+        if (attn2 > 0)
+        {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
+            value +=
+                attn2 * attn2 *
+                this->extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
         }
 
         /* Contribution (0,0,1) */
@@ -350,106 +407,134 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy3 = dy1;
         dz3 = dz0 - 1 - SQUISH_CONSTANT_3D;
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
-        if (attn3 > 0) {
+        if (attn3 > 0)
+        {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
+            value +=
+                attn3 * attn3 *
+                this->extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
         }
     }
-    else if (inSum >= 2) { /* We're inside the tetrahedron (3-Simplex) at (1,1,1) */
+    else if (inSum >= 2)
+    { /* We're inside the tetrahedron (3-Simplex) at (1,1,1) */
 
-     /* Determine which two tetrahedral vertices are the closest, out of (1,1,0), (1,0,1), (0,1,1) but not (1,1,1). */
+        /* Determine which two tetrahedral vertices are the closest, out of
+         * (1,1,0), (1,0,1), (0,1,1) but not (1,1,1). */
         aPoint = 0x06;
         aScore = xins;
         bPoint = 0x05;
         bScore = yins;
-        if (aScore <= bScore && zins < bScore) {
+        if (aScore <= bScore && zins < bScore)
+        {
             bScore = zins;
             bPoint = 0x03;
         }
-        else if (aScore > bScore && zins < aScore) {
+        else if (aScore > bScore && zins < aScore)
+        {
             aScore = zins;
             aPoint = 0x03;
         }
 
-        /* Now we determine the two lattice points not part of the tetrahedron that may contribute.
-           This depends on the closest two tetrahedral vertices, including (1,1,1) */
+        /* Now we determine the two lattice points not part of the tetrahedron
+           that may contribute. This depends on the closest two tetrahedral
+           vertices, including (1,1,1) */
         wins = 3 - inSum;
-        if (wins < aScore || wins < bScore) { /* (1,1,1) is one of the closest two tetrahedral vertices. */
-            c = (bScore < aScore ? bPoint : aPoint); /* Our other closest vertex is the closest out of a and b. */
+        if (wins < aScore || wins < bScore)
+        { /* (1,1,1) is one of the closest two tetrahedral vertices. */
+            c = (bScore < aScore ? bPoint
+                                 : aPoint); /* Our other closest vertex is the
+                                               closest out of a and b. */
 
-            if ((c & 0x01) != 0) {
+            if ((c & 0x01) != 0)
+            {
                 xsv_ext0 = xsb + 2;
                 xsv_ext1 = xsb + 1;
                 dx_ext0 = dx0 - 2 - 3 * SQUISH_CONSTANT_3D;
                 dx_ext1 = dx0 - 1 - 3 * SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsb;
                 dx_ext0 = dx_ext1 = dx0 - 3 * SQUISH_CONSTANT_3D;
             }
 
-            if ((c & 0x02) != 0) {
+            if ((c & 0x02) != 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysb + 1;
                 dy_ext0 = dy_ext1 = dy0 - 1 - 3 * SQUISH_CONSTANT_3D;
-                if ((c & 0x01) != 0) {
+                if ((c & 0x01) != 0)
+                {
                     ysv_ext1 += 1;
                     dy_ext1 -= 1;
                 }
-                else {
+                else
+                {
                     ysv_ext0 += 1;
                     dy_ext0 -= 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysb;
                 dy_ext0 = dy_ext1 = dy0 - 3 * SQUISH_CONSTANT_3D;
             }
 
-            if ((c & 0x04) != 0) {
+            if ((c & 0x04) != 0)
+            {
                 zsv_ext0 = zsb + 1;
                 zsv_ext1 = zsb + 2;
                 dz_ext0 = dz0 - 1 - 3 * SQUISH_CONSTANT_3D;
                 dz_ext1 = dz0 - 2 - 3 * SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsb;
                 dz_ext0 = dz_ext1 = dz0 - 3 * SQUISH_CONSTANT_3D;
             }
         }
-        else { /* (1,1,1) is not one of the closest two tetrahedral vertices. */
-            c = static_cast<int8_t>(aPoint & bPoint); /* Our two extra vertices are determined by the closest two. */
+        else
+        { /* (1,1,1) is not one of the closest two tetrahedral vertices. */
+            c = static_cast<int8_t>(
+                aPoint & bPoint); /* Our two extra vertices are determined by
+                                     the closest two. */
 
-            if ((c & 0x01) != 0) {
+            if ((c & 0x01) != 0)
+            {
                 xsv_ext0 = xsb + 1;
                 xsv_ext1 = xsb + 2;
                 dx_ext0 = dx0 - 1 - SQUISH_CONSTANT_3D;
                 dx_ext1 = dx0 - 2 - 2 * SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsb;
                 dx_ext0 = dx0 - SQUISH_CONSTANT_3D;
                 dx_ext1 = dx0 - 2 * SQUISH_CONSTANT_3D;
             }
 
-            if ((c & 0x02) != 0) {
+            if ((c & 0x02) != 0)
+            {
                 ysv_ext0 = ysb + 1;
                 ysv_ext1 = ysb + 2;
                 dy_ext0 = dy0 - 1 - SQUISH_CONSTANT_3D;
                 dy_ext1 = dy0 - 2 - 2 * SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysb;
                 dy_ext0 = dy0 - SQUISH_CONSTANT_3D;
                 dy_ext1 = dy0 - 2 * SQUISH_CONSTANT_3D;
             }
 
-            if ((c & 0x04) != 0) {
+            if ((c & 0x04) != 0)
+            {
                 zsv_ext0 = zsb + 1;
                 zsv_ext1 = zsb + 2;
                 dz_ext0 = dz0 - 1 - SQUISH_CONSTANT_3D;
                 dz_ext1 = dz0 - 2 - 2 * SQUISH_CONSTANT_3D;
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsb;
                 dz_ext0 = dz0 - SQUISH_CONSTANT_3D;
                 dz_ext1 = dz0 - 2 * SQUISH_CONSTANT_3D;
@@ -461,9 +546,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy3 = dy0 - 1 - 2 * SQUISH_CONSTANT_3D;
         dz3 = dz0 - 0 - 2 * SQUISH_CONSTANT_3D;
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
-        if (attn3 > 0) {
+        if (attn3 > 0)
+        {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx3, dy3, dz3);
+            value +=
+                attn3 * attn3 *
+                this->extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx3, dy3, dz3);
         }
 
         /* Contribution (1,0,1) */
@@ -471,9 +559,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy2 = dy0 - 0 - 2 * SQUISH_CONSTANT_3D;
         dz2 = dz0 - 1 - 2 * SQUISH_CONSTANT_3D;
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
-        if (attn2 > 0) {
+        if (attn2 > 0)
+        {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx2, dy2, dz2);
+            value +=
+                attn2 * attn2 *
+                this->extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx2, dy2, dz2);
         }
 
         /* Contribution (0,1,1) */
@@ -481,9 +572,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy1 = dy3;
         dz1 = dz2;
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
-        if (attn1 > 0) {
+        if (attn1 > 0)
+        {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx1, dy1, dz1);
+            value +=
+                attn1 * attn1 *
+                this->extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx1, dy1, dz1);
         }
 
         /* Contribution (1,1,1) */
@@ -491,20 +585,26 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy0 = dy0 - 1 - 3 * SQUISH_CONSTANT_3D;
         dz0 = dz0 - 1 - 3 * SQUISH_CONSTANT_3D;
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
-        if (attn0 > 0) {
+        if (attn0 > 0)
+        {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate3(xsb + 1, ysb + 1, zsb + 1, dx0, dy0, dz0);
+            value +=
+                attn0 * attn0 *
+                this->extrapolate3(xsb + 1, ysb + 1, zsb + 1, dx0, dy0, dz0);
         }
     }
-    else { /* We're inside the octahedron (Rectified 3-Simplex) in between.
-             Decide between point (0,0,1) and (1,1,0) as closest */
+    else
+    { /* We're inside the octahedron (rectified 3-Simplex) in between.
+        Decide between point (0,0,1) and (1,1,0) as closest */
         p1 = xins + yins;
-        if (p1 > 1) {
+        if (p1 > 1)
+        {
             aScore = p1 - 1;
             aPoint = 0x03;
             aIsFurtherSide = 1;
         }
-        else {
+        else
+        {
             aScore = 1 - p1;
             aPoint = 0x04;
             aIsFurtherSide = 0;
@@ -512,49 +612,61 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
 
         /* Decide between point (0,1,0) and (1,0,1) as closest */
         p2 = xins + zins;
-        if (p2 > 1) {
+        if (p2 > 1)
+        {
             bScore = p2 - 1;
             bPoint = 0x05;
             bIsFurtherSide = 1;
         }
-        else {
+        else
+        {
             bScore = 1 - p2;
             bPoint = 0x02;
             bIsFurtherSide = 0;
         }
 
-        /* The closest out of the two (1,0,0) and (0,1,1) will replace the furthest out of the two decided above, if closer. */
+        /* The closest out of the two (1,0,0) and (0,1,1) will replace the
+         * furthest out of the two decided above, if closer. */
         p3 = yins + zins;
-        if (p3 > 1) {
+        if (p3 > 1)
+        {
             score = p3 - 1;
-            if (aScore <= bScore && aScore < score) {
+            if (aScore <= bScore && aScore < score)
+            {
                 aScore = score;
                 aPoint = 0x06;
                 aIsFurtherSide = 1;
             }
-            else if (aScore > bScore && bScore < score) {
+            else if (aScore > bScore && bScore < score)
+            {
                 bScore = score;
                 bPoint = 0x06;
                 bIsFurtherSide = 1;
             }
         }
-        else {
+        else
+        {
             score = 1 - p3;
-            if (aScore <= bScore && aScore < score) {
+            if (aScore <= bScore && aScore < score)
+            {
                 aScore = score;
                 aPoint = 0x01;
                 aIsFurtherSide = 0;
             }
-            else if (aScore > bScore && bScore < score) {
+            else if (aScore > bScore && bScore < score)
+            {
                 bScore = score;
                 bPoint = 0x01;
                 bIsFurtherSide = 0;
             }
         }
 
-        /* Where each of the two closest points are determines how the extra two vertices are calculated. */
-        if (aIsFurtherSide == bIsFurtherSide) {
-            if (aIsFurtherSide) { /* Both closest points on (1,1,1) side */
+        /* Where each of the two closest points are determines how the extra two
+         * vertices are calculated. */
+        if (aIsFurtherSide == bIsFurtherSide)
+        {
+            if (aIsFurtherSide)
+            { /* Both closest points on (1,1,1) side */
 
                 /* One of the two extra points is (1,1,1) */
                 dx_ext0 = dx0 - 1 - 3 * SQUISH_CONSTANT_3D;
@@ -566,7 +678,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
 
                 /* Other extra point is based on the shared axis. */
                 c = static_cast<int8_t>(aPoint & bPoint);
-                if ((c & 0x01) != 0) {
+                if ((c & 0x01) != 0)
+                {
                     dx_ext1 = dx0 - 2 - 2 * SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 - 2 * SQUISH_CONSTANT_3D;
                     dz_ext1 = dz0 - 2 * SQUISH_CONSTANT_3D;
@@ -574,7 +687,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                     ysv_ext1 = ysb;
                     zsv_ext1 = zsb;
                 }
-                else if ((c & 0x02) != 0) {
+                else if ((c & 0x02) != 0)
+                {
                     dx_ext1 = dx0 - 2 * SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 - 2 - 2 * SQUISH_CONSTANT_3D;
                     dz_ext1 = dz0 - 2 * SQUISH_CONSTANT_3D;
@@ -582,7 +696,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                     ysv_ext1 = ysb + 2;
                     zsv_ext1 = zsb;
                 }
-                else {
+                else
+                {
                     dx_ext1 = dx0 - 2 * SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 - 2 * SQUISH_CONSTANT_3D;
                     dz_ext1 = dz0 - 2 - 2 * SQUISH_CONSTANT_3D;
@@ -591,9 +706,10 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                     zsv_ext1 = zsb + 2;
                 }
             }
-            else { /* Both closest points on (0,0,0) side */
+            else
+            { /* Both closest points on (0,0,0) side */
 
-             /* One of the two extra points is (0,0,0) */
+                /* One of the two extra points is (0,0,0) */
                 dx_ext0 = dx0;
                 dy_ext0 = dy0;
                 dz_ext0 = dz0;
@@ -603,7 +719,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
 
                 /* Other extra point is based on the omitted axis. */
                 c = static_cast<int8_t>(aPoint | bPoint);
-                if ((c & 0x01) == 0) {
+                if ((c & 0x01) == 0)
+                {
                     dx_ext1 = dx0 + 1 - SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 - 1 - SQUISH_CONSTANT_3D;
                     dz_ext1 = dz0 - 1 - SQUISH_CONSTANT_3D;
@@ -611,7 +728,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                     ysv_ext1 = ysb + 1;
                     zsv_ext1 = zsb + 1;
                 }
-                else if ((c & 0x02) == 0) {
+                else if ((c & 0x02) == 0)
+                {
                     dx_ext1 = dx0 - 1 - SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 + 1 - SQUISH_CONSTANT_3D;
                     dz_ext1 = dz0 - 1 - SQUISH_CONSTANT_3D;
@@ -619,7 +737,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                     ysv_ext1 = ysb - 1;
                     zsv_ext1 = zsb + 1;
                 }
-                else {
+                else
+                {
                     dx_ext1 = dx0 - 1 - SQUISH_CONSTANT_3D;
                     dy_ext1 = dy0 - 1 - SQUISH_CONSTANT_3D;
                     dz_ext1 = dz0 + 1 - SQUISH_CONSTANT_3D;
@@ -629,18 +748,22 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                 }
             }
         }
-        else { /* One point on (0,0,0) side, one point on (1,1,1) side */
-            if (aIsFurtherSide) {
+        else
+        { /* One point on (0,0,0) side, one point on (1,1,1) side */
+            if (aIsFurtherSide)
+            {
                 c1 = aPoint;
                 c2 = bPoint;
             }
-            else {
+            else
+            {
                 c1 = bPoint;
                 c2 = aPoint;
             }
 
             /* One contribution is a permutation of (1,1,-1) */
-            if ((c1 & 0x01) == 0) {
+            if ((c1 & 0x01) == 0)
+            {
                 dx_ext0 = dx0 + 1 - SQUISH_CONSTANT_3D;
                 dy_ext0 = dy0 - 1 - SQUISH_CONSTANT_3D;
                 dz_ext0 = dz0 - 1 - SQUISH_CONSTANT_3D;
@@ -648,7 +771,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                 ysv_ext0 = ysb + 1;
                 zsv_ext0 = zsb + 1;
             }
-            else if ((c1 & 0x02) == 0) {
+            else if ((c1 & 0x02) == 0)
+            {
                 dx_ext0 = dx0 - 1 - SQUISH_CONSTANT_3D;
                 dy_ext0 = dy0 + 1 - SQUISH_CONSTANT_3D;
                 dz_ext0 = dz0 - 1 - SQUISH_CONSTANT_3D;
@@ -656,7 +780,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
                 ysv_ext0 = ysb - 1;
                 zsv_ext0 = zsb + 1;
             }
-            else {
+            else
+            {
                 dx_ext0 = dx0 - 1 - SQUISH_CONSTANT_3D;
                 dy_ext0 = dy0 - 1 - SQUISH_CONSTANT_3D;
                 dz_ext0 = dz0 + 1 - SQUISH_CONSTANT_3D;
@@ -672,15 +797,18 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
             xsv_ext1 = xsb;
             ysv_ext1 = ysb;
             zsv_ext1 = zsb;
-            if ((c2 & 0x01) != 0) {
+            if ((c2 & 0x01) != 0)
+            {
                 dx_ext1 -= 2;
                 xsv_ext1 += 2;
             }
-            else if ((c2 & 0x02) != 0) {
+            else if ((c2 & 0x02) != 0)
+            {
                 dy_ext1 -= 2;
                 ysv_ext1 += 2;
             }
-            else {
+            else
+            {
                 dz_ext1 -= 2;
                 zsv_ext1 += 2;
             }
@@ -691,9 +819,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy1 = dy0 - 0 - SQUISH_CONSTANT_3D;
         dz1 = dz0 - 0 - SQUISH_CONSTANT_3D;
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
-        if (attn1 > 0) {
+        if (attn1 > 0)
+        {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
+            value +=
+                attn1 * attn1 *
+                this->extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
         }
 
         /* Contribution (0,1,0) */
@@ -701,9 +832,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy2 = dy0 - 1 - SQUISH_CONSTANT_3D;
         dz2 = dz1;
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
-        if (attn2 > 0) {
+        if (attn2 > 0)
+        {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
+            value +=
+                attn2 * attn2 *
+                this->extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
         }
 
         /* Contribution (0,0,1) */
@@ -711,9 +845,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy3 = dy1;
         dz3 = dz0 - 1 - SQUISH_CONSTANT_3D;
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
-        if (attn3 > 0) {
+        if (attn3 > 0)
+        {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
+            value +=
+                attn3 * attn3 *
+                this->extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
         }
 
         /* Contribution (1,1,0) */
@@ -721,9 +858,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy4 = dy0 - 1 - 2 * SQUISH_CONSTANT_3D;
         dz4 = dz0 - 0 - 2 * SQUISH_CONSTANT_3D;
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4;
-        if (attn4 > 0) {
+        if (attn4 > 0)
+        {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx4, dy4, dz4);
+            value +=
+                attn4 * attn4 *
+                this->extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx4, dy4, dz4);
         }
 
         /* Contribution (1,0,1) */
@@ -731,9 +871,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy5 = dy0 - 0 - 2 * SQUISH_CONSTANT_3D;
         dz5 = dz0 - 1 - 2 * SQUISH_CONSTANT_3D;
         attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5;
-        if (attn5 > 0) {
+        if (attn5 > 0)
+        {
             attn5 *= attn5;
-            value += attn5 * attn5 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx5, dy5, dz5);
+            value +=
+                attn5 * attn5 *
+                this->extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx5, dy5, dz5);
         }
 
         /* Contribution (0,1,1) */
@@ -741,9 +884,12 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         dy6 = dy4;
         dz6 = dz5;
         attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6;
-        if (attn6 > 0) {
+        if (attn6 > 0)
+        {
             attn6 *= attn6;
-            value += attn6 * attn6 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx6, dy6, dz6);
+            value +=
+                attn6 * attn6 *
+                this->extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx6, dy6, dz6);
         }
     }
 
@@ -752,7 +898,9 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     if (attn_ext0 > 0)
     {
         attn_ext0 *= attn_ext0;
-        value += attn_ext0 * attn_ext0 * this->Extrapolate3(xsv_ext0, ysv_ext0, zsv_ext0, dx_ext0, dy_ext0, dz_ext0);
+        value += attn_ext0 * attn_ext0 *
+                 this->extrapolate3(
+                     xsv_ext0, ysv_ext0, zsv_ext0, dx_ext0, dy_ext0, dz_ext0);
     }
 
     /* Second extra vertex */
@@ -760,13 +908,15 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     if (attn_ext1 > 0)
     {
         attn_ext1 *= attn_ext1;
-        value += attn_ext1 * attn_ext1 * this->Extrapolate3(xsv_ext1, ysv_ext1, zsv_ext1, dx_ext1, dy_ext1, dz_ext1);
+        value += attn_ext1 * attn_ext1 *
+                 this->extrapolate3(
+                     xsv_ext1, ysv_ext1, zsv_ext1, dx_ext1, dy_ext1, dz_ext1);
     }
 
     return value / NORM_CONSTANT_3D;
 }
 
-constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
+constexpr double open_simplex::noise(double x, double y, double z, double w)
 {
     double uins = 0.0;
     double dx1 = 0.0, dy1 = 0.0, dz1 = 0.0, dw1 = 0.0;
@@ -780,7 +930,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     double dx9 = 0.0, dy9 = 0.0, dz9 = 0.0, dw9 = 0.0;
     double dx10 = 0.0, dy10 = 0.0, dz10 = 0.0, dw10 = 0.0;
     double attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0;
-    double attn5 = 0.0, attn6 = 0.0, attn7 = 0.0, attn8 = 0.0, attn9 = 0.0, attn10 = 0.0;
+    double attn5 = 0.0, attn6 = 0.0, attn7 = 0.0, attn8 = 0.0, attn9 = 0.0,
+           attn10 = 0.0;
     double attn_ext0 = 0.0, attn_ext1 = 0.0, attn_ext2 = 0.0;
     int8_t c = 0, c1 = 0, c2 = 0;
     int8_t aPoint = 0, bPoint = 0;
@@ -797,26 +948,30 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     double zs = z + stretchOffset;
     double ws = w + stretchOffset;
 
-    /* Floor to get simplectic honeycomb coordinates of rhombo-hypercube super-cell origin. */
-    int xsb = Utils::FastFloor<int>(xs);
-    int ysb = Utils::FastFloor<int>(ys);
-    int zsb = Utils::FastFloor<int>(zs);
-    int wsb = Utils::FastFloor<int>(ws);
+    /* Floor to get simplectic honeycomb coordinates of rhombo-hypercube
+     * super-cell origin. */
+    int xsb = utils::fast_floor<int>(xs);
+    int ysb = utils::fast_floor<int>(ys);
+    int zsb = utils::fast_floor<int>(zs);
+    int wsb = utils::fast_floor<int>(ws);
 
-    /* Skew out to get actual coordinates of stretched rhombo-hypercube origin. We'll need these later. */
+    /* Skew out to get actual coordinates of stretched rhombo-hypercube origin.
+     * We'll need these later. */
     double squishOffset = (xsb + ysb + zsb + wsb) * SQUISH_CONSTANT_4D;
     double xb = xsb + squishOffset;
     double yb = ysb + squishOffset;
     double zb = zsb + squishOffset;
     double wb = wsb + squishOffset;
 
-    /* Compute simplectic honeycomb coordinates relative to rhombo-hypercube origin. */
+    /* Compute simplectic honeycomb coordinates relative to rhombo-hypercube
+     * origin. */
     double xins = xs - xsb;
     double yins = ys - ysb;
     double zins = zs - zsb;
     double wins = ws - wsb;
 
-    /* Sum those together to get a value that determines which region we're in. */
+    /* Sum those together to get a value that determines which region we're in.
+     */
     double inSum = xins + yins + zins + wins;
 
     /* Positions relative to origin point. */
@@ -825,7 +980,8 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     double dz0 = z - zb;
     double dw0 = w - wb;
 
-    /* We'll be defining these inside the next block and using them afterwards. */
+    /* We'll be defining these inside the next block and using them afterwards.
+     */
     double dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0, dw_ext0 = 0.0;
     double dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0, dw_ext1 = 0.0;
     double dx_ext2 = 0.0, dy_ext2 = 0.0, dz_ext2 = 0.0, dw_ext2 = 0.0;
@@ -834,159 +990,198 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     int xsv_ext2 = 0, ysv_ext2 = 0, zsv_ext2 = 0, wsv_ext2 = 0;
 
     double value = 0;
-    if (inSum <= 1) { /* We're inside the pentachoron (4-Simplex) at (0,0,0,0) */
+    if (inSum <= 1)
+    { /* We're inside the pentachoron (4-Simplex) at (0,0,0,0) */
 
-        /* Determine which two of (0,0,0,1), (0,0,1,0), (0,1,0,0), (1,0,0,0) are closest. */
+        /* Determine which two of (0,0,0,1), (0,0,1,0), (0,1,0,0), (1,0,0,0) are
+         * closest. */
         aPoint = 0x01;
         aScore = xins;
         bPoint = 0x02;
         bScore = yins;
-        if (aScore >= bScore && zins > bScore) {
+        if (aScore >= bScore && zins > bScore)
+        {
             bScore = zins;
             bPoint = 0x04;
         }
-        else if (aScore < bScore && zins > aScore) {
+        else if (aScore < bScore && zins > aScore)
+        {
             aScore = zins;
             aPoint = 0x04;
         }
-        if (aScore >= bScore && wins > bScore) {
+        if (aScore >= bScore && wins > bScore)
+        {
             bScore = wins;
             bPoint = 0x08;
         }
-        else if (aScore < bScore && wins > aScore) {
+        else if (aScore < bScore && wins > aScore)
+        {
             aScore = wins;
             aPoint = 0x08;
         }
 
-        /* Now we determine the three lattice points not part of the pentachoron that may contribute.
-           This depends on the closest two pentachoron vertices, including (0,0,0,0) */
+        /* Now we determine the three lattice points not part of the pentachoron
+           that may contribute. This depends on the closest two pentachoron
+           vertices, including (0,0,0,0) */
         uins = 1 - inSum;
-        if (uins > aScore || uins > bScore) { /* (0,0,0,0) is one of the closest two pentachoron vertices. */
-            c = (bScore > aScore ? bPoint : aPoint); /* Our other closest vertex is the closest out of a and b. */
-            if ((c & 0x01) == 0) {
+        if (uins > aScore || uins > bScore)
+        { /* (0,0,0,0) is one of the closest two pentachoron vertices. */
+            c = (bScore > aScore ? bPoint
+                                 : aPoint); /* Our other closest vertex is the
+                                               closest out of a and b. */
+            if ((c & 0x01) == 0)
+            {
                 xsv_ext0 = xsb - 1;
                 xsv_ext1 = xsv_ext2 = xsb;
                 dx_ext0 = dx0 + 1;
                 dx_ext1 = dx_ext2 = dx0;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsv_ext2 = xsb + 1;
                 dx_ext0 = dx_ext1 = dx_ext2 = dx0 - 1;
             }
 
-            if ((c & 0x02) == 0) {
+            if ((c & 0x02) == 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb;
                 dy_ext0 = dy_ext1 = dy_ext2 = dy0;
-                if ((c & 0x01) == 0x01) {
+                if ((c & 0x01) == 0x01)
+                {
                     ysv_ext0 -= 1;
                     dy_ext0 += 1;
                 }
-                else {
+                else
+                {
                     ysv_ext1 -= 1;
                     dy_ext1 += 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb + 1;
                 dy_ext0 = dy_ext1 = dy_ext2 = dy0 - 1;
             }
 
-            if ((c & 0x04) == 0) {
+            if ((c & 0x04) == 0)
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb;
                 dz_ext0 = dz_ext1 = dz_ext2 = dz0;
-                if ((c & 0x03) != 0) {
-                    if ((c & 0x03) == 0x03) {
+                if ((c & 0x03) != 0)
+                {
+                    if ((c & 0x03) == 0x03)
+                    {
                         zsv_ext0 -= 1;
                         dz_ext0 += 1;
                     }
-                    else {
+                    else
+                    {
                         zsv_ext1 -= 1;
                         dz_ext1 += 1;
                     }
                 }
-                else {
+                else
+                {
                     zsv_ext2 -= 1;
                     dz_ext2 += 1;
                 }
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb + 1;
                 dz_ext0 = dz_ext1 = dz_ext2 = dz0 - 1;
             }
 
-            if ((c & 0x08) == 0) {
+            if ((c & 0x08) == 0)
+            {
                 wsv_ext0 = wsv_ext1 = wsb;
                 wsv_ext2 = wsb - 1;
                 dw_ext0 = dw_ext1 = dw0;
                 dw_ext2 = dw0 + 1;
             }
-            else {
+            else
+            {
                 wsv_ext0 = wsv_ext1 = wsv_ext2 = wsb + 1;
                 dw_ext0 = dw_ext1 = dw_ext2 = dw0 - 1;
             }
         }
-        else { /* (0,0,0,0) is not one of the closest two pentachoron vertices. */
-            c = static_cast<int8_t>(aPoint | bPoint); /* Our three extra vertices are determined by the closest two. */
+        else
+        { /* (0,0,0,0) is not one of the closest two pentachoron vertices. */
+            c = static_cast<int8_t>(
+                aPoint | bPoint); /* Our three extra vertices are determined by
+                                     the closest two. */
 
-            if ((c & 0x01) == 0) {
+            if ((c & 0x01) == 0)
+            {
                 xsv_ext0 = xsv_ext2 = xsb;
                 xsv_ext1 = xsb - 1;
                 dx_ext0 = dx0 - 2 * SQUISH_CONSTANT_4D;
                 dx_ext1 = dx0 + 1 - SQUISH_CONSTANT_4D;
                 dx_ext2 = dx0 - SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsv_ext2 = xsb + 1;
                 dx_ext0 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dx_ext1 = dx_ext2 = dx0 - 1 - SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x02) == 0) {
+            if ((c & 0x02) == 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb;
                 dy_ext0 = dy0 - 2 * SQUISH_CONSTANT_4D;
                 dy_ext1 = dy_ext2 = dy0 - SQUISH_CONSTANT_4D;
-                if ((c & 0x01) == 0x01) {
+                if ((c & 0x01) == 0x01)
+                {
                     ysv_ext1 -= 1;
                     dy_ext1 += 1;
                 }
-                else {
+                else
+                {
                     ysv_ext2 -= 1;
                     dy_ext2 += 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb + 1;
                 dy_ext0 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dy_ext1 = dy_ext2 = dy0 - 1 - SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x04) == 0) {
+            if ((c & 0x04) == 0)
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb;
                 dz_ext0 = dz0 - 2 * SQUISH_CONSTANT_4D;
                 dz_ext1 = dz_ext2 = dz0 - SQUISH_CONSTANT_4D;
-                if ((c & 0x03) == 0x03) {
+                if ((c & 0x03) == 0x03)
+                {
                     zsv_ext1 -= 1;
                     dz_ext1 += 1;
                 }
-                else {
+                else
+                {
                     zsv_ext2 -= 1;
                     dz_ext2 += 1;
                 }
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb + 1;
                 dz_ext0 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dz_ext1 = dz_ext2 = dz0 - 1 - SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x08) == 0) {
+            if ((c & 0x08) == 0)
+            {
                 wsv_ext0 = wsv_ext1 = wsb;
                 wsv_ext2 = wsb - 1;
                 dw_ext0 = dw0 - 2 * SQUISH_CONSTANT_4D;
                 dw_ext1 = dw0 - SQUISH_CONSTANT_4D;
                 dw_ext2 = dw0 + 1 - SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 wsv_ext0 = wsv_ext1 = wsv_ext2 = wsb + 1;
                 dw_ext0 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dw_ext1 = dw_ext2 = dw0 - 1 - SQUISH_CONSTANT_4D;
@@ -995,9 +1190,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Contribution (0,0,0,0) */
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
-        if (attn0 > 0) {
+        if (attn0 > 0)
+        {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 0, dx0, dy0, dz0, dw0);
+            value +=
+                attn0 * attn0 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 0, zsb + 0, wsb + 0, dx0, dy0, dz0, dw0);
         }
 
         /* Contribution (1,0,0,0) */
@@ -1006,9 +1205,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz1 = dz0 - 0 - SQUISH_CONSTANT_4D;
         dw1 = dw0 - 0 - SQUISH_CONSTANT_4D;
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
-        if (attn1 > 0) {
+        if (attn1 > 0)
+        {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
+            value +=
+                attn1 * attn1 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (0,1,0,0) */
@@ -1017,9 +1220,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz2 = dz1;
         dw2 = dw1;
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
-        if (attn2 > 0) {
+        if (attn2 > 0)
+        {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
+            value +=
+                attn2 * attn2 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,0,1,0) */
@@ -1028,9 +1235,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz3 = dz0 - 1 - SQUISH_CONSTANT_4D;
         dw3 = dw1;
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
-        if (attn3 > 0) {
+        if (attn3 > 0)
+        {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
+            value +=
+                attn3 * attn3 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (0,0,0,1) */
@@ -1039,164 +1250,207 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz4 = dz1;
         dw4 = dw0 - 1 - SQUISH_CONSTANT_4D;
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
-        if (attn4 > 0) {
+        if (attn4 > 0)
+        {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
+            value +=
+                attn4 * attn4 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
         }
     }
-    else if (inSum >= 3) { /* We're inside the pentachoron (4-Simplex) at (1,1,1,1)
-     Determine which two of (1,1,1,0), (1,1,0,1), (1,0,1,1), (0,1,1,1) are closest. */
+    else if (inSum >= 3)
+    { /* We're inside the pentachoron (4-Simplex) at (1,1,1,1)
+Determine which two of (1,1,1,0), (1,1,0,1), (1,0,1,1), (0,1,1,1) are closest.
+*/
         aPoint = 0x0E;
         aScore = xins;
         bPoint = 0x0D;
         bScore = yins;
-        if (aScore <= bScore && zins < bScore) {
+        if (aScore <= bScore && zins < bScore)
+        {
             bScore = zins;
             bPoint = 0x0B;
         }
-        else if (aScore > bScore && zins < aScore) {
+        else if (aScore > bScore && zins < aScore)
+        {
             aScore = zins;
             aPoint = 0x0B;
         }
-        if (aScore <= bScore && wins < bScore) {
+        if (aScore <= bScore && wins < bScore)
+        {
             bScore = wins;
             bPoint = 0x07;
         }
-        else if (aScore > bScore && wins < aScore) {
+        else if (aScore > bScore && wins < aScore)
+        {
             aScore = wins;
             aPoint = 0x07;
         }
 
-        /* Now we determine the three lattice points not part of the pentachoron that may contribute.
-           This depends on the closest two pentachoron vertices, including (0,0,0,0) */
+        /* Now we determine the three lattice points not part of the pentachoron
+           that may contribute. This depends on the closest two pentachoron
+           vertices, including (0,0,0,0) */
         uins = 4 - inSum;
-        if (uins < aScore || uins < bScore) { /* (1,1,1,1) is one of the closest two pentachoron vertices. */
-            c = (bScore < aScore ? bPoint : aPoint); /* Our other closest vertex is the closest out of a and b. */
+        if (uins < aScore || uins < bScore)
+        { /* (1,1,1,1) is one of the closest two pentachoron vertices. */
+            c = (bScore < aScore ? bPoint
+                                 : aPoint); /* Our other closest vertex is the
+                                               closest out of a and b. */
 
-            if ((c & 0x01) != 0) {
+            if ((c & 0x01) != 0)
+            {
                 xsv_ext0 = xsb + 2;
                 xsv_ext1 = xsv_ext2 = xsb + 1;
                 dx_ext0 = dx0 - 2 - 4 * SQUISH_CONSTANT_4D;
                 dx_ext1 = dx_ext2 = dx0 - 1 - 4 * SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsv_ext2 = xsb;
                 dx_ext0 = dx_ext1 = dx_ext2 = dx0 - 4 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x02) != 0) {
+            if ((c & 0x02) != 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb + 1;
                 dy_ext0 = dy_ext1 = dy_ext2 = dy0 - 1 - 4 * SQUISH_CONSTANT_4D;
-                if ((c & 0x01) != 0) {
+                if ((c & 0x01) != 0)
+                {
                     ysv_ext1 += 1;
                     dy_ext1 -= 1;
                 }
-                else {
+                else
+                {
                     ysv_ext0 += 1;
                     dy_ext0 -= 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb;
                 dy_ext0 = dy_ext1 = dy_ext2 = dy0 - 4 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x04) != 0) {
+            if ((c & 0x04) != 0)
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb + 1;
                 dz_ext0 = dz_ext1 = dz_ext2 = dz0 - 1 - 4 * SQUISH_CONSTANT_4D;
-                if ((c & 0x03) != 0x03) {
-                    if ((c & 0x03) == 0) {
+                if ((c & 0x03) != 0x03)
+                {
+                    if ((c & 0x03) == 0)
+                    {
                         zsv_ext0 += 1;
                         dz_ext0 -= 1;
                     }
-                    else {
+                    else
+                    {
                         zsv_ext1 += 1;
                         dz_ext1 -= 1;
                     }
                 }
-                else {
+                else
+                {
                     zsv_ext2 += 1;
                     dz_ext2 -= 1;
                 }
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb;
                 dz_ext0 = dz_ext1 = dz_ext2 = dz0 - 4 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x08) != 0) {
+            if ((c & 0x08) != 0)
+            {
                 wsv_ext0 = wsv_ext1 = wsb + 1;
                 wsv_ext2 = wsb + 2;
                 dw_ext0 = dw_ext1 = dw0 - 1 - 4 * SQUISH_CONSTANT_4D;
                 dw_ext2 = dw0 - 2 - 4 * SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 wsv_ext0 = wsv_ext1 = wsv_ext2 = wsb;
                 dw_ext0 = dw_ext1 = dw_ext2 = dw0 - 4 * SQUISH_CONSTANT_4D;
             }
         }
-        else { /* (1,1,1,1) is not one of the closest two pentachoron vertices. */
-            c = static_cast<int8_t>(aPoint & bPoint); /* Our three extra vertices are determined by the closest two. */
+        else
+        { /* (1,1,1,1) is not one of the closest two pentachoron vertices. */
+            c = static_cast<int8_t>(
+                aPoint & bPoint); /* Our three extra vertices are determined by
+                                     the closest two. */
 
-            if ((c & 0x01) != 0) {
+            if ((c & 0x01) != 0)
+            {
                 xsv_ext0 = xsv_ext2 = xsb + 1;
                 xsv_ext1 = xsb + 2;
                 dx_ext0 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dx_ext1 = dx0 - 2 - 3 * SQUISH_CONSTANT_4D;
                 dx_ext2 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsv_ext2 = xsb;
                 dx_ext0 = dx0 - 2 * SQUISH_CONSTANT_4D;
                 dx_ext1 = dx_ext2 = dx0 - 3 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x02) != 0) {
+            if ((c & 0x02) != 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb + 1;
                 dy_ext0 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dy_ext1 = dy_ext2 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                if ((c & 0x01) != 0) {
+                if ((c & 0x01) != 0)
+                {
                     ysv_ext2 += 1;
                     dy_ext2 -= 1;
                 }
-                else {
+                else
+                {
                     ysv_ext1 += 1;
                     dy_ext1 -= 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysv_ext2 = ysb;
                 dy_ext0 = dy0 - 2 * SQUISH_CONSTANT_4D;
                 dy_ext1 = dy_ext2 = dy0 - 3 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x04) != 0) {
+            if ((c & 0x04) != 0)
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb + 1;
                 dz_ext0 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dz_ext1 = dz_ext2 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                if ((c & 0x03) != 0) {
+                if ((c & 0x03) != 0)
+                {
                     zsv_ext2 += 1;
                     dz_ext2 -= 1;
                 }
-                else {
+                else
+                {
                     zsv_ext1 += 1;
                     dz_ext1 -= 1;
                 }
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsv_ext2 = zsb;
                 dz_ext0 = dz0 - 2 * SQUISH_CONSTANT_4D;
                 dz_ext1 = dz_ext2 = dz0 - 3 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c & 0x08) != 0) {
+            if ((c & 0x08) != 0)
+            {
                 wsv_ext0 = wsv_ext1 = wsb + 1;
                 wsv_ext2 = wsb + 2;
                 dw_ext0 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dw_ext1 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
                 dw_ext2 = dw0 - 2 - 3 * SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 wsv_ext0 = wsv_ext1 = wsv_ext2 = wsb;
                 dw_ext0 = dw0 - 2 * SQUISH_CONSTANT_4D;
                 dw_ext1 = dw_ext2 = dw0 - 3 * SQUISH_CONSTANT_4D;
@@ -1209,9 +1463,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz4 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
         dw4 = dw0 - 3 * SQUISH_CONSTANT_4D;
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
-        if (attn4 > 0) {
+        if (attn4 > 0)
+        {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
+            value +=
+                attn4 * attn4 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
         }
 
         /* Contribution (1,1,0,1) */
@@ -1220,9 +1478,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz3 = dz0 - 3 * SQUISH_CONSTANT_4D;
         dw3 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
-        if (attn3 > 0) {
+        if (attn3 > 0)
+        {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
+            value +=
+                attn3 * attn3 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (1,0,1,1) */
@@ -1231,9 +1493,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz2 = dz4;
         dw2 = dw3;
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
-        if (attn2 > 0) {
+        if (attn2 > 0)
+        {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
+            value +=
+                attn2 * attn2 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,1,1,1) */
@@ -1242,9 +1508,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dy1 = dy4;
         dw1 = dw3;
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
-        if (attn1 > 0) {
+        if (attn1 > 0)
+        {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
+            value +=
+                attn1 * attn1 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (1,1,1,1) */
@@ -1253,54 +1523,70 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz0 = dz0 - 1 - 4 * SQUISH_CONSTANT_4D;
         dw0 = dw0 - 1 - 4 * SQUISH_CONSTANT_4D;
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
-        if (attn0 > 0) {
+        if (attn0 > 0)
+        {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 1, dx0, dy0, dz0, dw0);
+            value +=
+                attn0 * attn0 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 1, zsb + 1, wsb + 1, dx0, dy0, dz0, dw0);
         }
     }
-    else if (inSum <= 2) { /* We're inside the first dispentachoron (Rectified 4-Simplex) */
+    else if (inSum <= 2)
+    { /* We're inside the first dispentachoron (rectified 4-Simplex) */
         aIsBiggerSide = 1;
         bIsBiggerSide = 1;
 
         /* Decide between (1,1,0,0) and (0,0,1,1) */
-        if (xins + yins > zins + wins) {
+        if (xins + yins > zins + wins)
+        {
             aScore = xins + yins;
             aPoint = 0x03;
         }
-        else {
+        else
+        {
             aScore = zins + wins;
             aPoint = 0x0C;
         }
 
         /* Decide between (1,0,1,0) and (0,1,0,1) */
-        if (xins + zins > yins + wins) {
+        if (xins + zins > yins + wins)
+        {
             bScore = xins + zins;
             bPoint = 0x05;
         }
-        else {
+        else
+        {
             bScore = yins + wins;
             bPoint = 0x0A;
         }
 
-        /* Closer between (1,0,0,1) and (0,1,1,0) will replace the further of a and b, if closer. */
-        if (xins + wins > yins + zins) {
+        /* Closer between (1,0,0,1) and (0,1,1,0) will replace the further of a
+         * and b, if closer. */
+        if (xins + wins > yins + zins)
+        {
             score = xins + wins;
-            if (aScore >= bScore && score > bScore) {
+            if (aScore >= bScore && score > bScore)
+            {
                 bScore = score;
                 bPoint = 0x09;
             }
-            else if (aScore < bScore && score > aScore) {
+            else if (aScore < bScore && score > aScore)
+            {
                 aScore = score;
                 aPoint = 0x09;
             }
         }
-        else {
+        else
+        {
             score = yins + zins;
-            if (aScore >= bScore && score > bScore) {
+            if (aScore >= bScore && score > bScore)
+            {
                 bScore = score;
                 bPoint = 0x06;
             }
-            else if (aScore < bScore && score > aScore) {
+            else if (aScore < bScore && score > aScore)
+            {
                 aScore = score;
                 aPoint = 0x06;
             }
@@ -1308,12 +1594,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (1,0,0,0) is closer. */
         p1 = 2 - inSum + xins;
-        if (aScore >= bScore && p1 > bScore) {
+        if (aScore >= bScore && p1 > bScore)
+        {
             bScore = p1;
             bPoint = 0x01;
             bIsBiggerSide = 0;
         }
-        else if (aScore < bScore && p1 > aScore) {
+        else if (aScore < bScore && p1 > aScore)
+        {
             aScore = p1;
             aPoint = 0x01;
             aIsBiggerSide = 0;
@@ -1321,12 +1609,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (0,1,0,0) is closer. */
         p2 = 2 - inSum + yins;
-        if (aScore >= bScore && p2 > bScore) {
+        if (aScore >= bScore && p2 > bScore)
+        {
             bScore = p2;
             bPoint = 0x02;
             bIsBiggerSide = 0;
         }
-        else if (aScore < bScore && p2 > aScore) {
+        else if (aScore < bScore && p2 > aScore)
+        {
             aScore = p2;
             aPoint = 0x02;
             aIsBiggerSide = 0;
@@ -1334,12 +1624,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (0,0,1,0) is closer. */
         p3 = 2 - inSum + zins;
-        if (aScore >= bScore && p3 > bScore) {
+        if (aScore >= bScore && p3 > bScore)
+        {
             bScore = p3;
             bPoint = 0x04;
             bIsBiggerSide = 0;
         }
-        else if (aScore < bScore && p3 > aScore) {
+        else if (aScore < bScore && p3 > aScore)
+        {
             aScore = p3;
             aPoint = 0x04;
             aIsBiggerSide = 0;
@@ -1347,65 +1639,78 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (0,0,0,1) is closer. */
         p4 = 2 - inSum + wins;
-        if (aScore >= bScore && p4 > bScore) {
+        if (aScore >= bScore && p4 > bScore)
+        {
             bScore = p4;
             bPoint = 0x08;
             bIsBiggerSide = 0;
         }
-        else if (aScore < bScore && p4 > aScore) {
+        else if (aScore < bScore && p4 > aScore)
+        {
             aScore = p4;
             aPoint = 0x08;
             aIsBiggerSide = 0;
         }
 
-        /* Where each of the two closest points are determines how the extra three vertices are calculated. */
-        if (aIsBiggerSide == bIsBiggerSide) {
-            if (aIsBiggerSide) { /* Both closest points on the bigger side */
+        /* Where each of the two closest points are determines how the extra
+         * three vertices are calculated. */
+        if (aIsBiggerSide == bIsBiggerSide)
+        {
+            if (aIsBiggerSide)
+            { /* Both closest points on the bigger side */
                 c1 = static_cast<int8_t>(aPoint | bPoint);
                 c2 = static_cast<int8_t>(aPoint & bPoint);
-                if ((c1 & 0x01) == 0) {
+                if ((c1 & 0x01) == 0)
+                {
                     xsv_ext0 = xsb;
                     xsv_ext1 = xsb - 1;
                     dx_ext0 = dx0 - 3 * SQUISH_CONSTANT_4D;
                     dx_ext1 = dx0 + 1 - 2 * SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     xsv_ext0 = xsv_ext1 = xsb + 1;
                     dx_ext0 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
                     dx_ext1 = dx0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 }
 
-                if ((c1 & 0x02) == 0) {
+                if ((c1 & 0x02) == 0)
+                {
                     ysv_ext0 = ysb;
                     ysv_ext1 = ysb - 1;
                     dy_ext0 = dy0 - 3 * SQUISH_CONSTANT_4D;
                     dy_ext1 = dy0 + 1 - 2 * SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     ysv_ext0 = ysv_ext1 = ysb + 1;
                     dy_ext0 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
                     dy_ext1 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 }
 
-                if ((c1 & 0x04) == 0) {
+                if ((c1 & 0x04) == 0)
+                {
                     zsv_ext0 = zsb;
                     zsv_ext1 = zsb - 1;
                     dz_ext0 = dz0 - 3 * SQUISH_CONSTANT_4D;
                     dz_ext1 = dz0 + 1 - 2 * SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     zsv_ext0 = zsv_ext1 = zsb + 1;
                     dz_ext0 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
                     dz_ext1 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 }
 
-                if ((c1 & 0x08) == 0) {
+                if ((c1 & 0x08) == 0)
+                {
                     wsv_ext0 = wsb;
                     wsv_ext1 = wsb - 1;
                     dw_ext0 = dw0 - 3 * SQUISH_CONSTANT_4D;
                     dw_ext1 = dw0 + 1 - 2 * SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     wsv_ext0 = wsv_ext1 = wsb + 1;
                     dw_ext0 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
                     dw_ext1 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
@@ -1420,26 +1725,30 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                 dy_ext2 = dy0 - 2 * SQUISH_CONSTANT_4D;
                 dz_ext2 = dz0 - 2 * SQUISH_CONSTANT_4D;
                 dw_ext2 = dw0 - 2 * SQUISH_CONSTANT_4D;
-                if ((c2 & 0x01) != 0) {
+                if ((c2 & 0x01) != 0)
+                {
                     xsv_ext2 += 2;
                     dx_ext2 -= 2;
                 }
-                else if ((c2 & 0x02) != 0) {
+                else if ((c2 & 0x02) != 0)
+                {
                     ysv_ext2 += 2;
                     dy_ext2 -= 2;
                 }
-                else if ((c2 & 0x04) != 0) {
+                else if ((c2 & 0x04) != 0)
+                {
                     zsv_ext2 += 2;
                     dz_ext2 -= 2;
                 }
-                else {
+                else
+                {
                     wsv_ext2 += 2;
                     dw_ext2 -= 2;
                 }
-
             }
-            else { /* Both closest points on the smaller side */
-             /* One of the two extra points is (0,0,0,0) */
+            else
+            {   /* Both closest points on the smaller side */
+                /* One of the two extra points is (0,0,0,0) */
                 xsv_ext2 = xsb;
                 ysv_ext2 = ysb;
                 zsv_ext2 = zsb;
@@ -1452,18 +1761,21 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                 /* Other two points are based on the omitted axes. */
                 c = static_cast<int8_t>(aPoint | bPoint);
 
-                if ((c & 0x01) == 0) {
+                if ((c & 0x01) == 0)
+                {
                     xsv_ext0 = xsb - 1;
                     xsv_ext1 = xsb;
                     dx_ext0 = dx0 + 1 - SQUISH_CONSTANT_4D;
                     dx_ext1 = dx0 - SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     xsv_ext0 = xsv_ext1 = xsb + 1;
                     dx_ext0 = dx_ext1 = dx0 - 1 - SQUISH_CONSTANT_4D;
                 }
 
-                if ((c & 0x02) == 0) {
+                if ((c & 0x02) == 0)
+                {
                     ysv_ext0 = ysv_ext1 = ysb;
                     dy_ext0 = dy_ext1 = dy0 - SQUISH_CONSTANT_4D;
                     if ((c & 0x01) == 0x01)
@@ -1471,17 +1783,20 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                         ysv_ext0 -= 1;
                         dy_ext0 += 1;
                     }
-                    else {
+                    else
+                    {
                         ysv_ext1 -= 1;
                         dy_ext1 += 1;
                     }
                 }
-                else {
+                else
+                {
                     ysv_ext0 = ysv_ext1 = ysb + 1;
                     dy_ext0 = dy_ext1 = dy0 - 1 - SQUISH_CONSTANT_4D;
                 }
 
-                if ((c & 0x04) == 0) {
+                if ((c & 0x04) == 0)
+                {
                     zsv_ext0 = zsv_ext1 = zsb;
                     dz_ext0 = dz_ext1 = dz0 - SQUISH_CONSTANT_4D;
                     if ((c & 0x03) == 0x03)
@@ -1489,12 +1804,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                         zsv_ext0 -= 1;
                         dz_ext0 += 1;
                     }
-                    else {
+                    else
+                    {
                         zsv_ext1 -= 1;
                         dz_ext1 += 1;
                     }
                 }
-                else {
+                else
+                {
                     zsv_ext0 = zsv_ext1 = zsb + 1;
                     dz_ext0 = dz_ext1 = dz0 - 1 - SQUISH_CONSTANT_4D;
                 }
@@ -1506,81 +1823,98 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                     dw_ext0 = dw0 - SQUISH_CONSTANT_4D;
                     dw_ext1 = dw0 + 1 - SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     wsv_ext0 = wsv_ext1 = wsb + 1;
                     dw_ext0 = dw_ext1 = dw0 - 1 - SQUISH_CONSTANT_4D;
                 }
-
             }
         }
-        else { /* One point on each "side" */
-            if (aIsBiggerSide) {
+        else
+        { /* One point on each "side" */
+            if (aIsBiggerSide)
+            {
                 c1 = aPoint;
                 c2 = bPoint;
             }
-            else {
+            else
+            {
                 c1 = bPoint;
                 c2 = aPoint;
             }
 
-            /* Two contributions are the bigger-sided point with each 0 replaced with -1. */
-            if ((c1 & 0x01) == 0) {
+            /* Two contributions are the bigger-sided point with each 0 replaced
+             * with -1. */
+            if ((c1 & 0x01) == 0)
+            {
                 xsv_ext0 = xsb - 1;
                 xsv_ext1 = xsb;
                 dx_ext0 = dx0 + 1 - SQUISH_CONSTANT_4D;
                 dx_ext1 = dx0 - SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsb + 1;
                 dx_ext0 = dx_ext1 = dx0 - 1 - SQUISH_CONSTANT_4D;
             }
 
-            if ((c1 & 0x02) == 0) {
+            if ((c1 & 0x02) == 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysb;
                 dy_ext0 = dy_ext1 = dy0 - SQUISH_CONSTANT_4D;
-                if ((c1 & 0x01) == 0x01) {
+                if ((c1 & 0x01) == 0x01)
+                {
                     ysv_ext0 -= 1;
                     dy_ext0 += 1;
                 }
-                else {
+                else
+                {
                     ysv_ext1 -= 1;
                     dy_ext1 += 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysb + 1;
                 dy_ext0 = dy_ext1 = dy0 - 1 - SQUISH_CONSTANT_4D;
             }
 
-            if ((c1 & 0x04) == 0) {
+            if ((c1 & 0x04) == 0)
+            {
                 zsv_ext0 = zsv_ext1 = zsb;
                 dz_ext0 = dz_ext1 = dz0 - SQUISH_CONSTANT_4D;
-                if ((c1 & 0x03) == 0x03) {
+                if ((c1 & 0x03) == 0x03)
+                {
                     zsv_ext0 -= 1;
                     dz_ext0 += 1;
                 }
-                else {
+                else
+                {
                     zsv_ext1 -= 1;
                     dz_ext1 += 1;
                 }
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsb + 1;
                 dz_ext0 = dz_ext1 = dz0 - 1 - SQUISH_CONSTANT_4D;
             }
 
-            if ((c1 & 0x08) == 0) {
+            if ((c1 & 0x08) == 0)
+            {
                 wsv_ext0 = wsb;
                 wsv_ext1 = wsb - 1;
                 dw_ext0 = dw0 - SQUISH_CONSTANT_4D;
                 dw_ext1 = dw0 + 1 - SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 wsv_ext0 = wsv_ext1 = wsb + 1;
                 dw_ext0 = dw_ext1 = dw0 - 1 - SQUISH_CONSTANT_4D;
             }
 
-            /* One contribution is a permutation of (0,0,0,2) based on the smaller-sided point */
+            /* One contribution is a permutation of (0,0,0,2) based on the
+             * smaller-sided point */
             xsv_ext2 = xsb;
             ysv_ext2 = ysb;
             zsv_ext2 = zsb;
@@ -1589,19 +1923,23 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
             dy_ext2 = dy0 - 2 * SQUISH_CONSTANT_4D;
             dz_ext2 = dz0 - 2 * SQUISH_CONSTANT_4D;
             dw_ext2 = dw0 - 2 * SQUISH_CONSTANT_4D;
-            if ((c2 & 0x01) != 0) {
+            if ((c2 & 0x01) != 0)
+            {
                 xsv_ext2 += 2;
                 dx_ext2 -= 2;
             }
-            else if ((c2 & 0x02) != 0) {
+            else if ((c2 & 0x02) != 0)
+            {
                 ysv_ext2 += 2;
                 dy_ext2 -= 2;
             }
-            else if ((c2 & 0x04) != 0) {
+            else if ((c2 & 0x04) != 0)
+            {
                 zsv_ext2 += 2;
                 dz_ext2 -= 2;
             }
-            else {
+            else
+            {
                 wsv_ext2 += 2;
                 dw_ext2 -= 2;
             }
@@ -1613,9 +1951,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz1 = dz0 - 0 - SQUISH_CONSTANT_4D;
         dw1 = dw0 - 0 - SQUISH_CONSTANT_4D;
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
-        if (attn1 > 0) {
+        if (attn1 > 0)
+        {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
+            value +=
+                attn1 * attn1 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (0,1,0,0) */
@@ -1624,9 +1966,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz2 = dz1;
         dw2 = dw1;
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
-        if (attn2 > 0) {
+        if (attn2 > 0)
+        {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
+            value +=
+                attn2 * attn2 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,0,1,0) */
@@ -1635,9 +1981,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz3 = dz0 - 1 - SQUISH_CONSTANT_4D;
         dw3 = dw1;
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
-        if (attn3 > 0) {
+        if (attn3 > 0)
+        {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
+            value +=
+                attn3 * attn3 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (0,0,0,1) */
@@ -1646,9 +1996,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz4 = dz1;
         dw4 = dw0 - 1 - SQUISH_CONSTANT_4D;
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
-        if (attn4 > 0) {
+        if (attn4 > 0)
+        {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
+            value +=
+                attn4 * attn4 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
         }
 
         /* Contribution (1,1,0,0) */
@@ -1657,9 +2011,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz5 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
         dw5 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
         attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
-        if (attn5 > 0) {
+        if (attn5 > 0)
+        {
             attn5 *= attn5;
-            value += attn5 * attn5 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
+            value +=
+                attn5 * attn5 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
         }
 
         /* Contribution (1,0,1,0) */
@@ -1668,9 +2026,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz6 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
         dw6 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
         attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
-        if (attn6 > 0) {
+        if (attn6 > 0)
+        {
             attn6 *= attn6;
-            value += attn6 * attn6 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
+            value +=
+                attn6 * attn6 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
         }
 
         /* Contribution (1,0,0,1) */
@@ -1679,9 +2041,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz7 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
         dw7 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
         attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
-        if (attn7 > 0) {
+        if (attn7 > 0)
+        {
             attn7 *= attn7;
-            value += attn7 * attn7 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
+            value +=
+                attn7 * attn7 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
         }
 
         /* Contribution (0,1,1,0) */
@@ -1690,9 +2056,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz8 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
         dw8 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
         attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
-        if (attn8 > 0) {
+        if (attn8 > 0)
+        {
             attn8 *= attn8;
-            value += attn8 * attn8 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
+            value +=
+                attn8 * attn8 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
         }
 
         /* Contribution (0,1,0,1) */
@@ -1701,9 +2071,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz9 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
         dw9 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
         attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
-        if (attn9 > 0) {
+        if (attn9 > 0)
+        {
             attn9 *= attn9;
-            value += attn9 * attn9 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
+            value +=
+                attn9 * attn9 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
         }
 
         /* Contribution (0,0,1,1) */
@@ -1712,54 +2086,70 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz10 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
         dw10 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
         attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
-        if (attn10 > 0) {
+        if (attn10 > 0)
+        {
             attn10 *= attn10;
-            value += attn10 * attn10 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
+            value +=
+                attn10 * attn10 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
         }
     }
-    else { /* We're inside the second dispentachoron (Rectified 4-Simplex) */
+    else
+    { /* We're inside the second dispentachoron (rectified 4-Simplex) */
         aIsBiggerSide = 1;
         bIsBiggerSide = 1;
 
         /* Decide between (0,0,1,1) and (1,1,0,0) */
-        if (xins + yins < zins + wins) {
+        if (xins + yins < zins + wins)
+        {
             aScore = xins + yins;
             aPoint = 0x0C;
         }
-        else {
+        else
+        {
             aScore = zins + wins;
             aPoint = 0x03;
         }
 
         /* Decide between (0,1,0,1) and (1,0,1,0) */
-        if (xins + zins < yins + wins) {
+        if (xins + zins < yins + wins)
+        {
             bScore = xins + zins;
             bPoint = 0x0A;
         }
-        else {
+        else
+        {
             bScore = yins + wins;
             bPoint = 0x05;
         }
 
-        /* Closer between (0,1,1,0) and (1,0,0,1) will replace the further of a and b, if closer. */
-        if (xins + wins < yins + zins) {
+        /* Closer between (0,1,1,0) and (1,0,0,1) will replace the further of a
+         * and b, if closer. */
+        if (xins + wins < yins + zins)
+        {
             score = xins + wins;
-            if (aScore <= bScore && score < bScore) {
+            if (aScore <= bScore && score < bScore)
+            {
                 bScore = score;
                 bPoint = 0x06;
             }
-            else if (aScore > bScore && score < aScore) {
+            else if (aScore > bScore && score < aScore)
+            {
                 aScore = score;
                 aPoint = 0x06;
             }
         }
-        else {
+        else
+        {
             score = yins + zins;
-            if (aScore <= bScore && score < bScore) {
+            if (aScore <= bScore && score < bScore)
+            {
                 bScore = score;
                 bPoint = 0x09;
             }
-            else if (aScore > bScore && score < aScore) {
+            else if (aScore > bScore && score < aScore)
+            {
                 aScore = score;
                 aPoint = 0x09;
             }
@@ -1767,12 +2157,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (0,1,1,1) is closer. */
         p1 = 3 - inSum + xins;
-        if (aScore <= bScore && p1 < bScore) {
+        if (aScore <= bScore && p1 < bScore)
+        {
             bScore = p1;
             bPoint = 0x0E;
             bIsBiggerSide = 0;
         }
-        else if (aScore > bScore && p1 < aScore) {
+        else if (aScore > bScore && p1 < aScore)
+        {
             aScore = p1;
             aPoint = 0x0E;
             aIsBiggerSide = 0;
@@ -1780,12 +2172,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (1,0,1,1) is closer. */
         p2 = 3 - inSum + yins;
-        if (aScore <= bScore && p2 < bScore) {
+        if (aScore <= bScore && p2 < bScore)
+        {
             bScore = p2;
             bPoint = 0x0D;
             bIsBiggerSide = 0;
         }
-        else if (aScore > bScore && p2 < aScore) {
+        else if (aScore > bScore && p2 < aScore)
+        {
             aScore = p2;
             aPoint = 0x0D;
             aIsBiggerSide = 0;
@@ -1793,12 +2187,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (1,1,0,1) is closer. */
         p3 = 3 - inSum + zins;
-        if (aScore <= bScore && p3 < bScore) {
+        if (aScore <= bScore && p3 < bScore)
+        {
             bScore = p3;
             bPoint = 0x0B;
             bIsBiggerSide = 0;
         }
-        else if (aScore > bScore && p3 < aScore) {
+        else if (aScore > bScore && p3 < aScore)
+        {
             aScore = p3;
             aPoint = 0x0B;
             aIsBiggerSide = 0;
@@ -1806,24 +2202,30 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
 
         /* Decide if (1,1,1,0) is closer. */
         p4 = 3 - inSum + wins;
-        if (aScore <= bScore && p4 < bScore) {
+        if (aScore <= bScore && p4 < bScore)
+        {
             bScore = p4;
             bPoint = 0x07;
             bIsBiggerSide = 0;
         }
-        else if (aScore > bScore && p4 < aScore) {
+        else if (aScore > bScore && p4 < aScore)
+        {
             aScore = p4;
             aPoint = 0x07;
             aIsBiggerSide = 0;
         }
 
-        /* Where each of the two closest points are determines how the extra three vertices are calculated. */
-        if (aIsBiggerSide == bIsBiggerSide) {
-            if (aIsBiggerSide) { /* Both closest points on the bigger side */
+        /* Where each of the two closest points are determines how the extra
+         * three vertices are calculated. */
+        if (aIsBiggerSide == bIsBiggerSide)
+        {
+            if (aIsBiggerSide)
+            { /* Both closest points on the bigger side */
                 c1 = static_cast<int8_t>(aPoint & bPoint);
                 c2 = static_cast<int8_t>(aPoint | bPoint);
 
-                /* Two contributions are permutations of (0,0,0,1) and (0,0,0,2) based on c1 */
+                /* Two contributions are permutations of (0,0,0,1) and (0,0,0,2)
+                 * based on c1 */
                 xsv_ext0 = xsv_ext1 = xsb;
                 ysv_ext0 = ysv_ext1 = ysb;
                 zsv_ext0 = zsv_ext1 = zsb;
@@ -1836,32 +2238,37 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                 dy_ext1 = dy0 - 2 * SQUISH_CONSTANT_4D;
                 dz_ext1 = dz0 - 2 * SQUISH_CONSTANT_4D;
                 dw_ext1 = dw0 - 2 * SQUISH_CONSTANT_4D;
-                if ((c1 & 0x01) != 0) {
+                if ((c1 & 0x01) != 0)
+                {
                     xsv_ext0 += 1;
                     dx_ext0 -= 1;
                     xsv_ext1 += 2;
                     dx_ext1 -= 2;
                 }
-                else if ((c1 & 0x02) != 0) {
+                else if ((c1 & 0x02) != 0)
+                {
                     ysv_ext0 += 1;
                     dy_ext0 -= 1;
                     ysv_ext1 += 2;
                     dy_ext1 -= 2;
                 }
-                else if ((c1 & 0x04) != 0) {
+                else if ((c1 & 0x04) != 0)
+                {
                     zsv_ext0 += 1;
                     dz_ext0 -= 1;
                     zsv_ext1 += 2;
                     dz_ext1 -= 2;
                 }
-                else {
+                else
+                {
                     wsv_ext0 += 1;
                     dw_ext0 -= 1;
                     wsv_ext1 += 2;
                     dw_ext1 -= 2;
                 }
 
-                /* One contribution is a permutation of (1,1,1,-1) based on c2 */
+                /* One contribution is a permutation of (1,1,1,-1) based on c2
+                 */
                 xsv_ext2 = xsb + 1;
                 ysv_ext2 = ysb + 1;
                 zsv_ext2 = zsb + 1;
@@ -1870,25 +2277,30 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                 dy_ext2 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dz_ext2 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
                 dw_ext2 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-                if ((c2 & 0x01) == 0) {
+                if ((c2 & 0x01) == 0)
+                {
                     xsv_ext2 -= 2;
                     dx_ext2 += 2;
                 }
-                else if ((c2 & 0x02) == 0) {
+                else if ((c2 & 0x02) == 0)
+                {
                     ysv_ext2 -= 2;
                     dy_ext2 += 2;
                 }
-                else if ((c2 & 0x04) == 0) {
+                else if ((c2 & 0x04) == 0)
+                {
                     zsv_ext2 -= 2;
                     dz_ext2 += 2;
                 }
-                else {
+                else
+                {
                     wsv_ext2 -= 2;
                     dw_ext2 += 2;
                 }
             }
-            else { /* Both closest points on the smaller side */
-             /* One of the two extra points is (1,1,1,1) */
+            else
+            {   /* Both closest points on the smaller side */
+                /* One of the two extra points is (1,1,1,1) */
                 xsv_ext2 = xsb + 1;
                 ysv_ext2 = ysb + 1;
                 zsv_ext2 = zsb + 1;
@@ -1901,18 +2313,21 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                 /* Other two points are based on the shared axes. */
                 c = static_cast<int8_t>(aPoint & bPoint);
 
-                if ((c & 0x01) != 0) {
+                if ((c & 0x01) != 0)
+                {
                     xsv_ext0 = xsb + 2;
                     xsv_ext1 = xsb + 1;
                     dx_ext0 = dx0 - 2 - 3 * SQUISH_CONSTANT_4D;
                     dx_ext1 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     xsv_ext0 = xsv_ext1 = xsb;
                     dx_ext0 = dx_ext1 = dx0 - 3 * SQUISH_CONSTANT_4D;
                 }
 
-                if ((c & 0x02) != 0) {
+                if ((c & 0x02) != 0)
+                {
                     ysv_ext0 = ysv_ext1 = ysb + 1;
                     dy_ext0 = dy_ext1 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
                     if ((c & 0x01) == 0)
@@ -1920,17 +2335,20 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                         ysv_ext0 += 1;
                         dy_ext0 -= 1;
                     }
-                    else {
+                    else
+                    {
                         ysv_ext1 += 1;
                         dy_ext1 -= 1;
                     }
                 }
-                else {
+                else
+                {
                     ysv_ext0 = ysv_ext1 = ysb;
                     dy_ext0 = dy_ext1 = dy0 - 3 * SQUISH_CONSTANT_4D;
                 }
 
-                if ((c & 0x04) != 0) {
+                if ((c & 0x04) != 0)
+                {
                     zsv_ext0 = zsv_ext1 = zsb + 1;
                     dz_ext0 = dz_ext1 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
                     if ((c & 0x03) == 0)
@@ -1938,12 +2356,14 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                         zsv_ext0 += 1;
                         dz_ext0 -= 1;
                     }
-                    else {
+                    else
+                    {
                         zsv_ext1 += 1;
                         dz_ext1 -= 1;
                     }
                 }
-                else {
+                else
+                {
                     zsv_ext0 = zsv_ext1 = zsb;
                     dz_ext0 = dz_ext1 = dz0 - 3 * SQUISH_CONSTANT_4D;
                 }
@@ -1955,80 +2375,98 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
                     dw_ext0 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
                     dw_ext1 = dw0 - 2 - 3 * SQUISH_CONSTANT_4D;
                 }
-                else {
+                else
+                {
                     wsv_ext0 = wsv_ext1 = wsb;
                     dw_ext0 = dw_ext1 = dw0 - 3 * SQUISH_CONSTANT_4D;
                 }
             }
         }
-        else { /* One point on each "side" */
-            if (aIsBiggerSide) {
+        else
+        { /* One point on each "side" */
+            if (aIsBiggerSide)
+            {
                 c1 = aPoint;
                 c2 = bPoint;
             }
-            else {
+            else
+            {
                 c1 = bPoint;
                 c2 = aPoint;
             }
 
-            /* Two contributions are the bigger-sided point with each 1 replaced with 2. */
-            if ((c1 & 0x01) != 0) {
+            /* Two contributions are the bigger-sided point with each 1 replaced
+             * with 2. */
+            if ((c1 & 0x01) != 0)
+            {
                 xsv_ext0 = xsb + 2;
                 xsv_ext1 = xsb + 1;
                 dx_ext0 = dx0 - 2 - 3 * SQUISH_CONSTANT_4D;
                 dx_ext1 = dx0 - 1 - 3 * SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 xsv_ext0 = xsv_ext1 = xsb;
                 dx_ext0 = dx_ext1 = dx0 - 3 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c1 & 0x02) != 0) {
+            if ((c1 & 0x02) != 0)
+            {
                 ysv_ext0 = ysv_ext1 = ysb + 1;
                 dy_ext0 = dy_ext1 = dy0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                if ((c1 & 0x01) == 0) {
+                if ((c1 & 0x01) == 0)
+                {
                     ysv_ext0 += 1;
                     dy_ext0 -= 1;
                 }
-                else {
+                else
+                {
                     ysv_ext1 += 1;
                     dy_ext1 -= 1;
                 }
             }
-            else {
+            else
+            {
                 ysv_ext0 = ysv_ext1 = ysb;
                 dy_ext0 = dy_ext1 = dy0 - 3 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c1 & 0x04) != 0) {
+            if ((c1 & 0x04) != 0)
+            {
                 zsv_ext0 = zsv_ext1 = zsb + 1;
                 dz_ext0 = dz_ext1 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
-                if ((c1 & 0x03) == 0) {
+                if ((c1 & 0x03) == 0)
+                {
                     zsv_ext0 += 1;
                     dz_ext0 -= 1;
                 }
-                else {
+                else
+                {
                     zsv_ext1 += 1;
                     dz_ext1 -= 1;
                 }
             }
-            else {
+            else
+            {
                 zsv_ext0 = zsv_ext1 = zsb;
                 dz_ext0 = dz_ext1 = dz0 - 3 * SQUISH_CONSTANT_4D;
             }
 
-            if ((c1 & 0x08) != 0) {
+            if ((c1 & 0x08) != 0)
+            {
                 wsv_ext0 = wsb + 1;
                 wsv_ext1 = wsb + 2;
                 dw_ext0 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
                 dw_ext1 = dw0 - 2 - 3 * SQUISH_CONSTANT_4D;
             }
-            else {
+            else
+            {
                 wsv_ext0 = wsv_ext1 = wsb;
                 dw_ext0 = dw_ext1 = dw0 - 3 * SQUISH_CONSTANT_4D;
             }
 
-            /* One contribution is a permutation of (1,1,1,-1) based on the smaller-sided point */
+            /* One contribution is a permutation of (1,1,1,-1) based on the
+             * smaller-sided point */
             xsv_ext2 = xsb + 1;
             ysv_ext2 = ysb + 1;
             zsv_ext2 = zsb + 1;
@@ -2037,19 +2475,23 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
             dy_ext2 = dy0 - 1 - 2 * SQUISH_CONSTANT_4D;
             dz_ext2 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
             dw_ext2 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
-            if ((c2 & 0x01) == 0) {
+            if ((c2 & 0x01) == 0)
+            {
                 xsv_ext2 -= 2;
                 dx_ext2 += 2;
             }
-            else if ((c2 & 0x02) == 0) {
+            else if ((c2 & 0x02) == 0)
+            {
                 ysv_ext2 -= 2;
                 dy_ext2 += 2;
             }
-            else if ((c2 & 0x04) == 0) {
+            else if ((c2 & 0x04) == 0)
+            {
                 zsv_ext2 -= 2;
                 dz_ext2 += 2;
             }
-            else {
+            else
+            {
                 wsv_ext2 -= 2;
                 dw_ext2 += 2;
             }
@@ -2061,9 +2503,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz4 = dz0 - 1 - 3 * SQUISH_CONSTANT_4D;
         dw4 = dw0 - 3 * SQUISH_CONSTANT_4D;
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
-        if (attn4 > 0) {
+        if (attn4 > 0)
+        {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
+            value +=
+                attn4 * attn4 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
         }
 
         /* Contribution (1,1,0,1) */
@@ -2072,9 +2518,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz3 = dz0 - 3 * SQUISH_CONSTANT_4D;
         dw3 = dw0 - 1 - 3 * SQUISH_CONSTANT_4D;
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
-        if (attn3 > 0) {
+        if (attn3 > 0)
+        {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
+            value +=
+                attn3 * attn3 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (1,0,1,1) */
@@ -2083,9 +2533,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz2 = dz4;
         dw2 = dw3;
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
-        if (attn2 > 0) {
+        if (attn2 > 0)
+        {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
+            value +=
+                attn2 * attn2 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,1,1,1) */
@@ -2094,9 +2548,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dy1 = dy4;
         dw1 = dw3;
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
-        if (attn1 > 0) {
+        if (attn1 > 0)
+        {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
+            value +=
+                attn1 * attn1 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (1,1,0,0) */
@@ -2105,9 +2563,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz5 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
         dw5 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
         attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
-        if (attn5 > 0) {
+        if (attn5 > 0)
+        {
             attn5 *= attn5;
-            value += attn5 * attn5 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
+            value +=
+                attn5 * attn5 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
         }
 
         /* Contribution (1,0,1,0) */
@@ -2116,9 +2578,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz6 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
         dw6 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
         attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
-        if (attn6 > 0) {
+        if (attn6 > 0)
+        {
             attn6 *= attn6;
-            value += attn6 * attn6 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
+            value +=
+                attn6 * attn6 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
         }
 
         /* Contribution (1,0,0,1) */
@@ -2127,9 +2593,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz7 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
         dw7 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
         attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
-        if (attn7 > 0) {
+        if (attn7 > 0)
+        {
             attn7 *= attn7;
-            value += attn7 * attn7 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
+            value +=
+                attn7 * attn7 *
+                this->extrapolate4(
+                    xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
         }
 
         /* Contribution (0,1,1,0) */
@@ -2138,9 +2608,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz8 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
         dw8 = dw0 - 0 - 2 * SQUISH_CONSTANT_4D;
         attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
-        if (attn8 > 0) {
+        if (attn8 > 0)
+        {
             attn8 *= attn8;
-            value += attn8 * attn8 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
+            value +=
+                attn8 * attn8 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
         }
 
         /* Contribution (0,1,0,1) */
@@ -2149,9 +2623,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz9 = dz0 - 0 - 2 * SQUISH_CONSTANT_4D;
         dw9 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
         attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
-        if (attn9 > 0) {
+        if (attn9 > 0)
+        {
             attn9 *= attn9;
-            value += attn9 * attn9 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
+            value +=
+                attn9 * attn9 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
         }
 
         /* Contribution (0,0,1,1) */
@@ -2160,59 +2638,109 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         dz10 = dz0 - 1 - 2 * SQUISH_CONSTANT_4D;
         dw10 = dw0 - 1 - 2 * SQUISH_CONSTANT_4D;
         attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
-        if (attn10 > 0) {
+        if (attn10 > 0)
+        {
             attn10 *= attn10;
-            value += attn10 * attn10 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
+            value +=
+                attn10 * attn10 *
+                this->extrapolate4(
+                    xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
         }
     }
 
     /* First extra vertex */
-    attn_ext0 = 2 - dx_ext0 * dx_ext0 - dy_ext0 * dy_ext0 - dz_ext0 * dz_ext0 - dw_ext0 * dw_ext0;
+    attn_ext0 = 2 - dx_ext0 * dx_ext0 - dy_ext0 * dy_ext0 - dz_ext0 * dz_ext0 -
+                dw_ext0 * dw_ext0;
     if (attn_ext0 > 0)
     {
         attn_ext0 *= attn_ext0;
-        value += attn_ext0 * attn_ext0 * this->Extrapolate4(xsv_ext0, ysv_ext0, zsv_ext0, wsv_ext0, dx_ext0, dy_ext0, dz_ext0, dw_ext0);
+        value += attn_ext0 * attn_ext0 *
+                 this->extrapolate4(xsv_ext0,
+                                    ysv_ext0,
+                                    zsv_ext0,
+                                    wsv_ext0,
+                                    dx_ext0,
+                                    dy_ext0,
+                                    dz_ext0,
+                                    dw_ext0);
     }
 
     /* Second extra vertex */
-    attn_ext1 = 2 - dx_ext1 * dx_ext1 - dy_ext1 * dy_ext1 - dz_ext1 * dz_ext1 - dw_ext1 * dw_ext1;
+    attn_ext1 = 2 - dx_ext1 * dx_ext1 - dy_ext1 * dy_ext1 - dz_ext1 * dz_ext1 -
+                dw_ext1 * dw_ext1;
     if (attn_ext1 > 0)
     {
         attn_ext1 *= attn_ext1;
-        value += attn_ext1 * attn_ext1 * this->Extrapolate4(xsv_ext1, ysv_ext1, zsv_ext1, wsv_ext1, dx_ext1, dy_ext1, dz_ext1, dw_ext1);
+        value += attn_ext1 * attn_ext1 *
+                 this->extrapolate4(xsv_ext1,
+                                    ysv_ext1,
+                                    zsv_ext1,
+                                    wsv_ext1,
+                                    dx_ext1,
+                                    dy_ext1,
+                                    dz_ext1,
+                                    dw_ext1);
     }
 
     /* Third extra vertex */
-    attn_ext2 = 2 - dx_ext2 * dx_ext2 - dy_ext2 * dy_ext2 - dz_ext2 * dz_ext2 - dw_ext2 * dw_ext2;
+    attn_ext2 = 2 - dx_ext2 * dx_ext2 - dy_ext2 * dy_ext2 - dz_ext2 * dz_ext2 -
+                dw_ext2 * dw_ext2;
     if (attn_ext2 > 0)
     {
         attn_ext2 *= attn_ext2;
-        value += attn_ext2 * attn_ext2 * this->Extrapolate4(xsv_ext2, ysv_ext2, zsv_ext2, wsv_ext2, dx_ext2, dy_ext2, dz_ext2, dw_ext2);
+        value += attn_ext2 * attn_ext2 *
+                 this->extrapolate4(xsv_ext2,
+                                    ysv_ext2,
+                                    zsv_ext2,
+                                    wsv_ext2,
+                                    dx_ext2,
+                                    dy_ext2,
+                                    dz_ext2,
+                                    dw_ext2);
     }
 
     return value / NORM_CONSTANT_4D;
 }
 
-constexpr double OpenSimplex::Extrapolate2(int xsb, int ysb, double dx, double dy)
+constexpr double
+open_simplex::extrapolate2(int xsb, int ysb, double dx, double dy)
 {
     int index = this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] & 0x0E;
-    return  gradients2D[index] * dx +
-            gradients2D[index + 1] * dy;
+    return gradients2D[index] * dx + gradients2D[index + 1] * dy;
 }
 
-constexpr double OpenSimplex::Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz)
+constexpr double open_simplex::extrapolate3(int xsb,
+                                            int ysb,
+                                            int zsb,
+                                            double dx,
+                                            double dy,
+                                            double dz)
 {
-    int index = this->permGradIndex3D[(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF];
-    return  this->gradients3D[index] * dx +
-            this->gradients3D[index + 1] * dy +
-            this->gradients3D[index + 2] * dz;
+    int index =
+        this->permGradIndex3D
+            [(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF];
+    return this->gradients3D[index] * dx + this->gradients3D[index + 1] * dy +
+           this->gradients3D[index + 2] * dz;
 }
 
-constexpr double OpenSimplex::Extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw)
+constexpr double open_simplex::extrapolate4(int xsb,
+                                            int ysb,
+                                            int zsb,
+                                            int wsb,
+                                            double dx,
+                                            double dy,
+                                            double dz,
+                                            double dw)
 {
-    int index = this->perm[(this->perm[(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF] + wsb) & 0xFF] & 0xFC;
-    return  this->gradients4D[index] * dx +
-            this->gradients4D[index + 1] * dy +
-            this->gradients4D[index + 2] * dz +
-            this->gradients4D[index + 3] * dw;
+    int index =
+        this->perm
+            [(this->perm[(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] +
+                          zsb) &
+                         0xFF] +
+              wsb) &
+             0xFF] &
+        0xFC;
+    return this->gradients4D[index] * dx + this->gradients4D[index + 1] * dy +
+           this->gradients4D[index + 2] * dz +
+           this->gradients4D[index + 3] * dw;
 }

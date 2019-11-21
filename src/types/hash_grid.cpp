@@ -1,41 +1,43 @@
 #include "terra/types/hash_grid.hpp"
 
-using namespace Terra;
+using namespace terra;
 
-HashGrid::HashGrid() : 
-    gridSizeX(-1),
-    gridSizeY(-1),
-    neighbours(0),
-    bucketSize(0.0),
-    hashtable()
+hash_grid::hash_grid() :
+    grid_size_x(-1), grid_size_y(-1), n(0), bucket_size(0.0), hashtable()
 {
 }
 
-HashGrid::HashGrid(int64_t sizeX, int64_t sizeY, double radius)
+hash_grid::hash_grid(int64_t size_x, int64_t size_y, double radius)
 {
-    static const double sqrt1_2 = 1 / Utils::FastSqrt(2.0);
+    this->bucket_size = radius * hash_grid::sqrt1_2;
+    this->grid_size_x =
+        utils::fast_ceil<int64_t>(static_cast<double>(size_x) / bucket_size);
+    this->grid_size_y =
+        utils::fast_ceil<int64_t>(static_cast<double>(size_y) / bucket_size);
+    this->n = utils::fast_ceil<int64_t>(radius / this->bucket_size);
 
-    this->bucketSize = radius * sqrt1_2;
-    this->gridSizeX = Utils::FastCeil<int64_t>(static_cast<double>(sizeX) / bucketSize);
-    this->gridSizeY = Utils::FastCeil<int64_t>(static_cast<double>(sizeY) / bucketSize);
-    this->neighbours = Utils::FastCeil<int64_t>(radius / this->bucketSize);
-
-    this->hashtable.reserve(this->gridSizeX * this->gridSizeY);
+    this->hashtable.reserve(this->grid_size_x * this->grid_size_y);
     std::fill(this->hashtable.begin(), this->hashtable.end(), -1);
 }
 
-constexpr size_t HashPos(const Terra::vec2& point, const double bucketSize, const int64_t gridSizeX)
+constexpr size_t HashPos(const terra::vec2& point,
+                         const double bucket_size,
+                         const int64_t grid_size_x)
 {
-    int64_t x = std::max<int64_t>(static_cast<int64_t>(Utils::FastFloor<double>(point.x) / bucketSize), 0);
-    int64_t y = std::max<int64_t>(static_cast<int64_t>(Utils::FastFloor<double>(point.y) / bucketSize), 0);
+    int64_t x = std::max<int64_t>(
+        static_cast<int64_t>(utils::fast_floor<double>(point.x) / bucket_size),
+        0);
+    int64_t y = std::max<int64_t>(
+        static_cast<int64_t>(utils::fast_floor<double>(point.y) / bucket_size),
+        0);
 
-    return (y * gridSizeX) + x;
+    return (y * grid_size_x) + x;
 }
 
-void HashGrid::Set(const Terra::vec2& point, int64_t index)
+void hash_grid::set(const terra::vec2& point, int64_t index)
 {
-    int64_t hash = HashPos(point, this->bucketSize, this->gridSizeX);
-    if(this->hashtable[hash] > -1)
+    int64_t hash = HashPos(point, this->bucket_size, this->grid_size_x);
+    if (this->hashtable[hash] > -1)
     {
         throw double_index_error();
     }
@@ -43,29 +45,31 @@ void HashGrid::Set(const Terra::vec2& point, int64_t index)
     this->hashtable[hash] = index;
 }
 
-int64_t HashGrid::At(const Terra::vec2& point)
+int64_t hash_grid::at(const terra::vec2& point)
 {
-    int64_t hash = HashPos(point, this->bucketSize, this->gridSizeX);
+    int64_t hash = HashPos(point, this->bucket_size, this->grid_size_x);
     return this->hashtable[hash];
 }
 
-std::vector<int64_t> HashGrid::Neighbours(const Terra::vec2& point)
+std::vector<int64_t> hash_grid::neighbours(const terra::vec2& point)
 {
     std::vector<int64_t> indexs;
 
-    int64_t x = static_cast<int64_t>(Utils::FastFloor<double>(point.x) / this->bucketSize);
-    int64_t y = static_cast<int64_t>(Utils::FastFloor<double>(point.y) / this->bucketSize);
+    int64_t x = static_cast<int64_t>(utils::fast_floor<double>(point.x) /
+                                     this->bucket_size);
+    int64_t y = static_cast<int64_t>(utils::fast_floor<double>(point.y) /
+                                     this->bucket_size);
 
-    const int64_t x0 = std::max<int64_t>(x - neighbours, 0);
-    const int64_t y0 = std::max<int64_t>(y - neighbours, 0);
-    const int64_t x1 = std::min<int64_t>(x + neighbours + 1, this->gridSizeX);
-    const int64_t y1 = std::min<int64_t>(y + neighbours + 1, this->gridSizeY);
+    const int64_t x0 = std::max<int64_t>(x - this->n, 0);
+    const int64_t y0 = std::max<int64_t>(y - this->n, 0);
+    const int64_t x1 = std::min<int64_t>(x + this->n + 1, this->grid_size_x);
+    const int64_t y1 = std::min<int64_t>(y + this->n + 1, this->grid_size_y);
 
     for (y = y0; y < y1; y++)
     {
         for (x = x0; x < x1; x++)
         {
-            int64_t index = hashtable[(y * this->gridSizeX) + x];
+            int64_t index = hashtable[(y * this->grid_size_x) + x];
             if (index > -1)
             {
                 indexs.push_back(index);

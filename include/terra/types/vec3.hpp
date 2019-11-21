@@ -2,7 +2,7 @@
 
 #include <glm/vec3.hpp>
 
-namespace Terra
+namespace terra
 {
     typedef glm::vec3 vec3;
 
@@ -12,4 +12,4 @@ namespace Terra
         l = r;
         r = c;
     }
-}
+} // namespace terra

@@ -1,6 +1,6 @@
 #include "terra/delaunator.hpp"
 
-using namespace Terra;
+using namespace terra;
 
 // Kahan and Babuska summation, Neumaier variant; accumulates less FP error
 inline double sum(const std::vector<double>& x)
@@ -19,7 +19,7 @@ inline double sum(const std::vector<double>& x)
     return sum + err;
 }
 
-inline double dist(const Terra::vec2& a, const Terra::vec2& b)
+inline double dist(const terra::vec2& a, const terra::vec2& b)
 {
     const double dx = a.x - b.x;
     const double dy = a.y - b.y;
@@ -27,7 +27,8 @@ inline double dist(const Terra::vec2& a, const Terra::vec2& b)
     return dx * dx + dy * dy;
 }
 
-inline double circumradius(const Terra::vec2& a, const Terra::vec2& b, const Terra::vec2& c)
+inline double
+circumradius(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
 {
     const double dx = b.x - a.x;
     const double dy = b.y - a.y;
@@ -41,7 +42,8 @@ inline double circumradius(const Terra::vec2& a, const Terra::vec2& b, const Ter
     const double x = (ey * bl - dy * cl) * 0.5 / d;
     const double y = (dx * cl - ex * bl) * 0.5 / d;
 
-    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) && (d > 0.0 || d < 0.0))
+    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) &&
+        (d > 0.0 || d < 0.0))
     {
         return x * x + y * y;
     }
@@ -51,12 +53,14 @@ inline double circumradius(const Terra::vec2& a, const Terra::vec2& b, const Ter
     }
 }
 
-inline bool orient(const Terra::vec2& p, const Terra::vec2& q, const Terra::vec2& r)
+inline bool
+orient(const terra::vec2& p, const terra::vec2& q, const terra::vec2& r)
 {
     return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y) < 0.0;
 }
 
-inline Terra::vec2 circumcentre( const Terra::vec2& a, const Terra::vec2& b, const Terra::vec2& c)
+inline terra::vec2
+circumcentre(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
 {
     const double dx = b.x - a.x;
     const double dy = b.y - a.y;
@@ -70,18 +74,18 @@ inline Terra::vec2 circumcentre( const Terra::vec2& a, const Terra::vec2& b, con
     const double x = a.x + (ey * bl - dy * cl) * 0.5 / d;
     const double y = a.y + (dx * cl - ex * bl) * 0.5 / d;
 
-    return Terra::vec2(x, y);
+    return terra::vec2(x, y);
 }
 
 struct compare
 {
-    const std::vector<Terra::vec2>& coords;
-    Terra::vec2 c;
+    const std::vector<terra::vec2>& coords;
+    terra::vec2 c;
 
     bool operator()(size_t i, size_t j)
     {
-        const Terra::vec2& iv = coords[i];
-        const Terra::vec2& jv = coords[j];
+        const terra::vec2& iv = coords[i];
+        const terra::vec2& jv = coords[j];
 
         const double d1 = dist(iv, c);
         const double d2 = dist(jv, c);
@@ -105,7 +109,10 @@ struct compare
     }
 };
 
-inline bool in_circle(const Terra::vec2& a, const Terra::vec2& b, const Terra::vec2& c, const Terra::vec2& p)
+inline bool in_circle(const terra::vec2& a,
+                      const terra::vec2& b,
+                      const terra::vec2& c,
+                      const terra::vec2& p)
 {
     const double dx = a.x - p.x;
     const double dy = a.y - p.y;
@@ -118,18 +125,17 @@ inline bool in_circle(const Terra::vec2& a, const Terra::vec2& b, const Terra::v
     const double bp = ex * ex + ey * ey;
     const double cp = fx * fx + fy * fy;
 
-    return (dx * (ey * cp - bp * fy) -
-            dy * (ex * cp - bp * fx) +
+    return (dx * (ey * cp - bp * fy) - dy * (ex * cp - bp * fx) +
             ap * (ex * fy - ey * fx)) < 0.0;
 }
 
-inline bool check_pts_equal(const Terra::vec2& a, const Terra::vec2& b)
+inline bool check_pts_equal(const terra::vec2& a, const terra::vec2& b)
 {
-    return std::fabs(a.x - b.x) <= EPSILON &&
-           std::fabs(a.y - b.y) <= EPSILON;
+    return std::fabs(a.x - b.x) <= EPSILON && std::fabs(a.y - b.y) <= EPSILON;
 }
 
-// monotonically increases with real angle, but doesn't need expensive trigonometry
+// monotonically increases with real angle, but doesn't need expensive
+// trigonometry
 inline double pseudo_angle(const double dx, const double dy)
 {
     const double p = dx / (std::abs(dx) + std::abs(dy));
@@ -137,17 +143,9 @@ inline double pseudo_angle(const double dx, const double dy)
     return (dy > 0.0 ? 3.0 - p : 1.0 + p) / 4.0; // [0..1)
 }
 
-Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
-    coords(in_coords),
-    triangles(),
-    halfedges(),
-    hull_prev(),
-    hull_next(),
-    hull_tri(),
-    hull_start(),
-    m_hash(),
-    m_hash_size(),
-    m_edge_stack()
+delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
+    coords(in_coords), triangles(), halfedges(), hull_prev(), hull_next(),
+    hull_tri(), hull_start(), m_hash(), m_hash_size(), m_edge_stack()
 {
     size_t n = coords.size();
 
@@ -164,15 +162,19 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
         const double x = p.x;
         const double y = p.y;
 
-        if (x < min_x) min_x = x;
-        if (y < min_y) min_y = y;
-        if (x > max_x) max_x = x;
-        if (y > max_y) max_y = y;
+        if (x < min_x)
+            min_x = x;
+        if (y < min_y)
+            min_y = y;
+        if (x > max_x)
+            max_x = x;
+        if (y > max_y)
+            max_y = y;
 
         ids.push_back(i);
     }
-    
-    const auto c = Terra::vec2((min_x + max_x) / 2, (min_y + max_y) / 2);
+
+    const auto c = terra::vec2((min_x + max_x) / 2, (min_y + max_y) / 2);
     double min_dist = std::numeric_limits<double>::max();
 
     size_t i0 = INVALID_INDEX;
@@ -197,7 +199,8 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
     // find the point closest to the seed
     for (size_t i = 0; i < n; i++)
     {
-        if (i == i0) continue;
+        if (i == i0)
+            continue;
         const double d = dist(i0v, coords[i]);
         if (d < min_dist && d > 0.0)
         {
@@ -210,9 +213,12 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
 
     double min_radius = std::numeric_limits<double>::max();
 
-    // find the third point which forms the smallest circumcircle with the first two
-    for (size_t i = 0; i < n; i++) {
-        if (i == i0 || i == i1) continue;
+    // find the third point which forms the smallest circumcircle with the first
+    // two
+    for (size_t i = 0; i < n; i++)
+    {
+        if (i == i0 || i == i1)
+            continue;
 
         const double r = circumradius(i0v, i1v, coords[i]);
         if (r < min_radius)
@@ -238,7 +244,7 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
     m_centre = circumcentre(i0v, i1v, i2v);
 
     // sort the points by distance from the seed triangle circumcentre
-    std::sort(ids.begin(), ids.end(), compare{ coords, m_centre });
+    std::sort(ids.begin(), ids.end(), compare{coords, m_centre});
 
     // initialize a hash table for storing edges of the advancing convex hull
     m_hash_size = static_cast<size_t>(std::llround(std::ceil(std::sqrt(n))));
@@ -270,25 +276,23 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
     triangles.reserve(max_triangles * 3);
     halfedges.reserve(max_triangles * 3);
     add_triangle(i0, i1, i2, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX);
-    auto last_point = Terra::vec2
-    (
-        std::numeric_limits<double>::quiet_NaN(),
-        std::numeric_limits<double>::quiet_NaN()
-    );
+    auto last_point = terra::vec2(std::numeric_limits<double>::quiet_NaN(),
+                                  std::numeric_limits<double>::quiet_NaN());
     for (size_t k = 0; k < n; k++)
     {
         const size_t i = ids[k];
         const auto current_point = coords[i];
 
         // skip near-duplicate points
-        if (k > 0 && check_pts_equal(current_point, last_point)) continue;
+        if (k > 0 && check_pts_equal(current_point, last_point))
+            continue;
         last_point = current_point;
 
         // skip seed triangle points
-        if (
-            check_pts_equal(current_point, i0v) ||
+        if (check_pts_equal(current_point, i0v) ||
             check_pts_equal(current_point, i1v) ||
-            check_pts_equal(current_point, i2v)) continue;
+            check_pts_equal(current_point, i2v))
+            continue;
 
         // find a visible edge on the convex hull using edge hash
         size_t start = 0;
@@ -296,50 +300,45 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
         size_t key = hash_key(current_point);
         for (size_t j = 0; j < m_hash_size; j++)
         {
-            start = m_hash[Utils::FastMod<size_t>(key + j, m_hash_size)];
-            if (start != INVALID_INDEX && start != hull_next[start]) break;
+            start = m_hash[utils::fast_mod<size_t>(key + j, m_hash_size)];
+            if (start != INVALID_INDEX && start != hull_next[start])
+                break;
         }
 
         start = hull_prev[start];
         size_t e = start;
         size_t q;
 
-        //TODO: does it works in a same way as in JS
+        // TODO: does it works in a same way as in JS
         while (q = hull_next[e], !orient(current_point, coords[e], coords[q]))
         {
             e = q;
-            if (e == start) {
+            if (e == start)
+            {
                 e = INVALID_INDEX;
                 break;
             }
         }
 
-        if (e == INVALID_INDEX) continue; // likely a near-duplicate point; skip it
+        if (e == INVALID_INDEX)
+            continue; // likely a near-duplicate point; skip it
 
         // add the first triangle from the point
-        size_t t = add_triangle
-        (
-            e,
-            i,
-            hull_next[e],
-            INVALID_INDEX,
-            INVALID_INDEX,
-            hull_tri[e]
-        );
+        size_t t = add_triangle(
+            e, i, hull_next[e], INVALID_INDEX, INVALID_INDEX, hull_tri[e]);
 
         hull_tri[i] = legalize(t + 2);
         hull_tri[e] = t;
         hull_size++;
 
-        // walk forward through the hull, adding more triangles and flipping recursively
+        // walk forward through the hull, adding more triangles and flipping
+        // recursively
         size_t next = hull_next[e];
-        while
-        (
-            q = hull_next[next],
-            orient(current_point, coords[next], coords[q])
-        )
+        while (q = hull_next[next],
+               orient(current_point, coords[next], coords[q]))
         {
-            t = add_triangle(next, i, q, hull_tri[i], INVALID_INDEX, hull_tri[next]);
+            t = add_triangle(
+                next, i, q, hull_tri[i], INVALID_INDEX, hull_tri[next]);
             hull_tri[i] = legalize(t + 2);
             hull_next[next] = next; // mark as removed
             hull_size--;
@@ -349,13 +348,11 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
         // walk backward from the other side, adding more triangles and flipping
         if (e == start)
         {
-            while
-            (
-                q = hull_prev[e],
-                orient(current_point, coords[q], coords[e])
-            )
+            while (q = hull_prev[e],
+                   orient(current_point, coords[q], coords[e]))
             {
-                t = add_triangle(q, i, e, INVALID_INDEX, hull_tri[e], hull_tri[q]);
+                t = add_triangle(
+                    q, i, e, INVALID_INDEX, hull_tri[e], hull_tri[q]);
                 legalize(t + 2);
                 hull_tri[q] = t;
                 hull_next[e] = e; // mark as removed
@@ -376,7 +373,7 @@ Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
     }
 }
 
-double Delaunator::get_hull_area()
+double delaunator::get_hull_area()
 {
     std::vector<double> hull_area;
     size_t e = hull_start;
@@ -392,41 +389,46 @@ double Delaunator::get_hull_area()
     return sum(hull_area);
 }
 
-size_t Delaunator::legalize(size_t a)
+size_t delaunator::legalize(size_t a)
 {
     size_t i = 0;
     size_t ar = 0;
     m_edge_stack.clear();
 
     // recursion eliminated with a fixed-size stack
-    while (true) {
+    while (true)
+    {
         const size_t b = halfedges[a];
 
         /* if the pair of triangles doesn't satisfy the Delaunay condition
-        * (p1 is inside the circumcircle of [p0, pl, pr]), flip them,
-        * then do the same check/flip recursively for the new pair of triangles
-        *
-        *           pl                    pl
-        *          /||\                  /  \
-        *       al/ || \bl            al/    \a
-        *        /  ||  \              /      \
-        *       /  a||b  \    flip    /___ar___\
-        *     p0\   ||   /p1   =>   p0\---bl---/p1
-        *        \  ||  /              \      /
-        *       ar\ || /br             b\    /br
-        *          \||/                  \  /
-        *           pr                    pr
-        */
+         * (p1 is inside the circumcircle of [p0, pl, pr]), flip them,
+         * then do the same check/flip recursively for the new pair of triangles
+         *
+         *           pl                    pl
+         *          /||\                  /  \
+         *       al/ || \bl            al/    \a
+         *        /  ||  \              /      \
+         *       /  a||b  \    flip    /___ar___\
+         *     p0\   ||   /p1   =>   p0\---bl---/p1
+         *        \  ||  /              \      /
+         *       ar\ || /br             b\    /br
+         *          \||/                  \  /
+         *           pr                    pr
+         */
         const size_t a0 = 3 * (a / 3);
         ar = a0 + (a + 2) % 3;
 
-        if (b == INVALID_INDEX) {
-            if (i > 0) {
+        if (b == INVALID_INDEX)
+        {
+            if (i > 0)
+            {
                 i--;
                 a = m_edge_stack[i];
                 continue;
-            } else {
-                //i = INVALID_INDEX;
+            }
+            else
+            {
+                // i = INVALID_INDEX;
                 break;
             }
         }
@@ -440,25 +442,25 @@ size_t Delaunator::legalize(size_t a)
         const size_t pl = triangles[al];
         const size_t p1 = triangles[bl];
 
-        const bool illegal = in_circle
-        (
-            coords[p0],
-            coords[pr],
-            coords[pl],
-            coords[p1]
-        );
+        const bool illegal =
+            in_circle(coords[p0], coords[pr], coords[pl], coords[p1]);
 
-        if (illegal) {
+        if (illegal)
+        {
             triangles[a] = p1;
             triangles[b] = p0;
 
             auto hbl = halfedges[bl];
 
-            // edge swapped on the other side of the hull (rare); fix the halfedge reference
-            if (hbl == INVALID_INDEX) {
+            // edge swapped on the other side of the hull (rare); fix the
+            // halfedge reference
+            if (hbl == INVALID_INDEX)
+            {
                 size_t e = hull_start;
-                do {
-                    if (hull_tri[e] == bl) {
+                do
+                {
+                    if (hull_tri[e] == bl)
+                    {
                         hull_tri[e] = a;
                         break;
                     }
@@ -470,19 +472,26 @@ size_t Delaunator::legalize(size_t a)
             link(ar, bl);
             size_t br = b0 + (b + 1) % 3;
 
-            if (i < m_edge_stack.size()) {
+            if (i < m_edge_stack.size())
+            {
                 m_edge_stack[i] = br;
-            } else {
+            }
+            else
+            {
                 m_edge_stack.push_back(br);
             }
             i++;
-
-        } else {
-            if (i > 0) {
+        }
+        else
+        {
+            if (i > 0)
+            {
                 i--;
                 a = m_edge_stack[i];
                 continue;
-            } else {
+            }
+            else
+            {
                 break;
             }
         }
@@ -490,18 +499,22 @@ size_t Delaunator::legalize(size_t a)
     return ar;
 }
 
-inline size_t Delaunator::hash_key(const Terra::vec2& vec) const
+inline size_t delaunator::hash_key(const terra::vec2& vec) const
 {
     const double dx = vec.x - m_centre.x;
     const double dy = vec.y - m_centre.y;
-    return Utils::FastMod<size_t>
-    (
-        static_cast<size_t>(std::llround(std::floor(pseudo_angle(dx, dy) * static_cast<double>(m_hash_size)))),
-        m_hash_size
-    );
+    return utils::fast_mod<size_t>(
+        static_cast<size_t>(std::llround(std::floor(
+            pseudo_angle(dx, dy) * static_cast<double>(m_hash_size)))),
+        m_hash_size);
 }
 
-size_t Delaunator::add_triangle(size_t i0, size_t i1, size_t i2, size_t a, size_t b, size_t c)
+size_t delaunator::add_triangle(size_t i0,
+                                size_t i1,
+                                size_t i2,
+                                size_t a,
+                                size_t b,
+                                size_t c)
 {
     size_t t = triangles.size();
     triangles.push_back(i0);
@@ -514,7 +527,7 @@ size_t Delaunator::add_triangle(size_t i0, size_t i1, size_t i2, size_t a, size_
     return t;
 }
 
-void Delaunator::link(const size_t a, const size_t b)
+void delaunator::link(const size_t a, const size_t b)
 {
     size_t s = halfedges.size();
     if (a == s)
