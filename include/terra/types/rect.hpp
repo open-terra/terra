@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector_2.hpp"
+#include "vec2.hpp"
 
 namespace Terra
 {
@@ -26,7 +26,7 @@ namespace Terra
         {
         }
 
-        constexpr bool WithinExtent(const Vector2& p)
+        constexpr bool WithinExtent(const vec2& p)
         {
             return p.x >= this->x0 && p.x <= this->x1 && p.y >= this->y0 && p.y <= this->y1;
         }

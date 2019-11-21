@@ -24,7 +24,7 @@ HashGrid::HashGrid(int64_t sizeX, int64_t sizeY, double radius)
     std::fill(this->hashtable.begin(), this->hashtable.end(), -1);
 }
 
-constexpr size_t HashPos(const Terra::Vector2& point, const double bucketSize, const int64_t gridSizeX)
+constexpr size_t HashPos(const Terra::vec2& point, const double bucketSize, const int64_t gridSizeX)
 {
     int64_t x = std::max<int64_t>(static_cast<int64_t>(Utils::FastFloor<double>(point.x) / bucketSize), 0);
     int64_t y = std::max<int64_t>(static_cast<int64_t>(Utils::FastFloor<double>(point.y) / bucketSize), 0);
@@ -32,7 +32,7 @@ constexpr size_t HashPos(const Terra::Vector2& point, const double bucketSize, c
     return (y * gridSizeX) + x;
 }
 
-void HashGrid::Set(const Terra::Vector2& point, int64_t index)
+void HashGrid::Set(const Terra::vec2& point, int64_t index)
 {
     int64_t hash = HashPos(point, this->bucketSize, this->gridSizeX);
     if(this->hashtable[hash] > -1)
@@ -43,13 +43,13 @@ void HashGrid::Set(const Terra::Vector2& point, int64_t index)
     this->hashtable[hash] = index;
 }
 
-int64_t HashGrid::At(const Terra::Vector2& point)
+int64_t HashGrid::At(const Terra::vec2& point)
 {
     int64_t hash = HashPos(point, this->bucketSize, this->gridSizeX);
     return this->hashtable[hash];
 }
 
-std::vector<int64_t> HashGrid::Neighbours(const Terra::Vector2& point)
+std::vector<int64_t> HashGrid::Neighbours(const Terra::vec2& point)
 {
     std::vector<int64_t> indexs;
 

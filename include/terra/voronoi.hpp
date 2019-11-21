@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types/vector_2.hpp"
+#include "types/vec2.hpp"
 
 #define DELETED -2
 #define le 0
@@ -37,7 +37,7 @@ namespace Terra
     class Site
     {
     public:
-        Terra::Vector2	coord;
+        Terra::vec2	coord;
         int sitenbr;
         int refcnt;
     };
@@ -99,7 +99,7 @@ namespace Terra
         VoronoiDiagramGenerator();
         ~VoronoiDiagramGenerator();
 
-        bool generateVoronoi(std::vector<Terra::Vector2> *_parent_sites,
+        bool generateVoronoi(std::vector<Terra::vec2> *_parent_sites,
             double minX, double maxX, double minY, double maxY,
             double minDist=0);
 
@@ -118,7 +118,7 @@ namespace Terra
             return true;
         }
 
-        std::vector<Terra::Vector2> *parent_sites;
+        std::vector<Terra::vec2> *parent_sites;
         int n_parent_sites;
 
     private:
@@ -132,7 +132,7 @@ namespace Terra
         Halfedge *HEcreate(), *ELleft(), *ELright(), *ELleftbnd();
         Halfedge *HEcreate(Edge *e,int pm);
 
-        Terra::Vector2 PQ_min();
+        Terra::vec2 PQ_min();
         Halfedge *PQextractmin();
         void freeinit(Freelist *fl,int size);
         void makefree(Freenode *curr,Freelist *fl);
@@ -146,7 +146,7 @@ namespace Terra
         void endpoint(Edge *e,int lr,Site * s);
 
         void ELdelete(Halfedge *he);
-        Halfedge *ELleftbnd(Terra::Vector2 *p);
+        Halfedge *ELleftbnd(Terra::vec2 *p);
         Halfedge *ELright(Halfedge *he);
         void makevertex(Site *v);
 
@@ -161,7 +161,7 @@ namespace Terra
         int PQbucket(Halfedge *he);
         void clip_line(Edge *e);
         char *myalloc(unsigned n);
-        int right_of(Halfedge *el,Terra::Vector2 *p);
+        int right_of(Halfedge *el,Terra::vec2 *p);
 
         Site *rightreg(Halfedge *he);
         Edge *bisect(Site *s1, Site *s2);
@@ -169,7 +169,7 @@ namespace Terra
 
         // GS: 'p' is unused and always ==0 (see also comment by
         //     S. O'Sullivan in the source file), so we remove it
-        Site *intersect(Halfedge *el1, Halfedge *el2 /*, Terra::Vector2 *p=0*/);
+        Site *intersect(Halfedge *el1, Halfedge *el2 /*, Terra::vec2 *p=0*/);
 
         Site *nextone();
 

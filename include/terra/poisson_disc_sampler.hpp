@@ -5,7 +5,8 @@
 #include <random>
 #include <vector>
 
-#include "types/vector_2.hpp"
+#include "types/vec2.hpp"
+
 #include "types/rect.hpp"
 #include "types/hash_grid.hpp"
 
@@ -36,17 +37,17 @@ namespace Terra
 
         std::vector<int64_t> active;
 
-        std::vector<Terra::Vector2>* points;
+        std::vector<Terra::vec2>* points;
 		Terra::HashGrid* grid;
 
 	public:
         PoissonDiscSampler();
-        PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples = 30);
+        PoissonDiscSampler(std::vector<Terra::vec2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples = 30);
 
         int64_t Sample();
 
     private:
-        const Terra::Vector2 GenerateAround(Terra::Vector2& p);
-        bool IsValid(Terra::Vector2& p);
+        const Terra::vec2 GenerateAround(Terra::vec2& p);
+        bool IsValid(Terra::vec2& p);
     };
 }

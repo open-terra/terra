@@ -6,3 +6,5 @@ add_library(terra STATIC
     src/poisson_disc_sampler.cpp
     src/voronoi.cpp
 )
+
+target_link_libraries(terra glm)

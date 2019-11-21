@@ -6,7 +6,7 @@
 
 #include <catch2/catch.hpp>
 
-#include "terra/types/vector_2.hpp"
+#include "terra/types/vec2.hpp"
 #include "terra/delaunator.hpp"
 
 /*
@@ -19,7 +19,7 @@ Honey comb to be triangulated
   \__/  \__/
      \__/
 */
-static const std::vector<Terra::Vector2> vertices =
+static const std::vector<Terra::vec2> vertices =
 {
     { 3.0, 6.0 }, { 4.0, 6.0 },
     { 1.0, 5.0 }, { 2.0, 5.0 }, { 5.0, 5.0 }, { 6.0, 5.0 },

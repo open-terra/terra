@@ -31,7 +31,7 @@ VoronoiDiagramGenerator::~VoronoiDiagramGenerator()
         delete allMemoryList;
 }
 
-bool VoronoiDiagramGenerator::generateVoronoi(std::vector<Terra::Vector2> *_parent_sites,
+bool VoronoiDiagramGenerator::generateVoronoi(std::vector<Terra::vec2> *_parent_sites,
                                               double minX, double maxX,
                                               double minY, double maxY,
                                               double minDist)
@@ -198,7 +198,7 @@ Halfedge *VoronoiDiagramGenerator::ELgethash(int b)
     return (Halfedge *)NULL;
 }
 
-Halfedge *VoronoiDiagramGenerator::ELleftbnd(Terra::Vector2 *p)
+Halfedge *VoronoiDiagramGenerator::ELleftbnd(Terra::vec2 *p)
 {
     int i, bucket;
     Halfedge *he;
@@ -391,12 +391,12 @@ Edge *VoronoiDiagramGenerator::bisect(Site *s1, Site *s2)
 }
 
 // create a new site where the HalfEdges el1 and el2 intersect - note
-// that the Terra::Vector2 in the argument list is not used, don't know why
+// that the Terra::vec2 in the argument list is not used, don't know why
 // it's there
 //
 // Gregory Soyez: removed the uinused point p
 Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
-                                         /*, Terra::Vector2 *p*/)
+                                         /*, Terra::vec2 *p*/)
 {
     Edge *e1, *e2, *e;
     Halfedge *el;
@@ -510,7 +510,7 @@ Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
 //HERE
 
 /* returns 1 if p is to right of halfedge e */
-int VoronoiDiagramGenerator::right_of(Halfedge *el, Terra::Vector2 *p)
+int VoronoiDiagramGenerator::right_of(Halfedge *el, Terra::vec2 *p)
 {
     Edge *e;
     Site *topsite;
@@ -687,9 +687,9 @@ int VoronoiDiagramGenerator::PQempty()
     return (PQcount == 0);
 }
 
-Terra::Vector2 VoronoiDiagramGenerator::PQ_min()
+Terra::vec2 VoronoiDiagramGenerator::PQ_min()
 {
-    Terra::Vector2 answer;
+    Terra::vec2 answer;
 
     while (PQhash[PQmin].PQnext == (Halfedge *)NULL)
     {
@@ -1056,7 +1056,7 @@ bool VoronoiDiagramGenerator::voronoi()
 {
     Site *newsite, *bot, *top, *temp, *p;
     Site *v;
-    Terra::Vector2 newintstar;
+    Terra::vec2 newintstar;
     int pm;
     Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
     Edge *e;
@@ -1170,7 +1170,7 @@ bool VoronoiDiagramGenerator::voronoi()
 
 int scomp(const void *p1, const void *p2)
 {
-    Terra::Vector2 *s1 = (Terra::Vector2 *)p1, *s2 = (Terra::Vector2 *)p2;
+    Terra::vec2 *s1 = (Terra::vec2 *)p1, *s2 = (Terra::vec2 *)p2;
     if (s1->y < s2->y)
         return (-1);
     if (s1->y > s2->y)
