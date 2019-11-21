@@ -16,6 +16,9 @@ set(CMAKE_C_STANDARD 11)
 # Catch2 needed for testing
 find_package(Catch2 CONFIG REQUIRED)
 
+# GLM used for vecN types
+find_package(glm CONFIG REQUIRED)
+
 # Do stuff depending on the compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Wpedantic -Wunused-value -Wold-style-cast -std=c++17")

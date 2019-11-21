@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-#include "../types/vector_2.hpp"
+#include "vec2.hpp"
 #include "../utils/utils.hpp"
 
 namespace Terra
@@ -32,9 +32,9 @@ namespace Terra
         HashGrid();
         HashGrid(int64_t sizeX, int64_t sizeY, double radius);
 
-        void Set(const Terra::Vector2 &point, int64_t index);
-        int64_t At(const Terra::Vector2 &point);
+        void Set(const Terra::vec2 &point, int64_t index);
+        int64_t At(const Terra::vec2 &point);
 
-        std::vector<int64_t> Neighbours(const Terra::Vector2& point);
+        std::vector<int64_t> Neighbours(const Terra::vec2& point);
     };
 }

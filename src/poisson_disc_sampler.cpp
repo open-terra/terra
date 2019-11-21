@@ -1,5 +1,8 @@
 #include "terra/poisson_disc_sampler.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
+
 #include "terra/utils/fast_sqrt.hpp"
 
 using namespace Terra;
@@ -21,7 +24,7 @@ PoissonDiscSampler::PoissonDiscSampler() :
 {
 }
 
-PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::Vector2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples) :
+PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::vec2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples) :
     radius(radius),
     sizeX(sizeX),
     sizeY(sizeY),
@@ -44,7 +47,7 @@ int64_t PoissonDiscSampler::Sample()
     { // create the initial point
         std::uniform_real_distribution<double> dis(0.0, static_cast<double>(std::min(sizeX, sizeY))); // Random double within the grid
 
-        Vector2 point(Terra::Vector2(dis(gen), dis(gen)));
+        vec2 point(Terra::vec2(dis(gen), dis(gen)));
         this->points->push_back(point);
         active.push_back(0);
 
@@ -59,7 +62,7 @@ int64_t PoissonDiscSampler::Sample()
         for (int64_t j = 0; j < this->samples; j++) // Loop till a valid point is found or the sample limit is reached
         {
             // Create new point around current index
-            Terra::Vector2 point = this->GenerateAround(this->points->at(i));
+            Terra::vec2 point = this->GenerateAround(this->points->at(i));
             if (this->IsValid(point))
             {
                 // The point is valid add it to points then add the index to the active list
@@ -81,20 +84,20 @@ int64_t PoissonDiscSampler::Sample()
     return count;
 }
 
-const Terra::Vector2 PoissonDiscSampler::GenerateAround(Terra::Vector2& p)
+const Terra::vec2 PoissonDiscSampler::GenerateAround(Terra::vec2& p)
 {
     double theta = this->normal(this->gen) * 2.0 * this->pi; // Random radian on the circumference of the circle
     double r = Utils::FastSqrt((this->normal(gen) * this->outer) + this->inner); // Random radius of the circle between r^2 and 4r
     // Calculate the position of the point on the circle
     
-    return Terra::Vector2
+    return Terra::vec2
     (
         p.x + (r * std::cos(theta)),
         p.y + (r * std::sin(theta))
     );
 }
 
-bool PoissonDiscSampler::IsValid(Terra::Vector2& p)
+bool PoissonDiscSampler::IsValid(Terra::vec2& p)
 {
     if (!this->bounds.WithinExtent(p)) // Is within max extents
     {
@@ -104,7 +107,7 @@ bool PoissonDiscSampler::IsValid(Terra::Vector2& p)
     for (int64_t index : this->grid->Neighbours(p))
     {
         // If the point is to close to neighbour this point should be ignored
-        if (Terra::Vector2::DistanceSquared(p, this->points->at(index)) <= inner)
+        if (glm::distance2(p, this->points->at(index)) <= inner)
         {
             return false;
         }

@@ -19,7 +19,7 @@ inline double sum(const std::vector<double>& x)
     return sum + err;
 }
 
-inline double dist(const Terra::Vector2& a, const Terra::Vector2& b)
+inline double dist(const Terra::vec2& a, const Terra::vec2& b)
 {
     const double dx = a.x - b.x;
     const double dy = a.y - b.y;
@@ -27,7 +27,7 @@ inline double dist(const Terra::Vector2& a, const Terra::Vector2& b)
     return dx * dx + dy * dy;
 }
 
-inline double circumradius(const Terra::Vector2& a, const Terra::Vector2& b, const Terra::Vector2& c)
+inline double circumradius(const Terra::vec2& a, const Terra::vec2& b, const Terra::vec2& c)
 {
     const double dx = b.x - a.x;
     const double dy = b.y - a.y;
@@ -51,12 +51,12 @@ inline double circumradius(const Terra::Vector2& a, const Terra::Vector2& b, con
     }
 }
 
-inline bool orient(const Terra::Vector2& p, const Terra::Vector2& q, const Terra::Vector2& r)
+inline bool orient(const Terra::vec2& p, const Terra::vec2& q, const Terra::vec2& r)
 {
     return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y) < 0.0;
 }
 
-inline Terra::Vector2 circumcentre( const Terra::Vector2& a, const Terra::Vector2& b, const Terra::Vector2& c)
+inline Terra::vec2 circumcentre( const Terra::vec2& a, const Terra::vec2& b, const Terra::vec2& c)
 {
     const double dx = b.x - a.x;
     const double dy = b.y - a.y;
@@ -70,18 +70,18 @@ inline Terra::Vector2 circumcentre( const Terra::Vector2& a, const Terra::Vector
     const double x = a.x + (ey * bl - dy * cl) * 0.5 / d;
     const double y = a.y + (dx * cl - ex * bl) * 0.5 / d;
 
-    return Terra::Vector2(x, y);
+    return Terra::vec2(x, y);
 }
 
 struct compare
 {
-    const std::vector<Terra::Vector2>& coords;
-    Terra::Vector2 c;
+    const std::vector<Terra::vec2>& coords;
+    Terra::vec2 c;
 
     bool operator()(size_t i, size_t j)
     {
-        const Terra::Vector2& iv = coords[i];
-        const Terra::Vector2& jv = coords[j];
+        const Terra::vec2& iv = coords[i];
+        const Terra::vec2& jv = coords[j];
 
         const double d1 = dist(iv, c);
         const double d2 = dist(jv, c);
@@ -105,7 +105,7 @@ struct compare
     }
 };
 
-inline bool in_circle(const Terra::Vector2& a, const Terra::Vector2& b, const Terra::Vector2& c, const Terra::Vector2& p)
+inline bool in_circle(const Terra::vec2& a, const Terra::vec2& b, const Terra::vec2& c, const Terra::vec2& p)
 {
     const double dx = a.x - p.x;
     const double dy = a.y - p.y;
@@ -123,7 +123,7 @@ inline bool in_circle(const Terra::Vector2& a, const Terra::Vector2& b, const Te
             ap * (ex * fy - ey * fx)) < 0.0;
 }
 
-inline bool check_pts_equal(const Terra::Vector2& a, const Terra::Vector2& b)
+inline bool check_pts_equal(const Terra::vec2& a, const Terra::vec2& b)
 {
     return std::fabs(a.x - b.x) <= EPSILON &&
            std::fabs(a.y - b.y) <= EPSILON;
@@ -137,7 +137,7 @@ inline double pseudo_angle(const double dx, const double dy)
     return (dy > 0.0 ? 3.0 - p : 1.0 + p) / 4.0; // [0..1)
 }
 
-Delaunator::Delaunator(const std::vector<Terra::Vector2>& in_coords) :
+Delaunator::Delaunator(const std::vector<Terra::vec2>& in_coords) :
     coords(in_coords),
     triangles(),
     halfedges(),
@@ -172,7 +172,7 @@ Delaunator::Delaunator(const std::vector<Terra::Vector2>& in_coords) :
         ids.push_back(i);
     }
     
-    const auto c = Terra::Vector2((min_x + max_x) / 2, (min_y + max_y) / 2);
+    const auto c = Terra::vec2((min_x + max_x) / 2, (min_y + max_y) / 2);
     double min_dist = std::numeric_limits<double>::max();
 
     size_t i0 = INVALID_INDEX;
@@ -270,7 +270,7 @@ Delaunator::Delaunator(const std::vector<Terra::Vector2>& in_coords) :
     triangles.reserve(max_triangles * 3);
     halfedges.reserve(max_triangles * 3);
     add_triangle(i0, i1, i2, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX);
-    auto last_point = Terra::Vector2
+    auto last_point = Terra::vec2
     (
         std::numeric_limits<double>::quiet_NaN(),
         std::numeric_limits<double>::quiet_NaN()
@@ -490,7 +490,7 @@ size_t Delaunator::legalize(size_t a)
     return ar;
 }
 
-inline size_t Delaunator::hash_key(const Terra::Vector2& vec) const
+inline size_t Delaunator::hash_key(const Terra::vec2& vec) const
 {
     const double dx = vec.x - m_centre.x;
     const double dy = vec.y - m_centre.y;
