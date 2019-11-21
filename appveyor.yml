@@ -9,6 +9,7 @@ cache:
 
 install:
   - vcpkg install Catch2:x64-windows-static
+  - vcpkg install glm:x64-windows-static
 
 before_build:
   - mkdir build

@@ -13,6 +13,7 @@ dist: bionic
 compiler: gcc
 
 before_install:
+  - sudo apt-get -y install glm
   - ./install-catch2.sh
 
 # Build steps
