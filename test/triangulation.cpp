@@ -19,7 +19,7 @@ Honey comb to be triangulated
   \__/  \__/
      \__/
 */
-static const std::vector<Terra::vec2> vertices =
+static const std::vector<terra::vec2> vertices =
 {
     { 3.0, 6.0 }, { 4.0, 6.0 },
     { 1.0, 5.0 }, { 2.0, 5.0 }, { 5.0, 5.0 }, { 6.0, 5.0 },
@@ -30,8 +30,8 @@ static const std::vector<Terra::vec2> vertices =
     { 3.0, 0.0 }, { 4.0, 0.0 },
 };
 
-TEST_CASE("can triangulate correctly", "[Delaunator]")
+TEST_CASE("can triangulate correctly", "[delaunator]")
 {
-    Terra::Delaunator delaunator(vertices);
+    terra::delaunator delaunator(vertices);
     REQUIRE(delaunator.triangles.size() > 0);
 }

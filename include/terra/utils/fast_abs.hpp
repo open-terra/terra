@@ -1,9 +1,9 @@
 #pragma once
 
-namespace Utils
+namespace utils
 {
     template <typename T>
-    constexpr T FastAbs(T x)
+    constexpr T fast_abs(T x)
     {
         return x >= 0 ? x : -x;
     }

@@ -5,11 +5,11 @@
 #include "ridged_noise.hpp"
 #include "summed_noise.hpp"
 
-namespace Terra::Noise
+namespace terra::noise
 {
-    #define SUMMED_OPEN_SIMPLEX(Type) SummedNoise<Type<OpenSimplex>>
+    #define SUMMED_OPEN_SIMPLEX(Type) summed_noise<Type<open_simplex>>
 
-    typedef SummedNoise<OpenSimplex> SummedOpenSimplex;
-    typedef SUMMED_OPEN_SIMPLEX(BillowyNoise) BillowyOpenSimplex;
-    typedef SUMMED_OPEN_SIMPLEX(RidgedNoise) RidgedOpenSimplex;
+    typedef summed_noise<open_simplex> summed_open_simplex;
+    typedef SUMMED_OPEN_SIMPLEX(billowy_noise) billowy_open_simplex;
+    typedef SUMMED_OPEN_SIMPLEX(ridged_noise) ridged_open_simplex;
 }

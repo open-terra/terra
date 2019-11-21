@@ -2,9 +2,9 @@
 
 #include "terra/utils/fast_floor.hpp"
 
-using namespace Terra::Noise;
+using namespace terra::noise;
 
-constexpr OpenSimplex::OpenSimplex(int64_t seed) :
+constexpr open_simplex::open_simplex(int64_t seed) :
     perm(),
     permGradIndex3D()
 {
@@ -32,7 +32,7 @@ constexpr OpenSimplex::OpenSimplex(int64_t seed) :
     }
 }
 
-constexpr double OpenSimplex::Noise(double x, double y)
+constexpr double open_simplex::noise(double x, double y)
 {
     /* Place input coordinates onto grid. */
     double stretchOffset = (x + y) * STRETCH_CONSTANT_2D;
@@ -40,8 +40,8 @@ constexpr double OpenSimplex::Noise(double x, double y)
     double ys = y + stretchOffset;
 
     /* Floor to get grid coordinates of rhombus (stretched square) super-cell origin. */
-    int xsb = Utils::FastFloor<int>(xs);
-    int ysb = Utils::FastFloor<int>(ys);
+    int xsb = utils::fast_floor<int>(xs);
+    int ysb = utils::fast_floor<int>(ys);
 
     /* Skew out to get actual coordinates of rhombus origin. We'll need these later. */
     double squishOffset = static_cast<double>(xsb + ysb) * SQUISH_CONSTANT_2D;
@@ -81,7 +81,7 @@ constexpr double OpenSimplex::Noise(double x, double y)
     attn1 = 2 - dx1 * dx1 - dy1 * dy1;
     if (attn1 > 0) {
         attn1 *= attn1;
-        value += attn1 * attn1 * this->Extrapolate2(xsb + 1, ysb + 0, dx1, dy1);
+        value += attn1 * attn1 * this->extrapolate2(xsb + 1, ysb + 0, dx1, dy1);
     }
 
     /* Contribution (0,1) */
@@ -90,7 +90,7 @@ constexpr double OpenSimplex::Noise(double x, double y)
     attn2 = 2 - dx2 * dx2 - dy2 * dy2;
     if (attn2 > 0) {
         attn2 *= attn2;
-        value += attn2 * attn2 * this->Extrapolate2(xsb + 0, ysb + 1, dx2, dy2);
+        value += attn2 * attn2 * this->extrapolate2(xsb + 0, ysb + 1, dx2, dy2);
     }
 
     if (inSum <= 1) { /* We're inside the triangle (2-Simplex) at (0,0) */
@@ -148,20 +148,20 @@ constexpr double OpenSimplex::Noise(double x, double y)
     attn0 = 2 - dx0 * dx0 - dy0 * dy0;
     if (attn0 > 0) {
         attn0 *= attn0;
-        value += attn0 * attn0 * this->Extrapolate2(xsb, ysb, dx0, dy0);
+        value += attn0 * attn0 * this->extrapolate2(xsb, ysb, dx0, dy0);
     }
 
     /* Extra Vertex */
     attn_ext = 2 - dx_ext * dx_ext - dy_ext * dy_ext;
     if (attn_ext > 0) {
         attn_ext *= attn_ext;
-        value += attn_ext * attn_ext * this->Extrapolate2(xsv_ext, ysv_ext, dx_ext, dy_ext);
+        value += attn_ext * attn_ext * this->extrapolate2(xsv_ext, ysv_ext, dx_ext, dy_ext);
     }
 
     return value / NORM_CONSTANT_2D;
 }
 
-constexpr double OpenSimplex::Noise(double x, double y, double z)
+constexpr double open_simplex::noise(double x, double y, double z)
 {
     /* Place input coordinates on simplectic honeycomb. */
     double stretchOffset = (x + y + z) * STRETCH_CONSTANT_3D;
@@ -170,9 +170,9 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     double zs = z + stretchOffset;
 
     /* Floor to get simplectic honeycomb coordinates of rhombohedron (stretched cube) super-cell origin. */
-    int xsb = Utils::FastFloor<int>(xs);
-    int ysb = Utils::FastFloor<int>(ys);
-    int zsb = Utils::FastFloor<int>(zs);
+    int xsb = utils::fast_floor<int>(xs);
+    int ysb = utils::fast_floor<int>(ys);
+    int zsb = utils::fast_floor<int>(zs);
 
     /* Skew out to get actual coordinates of rhombohedron origin. We'll need these later. */
     double squishOffset = (xsb + ysb + zsb) * SQUISH_CONSTANT_3D;
@@ -322,7 +322,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
         if (attn0 > 0) {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate3(xsb + 0, ysb + 0, zsb + 0, dx0, dy0, dz0);
+            value += attn0 * attn0 * this->extrapolate3(xsb + 0, ysb + 0, zsb + 0, dx0, dy0, dz0);
         }
 
         /* Contribution (1,0,0) */
@@ -332,7 +332,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
         if (attn1 > 0) {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
+            value += attn1 * attn1 * this->extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
         }
 
         /* Contribution (0,1,0) */
@@ -342,7 +342,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
         if (attn2 > 0) {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
+            value += attn2 * attn2 * this->extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
         }
 
         /* Contribution (0,0,1) */
@@ -352,7 +352,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
         if (attn3 > 0) {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
+            value += attn3 * attn3 * this->extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
         }
     }
     else if (inSum >= 2) { /* We're inside the tetrahedron (3-Simplex) at (1,1,1) */
@@ -463,7 +463,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
         if (attn3 > 0) {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx3, dy3, dz3);
+            value += attn3 * attn3 * this->extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx3, dy3, dz3);
         }
 
         /* Contribution (1,0,1) */
@@ -473,7 +473,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
         if (attn2 > 0) {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx2, dy2, dz2);
+            value += attn2 * attn2 * this->extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx2, dy2, dz2);
         }
 
         /* Contribution (0,1,1) */
@@ -483,7 +483,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
         if (attn1 > 0) {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx1, dy1, dz1);
+            value += attn1 * attn1 * this->extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx1, dy1, dz1);
         }
 
         /* Contribution (1,1,1) */
@@ -493,10 +493,10 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0;
         if (attn0 > 0) {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate3(xsb + 1, ysb + 1, zsb + 1, dx0, dy0, dz0);
+            value += attn0 * attn0 * this->extrapolate3(xsb + 1, ysb + 1, zsb + 1, dx0, dy0, dz0);
         }
     }
-    else { /* We're inside the octahedron (Rectified 3-Simplex) in between.
+    else { /* We're inside the octahedron (rectified 3-Simplex) in between.
              Decide between point (0,0,1) and (1,1,0) as closest */
         p1 = xins + yins;
         if (p1 > 1) {
@@ -693,7 +693,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1;
         if (attn1 > 0) {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
+            value += attn1 * attn1 * this->extrapolate3(xsb + 1, ysb + 0, zsb + 0, dx1, dy1, dz1);
         }
 
         /* Contribution (0,1,0) */
@@ -703,7 +703,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2;
         if (attn2 > 0) {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
+            value += attn2 * attn2 * this->extrapolate3(xsb + 0, ysb + 1, zsb + 0, dx2, dy2, dz2);
         }
 
         /* Contribution (0,0,1) */
@@ -713,7 +713,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3;
         if (attn3 > 0) {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
+            value += attn3 * attn3 * this->extrapolate3(xsb + 0, ysb + 0, zsb + 1, dx3, dy3, dz3);
         }
 
         /* Contribution (1,1,0) */
@@ -723,7 +723,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4;
         if (attn4 > 0) {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx4, dy4, dz4);
+            value += attn4 * attn4 * this->extrapolate3(xsb + 1, ysb + 1, zsb + 0, dx4, dy4, dz4);
         }
 
         /* Contribution (1,0,1) */
@@ -733,7 +733,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5;
         if (attn5 > 0) {
             attn5 *= attn5;
-            value += attn5 * attn5 * this->Extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx5, dy5, dz5);
+            value += attn5 * attn5 * this->extrapolate3(xsb + 1, ysb + 0, zsb + 1, dx5, dy5, dz5);
         }
 
         /* Contribution (0,1,1) */
@@ -743,7 +743,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
         attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6;
         if (attn6 > 0) {
             attn6 *= attn6;
-            value += attn6 * attn6 * this->Extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx6, dy6, dz6);
+            value += attn6 * attn6 * this->extrapolate3(xsb + 0, ysb + 1, zsb + 1, dx6, dy6, dz6);
         }
     }
 
@@ -752,7 +752,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     if (attn_ext0 > 0)
     {
         attn_ext0 *= attn_ext0;
-        value += attn_ext0 * attn_ext0 * this->Extrapolate3(xsv_ext0, ysv_ext0, zsv_ext0, dx_ext0, dy_ext0, dz_ext0);
+        value += attn_ext0 * attn_ext0 * this->extrapolate3(xsv_ext0, ysv_ext0, zsv_ext0, dx_ext0, dy_ext0, dz_ext0);
     }
 
     /* Second extra vertex */
@@ -760,13 +760,13 @@ constexpr double OpenSimplex::Noise(double x, double y, double z)
     if (attn_ext1 > 0)
     {
         attn_ext1 *= attn_ext1;
-        value += attn_ext1 * attn_ext1 * this->Extrapolate3(xsv_ext1, ysv_ext1, zsv_ext1, dx_ext1, dy_ext1, dz_ext1);
+        value += attn_ext1 * attn_ext1 * this->extrapolate3(xsv_ext1, ysv_ext1, zsv_ext1, dx_ext1, dy_ext1, dz_ext1);
     }
 
     return value / NORM_CONSTANT_3D;
 }
 
-constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
+constexpr double open_simplex::noise(double x, double y, double z, double w)
 {
     double uins = 0.0;
     double dx1 = 0.0, dy1 = 0.0, dz1 = 0.0, dw1 = 0.0;
@@ -798,10 +798,10 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     double ws = w + stretchOffset;
 
     /* Floor to get simplectic honeycomb coordinates of rhombo-hypercube super-cell origin. */
-    int xsb = Utils::FastFloor<int>(xs);
-    int ysb = Utils::FastFloor<int>(ys);
-    int zsb = Utils::FastFloor<int>(zs);
-    int wsb = Utils::FastFloor<int>(ws);
+    int xsb = utils::fast_floor<int>(xs);
+    int ysb = utils::fast_floor<int>(ys);
+    int zsb = utils::fast_floor<int>(zs);
+    int wsb = utils::fast_floor<int>(ws);
 
     /* Skew out to get actual coordinates of stretched rhombo-hypercube origin. We'll need these later. */
     double squishOffset = (xsb + ysb + zsb + wsb) * SQUISH_CONSTANT_4D;
@@ -997,7 +997,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
         if (attn0 > 0) {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 0, dx0, dy0, dz0, dw0);
+            value += attn0 * attn0 * this->extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 0, dx0, dy0, dz0, dw0);
         }
 
         /* Contribution (1,0,0,0) */
@@ -1008,7 +1008,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
         if (attn1 > 0) {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
+            value += attn1 * attn1 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (0,1,0,0) */
@@ -1019,7 +1019,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
         if (attn2 > 0) {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
+            value += attn2 * attn2 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,0,1,0) */
@@ -1030,7 +1030,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
         if (attn3 > 0) {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
+            value += attn3 * attn3 * this->extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (0,0,0,1) */
@@ -1041,7 +1041,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
         if (attn4 > 0) {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
+            value += attn4 * attn4 * this->extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
         }
     }
     else if (inSum >= 3) { /* We're inside the pentachoron (4-Simplex) at (1,1,1,1)
@@ -1211,7 +1211,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
         if (attn4 > 0) {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
+            value += attn4 * attn4 * this->extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
         }
 
         /* Contribution (1,1,0,1) */
@@ -1222,7 +1222,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
         if (attn3 > 0) {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
+            value += attn3 * attn3 * this->extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (1,0,1,1) */
@@ -1233,7 +1233,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
         if (attn2 > 0) {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
+            value += attn2 * attn2 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,1,1,1) */
@@ -1244,7 +1244,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
         if (attn1 > 0) {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
+            value += attn1 * attn1 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (1,1,1,1) */
@@ -1255,10 +1255,10 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn0 = 2 - dx0 * dx0 - dy0 * dy0 - dz0 * dz0 - dw0 * dw0;
         if (attn0 > 0) {
             attn0 *= attn0;
-            value += attn0 * attn0 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 1, dx0, dy0, dz0, dw0);
+            value += attn0 * attn0 * this->extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 1, dx0, dy0, dz0, dw0);
         }
     }
-    else if (inSum <= 2) { /* We're inside the first dispentachoron (Rectified 4-Simplex) */
+    else if (inSum <= 2) { /* We're inside the first dispentachoron (rectified 4-Simplex) */
         aIsBiggerSide = 1;
         bIsBiggerSide = 1;
 
@@ -1615,7 +1615,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
         if (attn1 > 0) {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
+            value += attn1 * attn1 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 0, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (0,1,0,0) */
@@ -1626,7 +1626,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
         if (attn2 > 0) {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
+            value += attn2 * attn2 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 0, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,0,1,0) */
@@ -1637,7 +1637,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
         if (attn3 > 0) {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
+            value += attn3 * attn3 * this->extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 0, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (0,0,0,1) */
@@ -1648,7 +1648,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
         if (attn4 > 0) {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
+            value += attn4 * attn4 * this->extrapolate4(xsb + 0, ysb + 0, zsb + 0, wsb + 1, dx4, dy4, dz4, dw4);
         }
 
         /* Contribution (1,1,0,0) */
@@ -1659,7 +1659,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
         if (attn5 > 0) {
             attn5 *= attn5;
-            value += attn5 * attn5 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
+            value += attn5 * attn5 * this->extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
         }
 
         /* Contribution (1,0,1,0) */
@@ -1670,7 +1670,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
         if (attn6 > 0) {
             attn6 *= attn6;
-            value += attn6 * attn6 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
+            value += attn6 * attn6 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
         }
 
         /* Contribution (1,0,0,1) */
@@ -1681,7 +1681,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
         if (attn7 > 0) {
             attn7 *= attn7;
-            value += attn7 * attn7 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
+            value += attn7 * attn7 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
         }
 
         /* Contribution (0,1,1,0) */
@@ -1692,7 +1692,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
         if (attn8 > 0) {
             attn8 *= attn8;
-            value += attn8 * attn8 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
+            value += attn8 * attn8 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
         }
 
         /* Contribution (0,1,0,1) */
@@ -1703,7 +1703,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
         if (attn9 > 0) {
             attn9 *= attn9;
-            value += attn9 * attn9 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
+            value += attn9 * attn9 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
         }
 
         /* Contribution (0,0,1,1) */
@@ -1714,10 +1714,10 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
         if (attn10 > 0) {
             attn10 *= attn10;
-            value += attn10 * attn10 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
+            value += attn10 * attn10 * this->extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
         }
     }
-    else { /* We're inside the second dispentachoron (Rectified 4-Simplex) */
+    else { /* We're inside the second dispentachoron (rectified 4-Simplex) */
         aIsBiggerSide = 1;
         bIsBiggerSide = 1;
 
@@ -2063,7 +2063,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn4 = 2 - dx4 * dx4 - dy4 * dy4 - dz4 * dz4 - dw4 * dw4;
         if (attn4 > 0) {
             attn4 *= attn4;
-            value += attn4 * attn4 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
+            value += attn4 * attn4 * this->extrapolate4(xsb + 1, ysb + 1, zsb + 1, wsb + 0, dx4, dy4, dz4, dw4);
         }
 
         /* Contribution (1,1,0,1) */
@@ -2074,7 +2074,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn3 = 2 - dx3 * dx3 - dy3 * dy3 - dz3 * dz3 - dw3 * dw3;
         if (attn3 > 0) {
             attn3 *= attn3;
-            value += attn3 * attn3 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
+            value += attn3 * attn3 * this->extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 1, dx3, dy3, dz3, dw3);
         }
 
         /* Contribution (1,0,1,1) */
@@ -2085,7 +2085,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn2 = 2 - dx2 * dx2 - dy2 * dy2 - dz2 * dz2 - dw2 * dw2;
         if (attn2 > 0) {
             attn2 *= attn2;
-            value += attn2 * attn2 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
+            value += attn2 * attn2 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 1, dx2, dy2, dz2, dw2);
         }
 
         /* Contribution (0,1,1,1) */
@@ -2096,7 +2096,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn1 = 2 - dx1 * dx1 - dy1 * dy1 - dz1 * dz1 - dw1 * dw1;
         if (attn1 > 0) {
             attn1 *= attn1;
-            value += attn1 * attn1 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
+            value += attn1 * attn1 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 1, dx1, dy1, dz1, dw1);
         }
 
         /* Contribution (1,1,0,0) */
@@ -2107,7 +2107,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn5 = 2 - dx5 * dx5 - dy5 * dy5 - dz5 * dz5 - dw5 * dw5;
         if (attn5 > 0) {
             attn5 *= attn5;
-            value += attn5 * attn5 * this->Extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
+            value += attn5 * attn5 * this->extrapolate4(xsb + 1, ysb + 1, zsb + 0, wsb + 0, dx5, dy5, dz5, dw5);
         }
 
         /* Contribution (1,0,1,0) */
@@ -2118,7 +2118,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn6 = 2 - dx6 * dx6 - dy6 * dy6 - dz6 * dz6 - dw6 * dw6;
         if (attn6 > 0) {
             attn6 *= attn6;
-            value += attn6 * attn6 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
+            value += attn6 * attn6 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 1, wsb + 0, dx6, dy6, dz6, dw6);
         }
 
         /* Contribution (1,0,0,1) */
@@ -2129,7 +2129,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn7 = 2 - dx7 * dx7 - dy7 * dy7 - dz7 * dz7 - dw7 * dw7;
         if (attn7 > 0) {
             attn7 *= attn7;
-            value += attn7 * attn7 * this->Extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
+            value += attn7 * attn7 * this->extrapolate4(xsb + 1, ysb + 0, zsb + 0, wsb + 1, dx7, dy7, dz7, dw7);
         }
 
         /* Contribution (0,1,1,0) */
@@ -2140,7 +2140,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn8 = 2 - dx8 * dx8 - dy8 * dy8 - dz8 * dz8 - dw8 * dw8;
         if (attn8 > 0) {
             attn8 *= attn8;
-            value += attn8 * attn8 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
+            value += attn8 * attn8 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 1, wsb + 0, dx8, dy8, dz8, dw8);
         }
 
         /* Contribution (0,1,0,1) */
@@ -2151,7 +2151,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn9 = 2 - dx9 * dx9 - dy9 * dy9 - dz9 * dz9 - dw9 * dw9;
         if (attn9 > 0) {
             attn9 *= attn9;
-            value += attn9 * attn9 * this->Extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
+            value += attn9 * attn9 * this->extrapolate4(xsb + 0, ysb + 1, zsb + 0, wsb + 1, dx9, dy9, dz9, dw9);
         }
 
         /* Contribution (0,0,1,1) */
@@ -2162,7 +2162,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
         attn10 = 2 - dx10 * dx10 - dy10 * dy10 - dz10 * dz10 - dw10 * dw10;
         if (attn10 > 0) {
             attn10 *= attn10;
-            value += attn10 * attn10 * this->Extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
+            value += attn10 * attn10 * this->extrapolate4(xsb + 0, ysb + 0, zsb + 1, wsb + 1, dx10, dy10, dz10, dw10);
         }
     }
 
@@ -2171,7 +2171,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     if (attn_ext0 > 0)
     {
         attn_ext0 *= attn_ext0;
-        value += attn_ext0 * attn_ext0 * this->Extrapolate4(xsv_ext0, ysv_ext0, zsv_ext0, wsv_ext0, dx_ext0, dy_ext0, dz_ext0, dw_ext0);
+        value += attn_ext0 * attn_ext0 * this->extrapolate4(xsv_ext0, ysv_ext0, zsv_ext0, wsv_ext0, dx_ext0, dy_ext0, dz_ext0, dw_ext0);
     }
 
     /* Second extra vertex */
@@ -2179,7 +2179,7 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     if (attn_ext1 > 0)
     {
         attn_ext1 *= attn_ext1;
-        value += attn_ext1 * attn_ext1 * this->Extrapolate4(xsv_ext1, ysv_ext1, zsv_ext1, wsv_ext1, dx_ext1, dy_ext1, dz_ext1, dw_ext1);
+        value += attn_ext1 * attn_ext1 * this->extrapolate4(xsv_ext1, ysv_ext1, zsv_ext1, wsv_ext1, dx_ext1, dy_ext1, dz_ext1, dw_ext1);
     }
 
     /* Third extra vertex */
@@ -2187,20 +2187,20 @@ constexpr double OpenSimplex::Noise(double x, double y, double z, double w)
     if (attn_ext2 > 0)
     {
         attn_ext2 *= attn_ext2;
-        value += attn_ext2 * attn_ext2 * this->Extrapolate4(xsv_ext2, ysv_ext2, zsv_ext2, wsv_ext2, dx_ext2, dy_ext2, dz_ext2, dw_ext2);
+        value += attn_ext2 * attn_ext2 * this->extrapolate4(xsv_ext2, ysv_ext2, zsv_ext2, wsv_ext2, dx_ext2, dy_ext2, dz_ext2, dw_ext2);
     }
 
     return value / NORM_CONSTANT_4D;
 }
 
-constexpr double OpenSimplex::Extrapolate2(int xsb, int ysb, double dx, double dy)
+constexpr double open_simplex::extrapolate2(int xsb, int ysb, double dx, double dy)
 {
     int index = this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] & 0x0E;
     return  gradients2D[index] * dx +
             gradients2D[index + 1] * dy;
 }
 
-constexpr double OpenSimplex::Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz)
+constexpr double open_simplex::extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz)
 {
     int index = this->permGradIndex3D[(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF];
     return  this->gradients3D[index] * dx +
@@ -2208,7 +2208,7 @@ constexpr double OpenSimplex::Extrapolate3(int xsb, int ysb, int zsb, double dx,
             this->gradients3D[index + 2] * dz;
 }
 
-constexpr double OpenSimplex::Extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw)
+constexpr double open_simplex::extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw)
 {
     int index = this->perm[(this->perm[(this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] + zsb) & 0xFF] + wsb) & 0xFF] & 0xFC;
     return  this->gradients4D[index] * dx +

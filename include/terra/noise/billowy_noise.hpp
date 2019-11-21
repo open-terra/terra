@@ -5,29 +5,29 @@
 
 #include "../utils/fast_abs.hpp"
 
-namespace Terra::Noise
+namespace terra::noise
 {
     template<class T>
-    class BillowyNoise
+    class billowy_noise
     {
     private:
         T& noise;
 
     public:
-        constexpr BillowyNoise(int64_t seed) : noise(T(seed)) {}
-        constexpr BillowyNoise(T& noise) : noise(noise) {}
+        constexpr billowy_noise(int64_t seed) : noise(T(seed)) {}
+        constexpr billowy_noise(T& noise) : noise(noise) {}
 
-        constexpr double Noise(double x, double y)
+        constexpr double noise(double x, double y)
         {
-            return Utils::FastAbs(noise.Noise(x, y));
+            return utils::fast_abs(noise.noise(x, y));
         }
-        constexpr double Noise(double x, double y, double z)
+        constexpr double noise(double x, double y, double z)
         {
-            return Utils::FastAbs(noise.Noise(x, y, z));
+            return utils::fast_abs(noise.noise(x, y, z));
         }
-        constexpr double Noise(double x, double y, double z, double w)
+        constexpr double noise(double x, double y, double z, double w)
         {
-            return Utils::FastAbs(noise.Noise(x, y, z, w));
+            return utils::fast_abs(noise.noise(x, y, z, w));
         }
     };
 }

@@ -10,23 +10,22 @@
 #include "types/rect.hpp"
 #include "types/hash_grid.hpp"
 
-namespace Terra
+namespace terra
 {
-    class PoissonDiscSampler
+    class poisson_disc_sampler
     {
 	private:
         const double pi = 3.14159265358979323846;
-        const double sqrt1_2 = 0.7071067811865476;
 
         double radius;
-        int64_t sizeX;
-        int64_t sizeY;
+        int64_t size_x;
+        int64_t size_y;
         int64_t samples;
 
         double inner, outer;
         int64_t count;
 
-        Terra::Rect<double> bounds;
+        terra::rect<double> bounds;
 
         // Will be used to obtain a seed for the random number engine
         std::random_device rd;
@@ -37,17 +36,17 @@ namespace Terra
 
         std::vector<int64_t> active;
 
-        std::vector<Terra::vec2>* points;
-		Terra::HashGrid* grid;
+        std::vector<terra::vec2>* points;
+		terra::hash_grid* grid;
 
 	public:
-        PoissonDiscSampler();
-        PoissonDiscSampler(std::vector<Terra::vec2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples = 30);
+        poisson_disc_sampler();
+        poisson_disc_sampler(std::vector<terra::vec2>& points, terra::hash_grid& grid, int64_t size_x, int64_t size_y, double radius, int64_t samples = 30);
 
-        int64_t Sample();
+        int64_t sample();
 
     private:
-        const Terra::vec2 GenerateAround(Terra::vec2& p);
-        bool IsValid(Terra::vec2& p);
+        const terra::vec2 generate_around(terra::vec2& p);
+        bool is_valid(terra::vec2& p);
     };
 }

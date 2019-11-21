@@ -1,9 +1,9 @@
 #pragma once
 
-namespace Utils
+namespace utils
 {
     template <typename T>
-    constexpr T FastFloor(double x)
+    constexpr T fast_floor(double x)
     {
         T xi = static_cast<T>(x);
         return x < xi ? xi - 1 : xi;

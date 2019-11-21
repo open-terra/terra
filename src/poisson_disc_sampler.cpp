@@ -5,12 +5,12 @@
 
 #include "terra/utils/fast_sqrt.hpp"
 
-using namespace Terra;
+using namespace terra;
 
-PoissonDiscSampler::PoissonDiscSampler() :
+poisson_disc_sampler::poisson_disc_sampler() :
     radius(0.0),
-    sizeX(0),
-    sizeY(0),
+    size_x(0),
+    size_y(0),
     samples(0),
     points(),
     grid(),
@@ -24,10 +24,10 @@ PoissonDiscSampler::PoissonDiscSampler() :
 {
 }
 
-PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::vec2>& points, Terra::HashGrid& grid, int64_t sizeX, int64_t sizeY, double radius, int64_t samples) :
+poisson_disc_sampler::poisson_disc_sampler(std::vector<terra::vec2>& points, terra::hash_grid& grid, int64_t size_x, int64_t size_y, double radius, int64_t samples) :
     radius(radius),
-    sizeX(sizeX),
-    sizeY(sizeY),
+    size_x(size_x),
+    size_y(size_y),
     samples(samples),
     points(&points),
     grid(&grid),
@@ -39,36 +39,36 @@ PoissonDiscSampler::PoissonDiscSampler(std::vector<Terra::vec2>& points, Terra::
     inner = this->radius * this->radius;
     outer = 3 * inner;
 
-    bounds = Rect(this->radius, this->radius, this->sizeX - this->radius, this->sizeY - this->radius);
+    bounds = rect(this->radius, this->radius, this->size_x - this->radius, this->size_y - this->radius);
 }
 
-int64_t PoissonDiscSampler::Sample()
+int64_t poisson_disc_sampler::sample()
 {
     { // create the initial point
-        std::uniform_real_distribution<double> dis(0.0, static_cast<double>(std::min(sizeX, sizeY))); // Random double within the grid
+        std::uniform_real_distribution<double> dis(0.0, static_cast<double>(std::min(size_x, size_y))); // Random double within the grid
 
-        vec2 point(Terra::vec2(dis(gen), dis(gen)));
+        vec2 point(terra::vec2(dis(gen), dis(gen)));
         this->points->push_back(point);
         active.push_back(0);
 
-        this->grid->Set(point, count);
+        this->grid->set(point, count);
         count++;
     }
 
     while (!active.empty())
     {
-        int64_t i = Utils::FastRound<int64_t>(normal(gen) * static_cast<double>(active.size() - 1)); // Get a random index from the list of active points
+        int64_t i = utils::fast_round<int64_t>(normal(gen) * static_cast<double>(active.size() - 1)); // Get a random index from the list of active points
 
         for (int64_t j = 0; j < this->samples; j++) // Loop till a valid point is found or the sample limit is reached
         {
             // Create new point around current index
-            Terra::vec2 point = this->GenerateAround(this->points->at(i));
-            if (this->IsValid(point))
+            terra::vec2 point = this->generate_around(this->points->at(i));
+            if (this->is_valid(point))
             {
                 // The point is valid add it to points then add the index to the active list
                 this->points->push_back(point);
                 active.push_back(count);
-                this->grid->Set(point, count);
+                this->grid->set(point, count);
                 count++;
 
                 break;
@@ -84,27 +84,27 @@ int64_t PoissonDiscSampler::Sample()
     return count;
 }
 
-const Terra::vec2 PoissonDiscSampler::GenerateAround(Terra::vec2& p)
+const terra::vec2 poisson_disc_sampler::generate_around(terra::vec2& p)
 {
     double theta = this->normal(this->gen) * 2.0 * this->pi; // Random radian on the circumference of the circle
-    double r = Utils::FastSqrt((this->normal(gen) * this->outer) + this->inner); // Random radius of the circle between r^2 and 4r
+    double r = utils::fast_sqrt((this->normal(gen) * this->outer) + this->inner); // Random radius of the circle between r^2 and 4r
     // Calculate the position of the point on the circle
     
-    return Terra::vec2
+    return terra::vec2
     (
         p.x + (r * std::cos(theta)),
         p.y + (r * std::sin(theta))
     );
 }
 
-bool PoissonDiscSampler::IsValid(Terra::vec2& p)
+bool poisson_disc_sampler::is_valid(terra::vec2& p)
 {
-    if (!this->bounds.WithinExtent(p)) // Is within max extents
+    if (!this->bounds.within_extent(p)) // Is within max extents
     {
         return false;
     }
 
-    for (int64_t index : this->grid->Neighbours(p))
+    for (int64_t index : this->grid->neighbours(p))
     {
         // If the point is to close to neighbour this point should be ignored
         if (glm::distance2(p, this->points->at(index)) <= inner)

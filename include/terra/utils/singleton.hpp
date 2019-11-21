@@ -1,21 +1,21 @@
 #pragma once
 
-namespace Utils
+namespace utils
 {
     template <typename T>
-    class Singleton
+    class singleton
     {
     public:
-        static T& Instance()
+        static T& instance()
         {
-            static T Inst;
-            return Inst;
+            static T inst;
+            return inst;
         }
 
-        Singleton(Singleton const&) = delete;
-        Singleton& operator=(Singleton const&) = delete;
+        singleton(singleton const&) = delete;
+        singleton& operator=(singleton const&) = delete;
     protected:
-        Singleton()
+        singleton()
         {
         };
     };

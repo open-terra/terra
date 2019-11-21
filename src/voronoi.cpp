@@ -2,57 +2,57 @@
 
 #include <stdio.h>
 
-using namespace Terra;
+using namespace terra;
 
-VoronoiDiagramGenerator::VoronoiDiagramGenerator()
+voronoi_diagram_generator::voronoi_diagram_generator()
 {
     siteidx = 0;
     sites = NULL;
     parent_sites = NULL;
 
-    allMemoryList = new FreeNodeArrayList;
+    allMemoryList = new free_node_array_list;
     allMemoryList->memory = NULL;
     allMemoryList->next = NULL;
     currentMemoryBlock = allMemoryList;
-    allEdges = NULL;
-    iteratorEdges = 0;
-    minDistanceBetweenSites = 0;
+    alledges = NULL;
+    iteratoredges = 0;
+    minDistanceBetweensites = 0;
 
     ELhash = NULL;
     PQhash = NULL;
 }
 
-VoronoiDiagramGenerator::~VoronoiDiagramGenerator()
+voronoi_diagram_generator::~voronoi_diagram_generator()
 {
     cleanup();
-    cleanupEdges();
+    cleanupedges();
 
     if (allMemoryList != NULL)
         delete allMemoryList;
 }
 
-bool VoronoiDiagramGenerator::generateVoronoi(std::vector<Terra::vec2> *_parent_sites,
+bool voronoi_diagram_generator::generate_voronoi(std::vector<terra::vec2> *_parent_sites,
                                               double minX, double maxX,
                                               double minY, double maxY,
                                               double minDist)
 {
     cleanup();
-    cleanupEdges();
+    cleanupedges();
     int i;
     double x, y;
 
-    minDistanceBetweenSites = minDist;
+    minDistanceBetweensites = minDist;
 
     parent_sites = _parent_sites;
 
     nsites = n_parent_sites = parent_sites->size();
     debug = 1;
     sorted = 0;
-    freeinit(&sfl, sizeof(Site));
+    freeinit(&sfl, sizeof(site));
 
-    //sites = (Site *) myalloc(nsites*sizeof( *sites));
-    sites = (Site *)myalloc(nsites * sizeof(Site));
-    //parent_sites = (Site *) myalloc(nsites*sizeof( Site));
+    //sites = (site *) myalloc(nsites*sizeof( *sites));
+    sites = (site *)myalloc(nsites * sizeof(site));
+    //parent_sites = (site *) myalloc(nsites*sizeof( site));
 
     if (sites == 0)
         return false;
@@ -86,7 +86,7 @@ bool VoronoiDiagramGenerator::generateVoronoi(std::vector<Terra::vec2> *_parent_
     //
     // check if some of the particles are degenerate to avoid a crash.
     //
-    // At the moment, we work under the assumption that they will be
+    // at the moment, we work under the assumption that they will be
     // "clustered" later on, so we just keep the 1st one and discard the
     // others
     unsigned int offset = 0;
@@ -105,7 +105,7 @@ bool VoronoiDiagramGenerator::generateVoronoi(std::vector<Terra::vec2> *_parent_
     if (offset > 0)
     {
         nsites -= offset;
-        //_warning_degeneracy.warn("VoronoiDiagramGenerator: two (or more) particles are degenerate in rapidity and azimuth, Voronoi cell assigned to the first of each set of degenerate particles.");
+        //_warning_degeneracy.warn("voronoi_diagram_generator: two (or more) particles are degenerate in rapidity and azimuth, Voronoi cell assigned to the first of each set of degenerate particles.");
     }
 
     siteidx = 0;
@@ -134,44 +134,44 @@ bool VoronoiDiagramGenerator::generateVoronoi(std::vector<Terra::vec2> *_parent_
     return true;
 }
 
-bool VoronoiDiagramGenerator::ELinitialize()
+bool voronoi_diagram_generator::ELinitialize()
 {
     int i;
-    freeinit(&hfl, sizeof(Halfedge));
+    freeinit(&hfl, sizeof(half_edge));
     ELhashsize = 2 * sqrt_nsites;
-    //ELhash = (Halfedge **) myalloc ( sizeof *ELhash * ELhashsize);
-    ELhash = (Halfedge **)myalloc(sizeof(Halfedge *) * ELhashsize);
+    //ELhash = (half_edge **) myalloc ( sizeof *ELhash * ELhashsize);
+    ELhash = (half_edge **)myalloc(sizeof(half_edge *) * ELhashsize);
 
     if (ELhash == 0)
         return false;
 
     for (i = 0; i < ELhashsize; i += 1)
-        ELhash[i] = (Halfedge *)NULL;
-    ELleftend = HEcreate((Edge *)NULL, 0);
-    ELrightend = HEcreate((Edge *)NULL, 0);
-    ELleftend->ELleft = (Halfedge *)NULL;
+        ELhash[i] = (half_edge *)NULL;
+    ELleftend = HEcreate((edge *)NULL, 0);
+    ELrightend = HEcreate((edge *)NULL, 0);
+    ELleftend->ELleft = (half_edge *)NULL;
     ELleftend->ELright = ELrightend;
     ELrightend->ELleft = ELleftend;
-    ELrightend->ELright = (Halfedge *)NULL;
+    ELrightend->ELright = (half_edge *)NULL;
     ELhash[0] = ELleftend;
     ELhash[ELhashsize - 1] = ELrightend;
 
     return true;
 }
 
-Halfedge *VoronoiDiagramGenerator::HEcreate(Edge *e, int pm)
+half_edge *voronoi_diagram_generator::HEcreate(edge *e, int pm)
 {
-    Halfedge *answer;
-    answer = (Halfedge *)getfree(&hfl);
+    half_edge *answer;
+    answer = (half_edge *)getfree(&hfl);
     answer->ELedge = e;
     answer->ELpm = pm;
-    answer->PQnext = (Halfedge *)NULL;
-    answer->vertex = (Site *)NULL;
+    answer->PQnext = (half_edge *)NULL;
+    answer->vertex = (site *)NULL;
     answer->ELrefcnt = 0;
     return answer;
 }
 
-void VoronoiDiagramGenerator::ELinsert(Halfedge *lb, Halfedge *newHe)
+void voronoi_diagram_generator::ELinsert(half_edge *lb, half_edge *newHe)
 {
     newHe->ELleft = lb;
     newHe->ELright = lb->ELright;
@@ -180,32 +180,32 @@ void VoronoiDiagramGenerator::ELinsert(Halfedge *lb, Halfedge *newHe)
 }
 
 /* Get entry from hash table, pruning any deleted nodes */
-Halfedge *VoronoiDiagramGenerator::ELgethash(int b)
+half_edge *voronoi_diagram_generator::ELgethash(int b)
 {
-    Halfedge *he;
+    half_edge *he;
 
     if ((b < 0) || (b >= ELhashsize))
-        return (Halfedge *)NULL;
+        return (half_edge *)NULL;
 
     he = ELhash[b];
-    if ((he == (Halfedge *)NULL) || (he->ELedge != (Edge *)DELETED))
+    if ((he == (half_edge *)NULL) || (he->ELedge != (edge *)DELETED))
         return he;
 
     /* Hash table points to deleted half edge.  Patch as necessary. */
-    ELhash[b] = (Halfedge *)NULL;
+    ELhash[b] = (half_edge *)NULL;
     if ((he->ELrefcnt -= 1) == 0)
-        makefree((Freenode *)he, &hfl);
-    return (Halfedge *)NULL;
+        makefree((free_node *)he, &hfl);
+    return (half_edge *)NULL;
 }
 
-Halfedge *VoronoiDiagramGenerator::ELleftbnd(Terra::vec2 *p)
+half_edge *voronoi_diagram_generator::ELleftbnd(terra::vec2 *p)
 {
     int i, bucket;
-    Halfedge *he;
+    half_edge *he;
 
     /* Use hash table to get close to desired halfedge */
     // use the hash function to find the place in the hash map that this
-    // HalfEdge should be
+    // half_edge should be
     // Gregory Soyez: the original code was
     //
     //   bucket = (int)((p->x - xmin)/deltax * ELhashsize);
@@ -241,13 +241,13 @@ Halfedge *VoronoiDiagramGenerator::ELleftbnd(Terra::vec2 *p)
 
     // if the HE isn't found, search backwards and forwards in the hash
     // map for the first non-null entry
-    if (he == (Halfedge *)NULL)
+    if (he == (half_edge *)NULL)
     {
         for (i = 1; 1; i++)
         {
-            if ((he = ELgethash(bucket - i)) != (Halfedge *)NULL)
+            if ((he = ELgethash(bucket - i)) != (half_edge *)NULL)
                 break;
-            if ((he = ELgethash(bucket + i)) != (Halfedge *)NULL)
+            if ((he = ELgethash(bucket + i)) != (half_edge *)NULL)
                 break;
         };
         totalsearch += i;
@@ -265,7 +265,7 @@ Halfedge *VoronoiDiagramGenerator::ELleftbnd(Terra::vec2 *p)
         he = he->ELleft; //isn't to the right of
     }
     else
-        // if the point is to the left of the HalfEdge, then search left
+        // if the point is to the left of the half_edge, then search left
         // for the HE just to the left of the point
         do
         {
@@ -275,7 +275,7 @@ Halfedge *VoronoiDiagramGenerator::ELleftbnd(Terra::vec2 *p)
     /* Update hash table and reference counts */
     if ((bucket > 0) && (bucket < ELhashsize - 1))
     {
-        if (ELhash[bucket] != (Halfedge *)NULL)
+        if (ELhash[bucket] != (half_edge *)NULL)
         {
             ELhash[bucket]->ELrefcnt -= 1;
         }
@@ -288,35 +288,35 @@ Halfedge *VoronoiDiagramGenerator::ELleftbnd(Terra::vec2 *p)
 
 /* This delete routine can't reclaim node, since pointers from hash
    table may be present.   */
-void VoronoiDiagramGenerator::ELdelete(Halfedge *he)
+void voronoi_diagram_generator::ELdelete(half_edge *he)
 {
     (he->ELleft)->ELright = he->ELright;
     (he->ELright)->ELleft = he->ELleft;
-    he->ELedge = (Edge *)DELETED;
+    he->ELedge = (edge *)DELETED;
 }
 
-Halfedge *VoronoiDiagramGenerator::ELright(Halfedge *he)
+half_edge *voronoi_diagram_generator::ELright(half_edge *he)
 {
     return he->ELright;
 }
 
-Halfedge *VoronoiDiagramGenerator::ELleft(Halfedge *he)
+half_edge *voronoi_diagram_generator::ELleft(half_edge *he)
 {
     return he->ELleft;
 }
 
-Site *VoronoiDiagramGenerator::leftreg(Halfedge *he)
+site *voronoi_diagram_generator::leftreg(half_edge *he)
 {
-    if (he->ELedge == (Edge *)NULL)
+    if (he->ELedge == (edge *)NULL)
         return (bottomsite);
     return (he->ELpm == le)
                ? he->ELedge->reg[le]
                : he->ELedge->reg[re];
 }
 
-Site *VoronoiDiagramGenerator::rightreg(Halfedge *he)
+site *voronoi_diagram_generator::rightreg(half_edge *he)
 {
-    if (he->ELedge == (Edge *)NULL)
+    if (he->ELedge == (edge *)NULL)
         // if this halfedge has no edge, return the bottom site (whatever
         // that is)
         return bottomsite;
@@ -328,11 +328,11 @@ Site *VoronoiDiagramGenerator::rightreg(Halfedge *he)
                : he->ELedge->reg[le];
 }
 
-void VoronoiDiagramGenerator::geominit()
+void voronoi_diagram_generator::geominit()
 {
     double sn;
 
-    freeinit(&efl, sizeof(Edge));
+    freeinit(&efl, sizeof(edge));
     nvertices = 0;
     nedges = 0;
     sn = (double)nsites + 4;
@@ -341,12 +341,12 @@ void VoronoiDiagramGenerator::geominit()
     deltax = xmax - xmin;
 }
 
-Edge *VoronoiDiagramGenerator::bisect(Site *s1, Site *s2)
+edge *voronoi_diagram_generator::bisect(site *s1, site *s2)
 {
     double dx, dy, adx, ady;
-    Edge *newedge;
+    edge *newedge;
 
-    newedge = (Edge *)getfree(&efl);
+    newedge = (edge *)getfree(&efl);
 
     newedge->reg[0] = s1; //store the sites that this edge is bisecting
     newedge->reg[1] = s2;
@@ -355,8 +355,8 @@ Edge *VoronoiDiagramGenerator::bisect(Site *s1, Site *s2)
 
     // to begin with, there are no endpoints on the bisector - it goes
     // to infinity
-    newedge->ep[0] = (Site *)NULL;
-    newedge->ep[1] = (Site *)NULL;
+    newedge->ep[0] = (site *)NULL;
+    newedge->ep[1] = (site *)NULL;
 
     // get the difference in x dist between the sites
     dx = s2->coord.x - s1->coord.x;
@@ -390,28 +390,28 @@ Edge *VoronoiDiagramGenerator::bisect(Site *s1, Site *s2)
     return newedge;
 }
 
-// create a new site where the HalfEdges el1 and el2 intersect - note
-// that the Terra::vec2 in the argument list is not used, don't know why
+// create a new site where the half_edges el1 and el2 intersect - note
+// that the terra::vec2 in the argument list is not used, don't know why
 // it's there
 //
 // Gregory Soyez: removed the uinused point p
-Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
-                                         /*, Terra::vec2 *p*/)
+site *voronoi_diagram_generator::intersect(half_edge *el1, half_edge *el2
+                                         /*, terra::vec2 *p*/)
 {
-    Edge *e1, *e2, *e;
-    Halfedge *el;
+    edge *e1, *e2, *e;
+    half_edge *el;
     double d, xint, yint;
     int right_of_site;
-    Site *v;
+    site *v;
 
     e1 = el1->ELedge;
     e2 = el2->ELedge;
-    if ((e1 == (Edge *)NULL) || (e2 == (Edge *)NULL))
-        return ((Site *)NULL);
+    if ((e1 == (edge *)NULL) || (e2 == (edge *)NULL))
+        return ((site *)NULL);
 
     // if the two edges bisect the same parent, return null
     if (e1->reg[1] == e2->reg[1])
-        return (Site *)NULL;
+        return (site *)NULL;
 
     // Gregory Soyez:
     //
@@ -423,7 +423,7 @@ Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
     // The following replaces
     //   d = e1->a * e2->b - e1->b * e2->a;
     //   if (-1.0e-10<d && d<1.0e-10)
-    //     return (Site*) NULL;
+    //     return (site*) NULL;
     //
     //   xint = (e1->c*e2->b - e2->c*e1->b)/d;
     //   yint = (e2->c*e1->a - e1->c*e2->a)/d;
@@ -459,7 +459,7 @@ Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
         d = e1->a * b - e1->b * a;
         if (-1.0e-10 < d && d < 1.0e-10)
         {
-            return (Site *)NULL;
+            return (site *)NULL;
         }
 
         xint = (e1->c * b - c * e1->b) / d;
@@ -470,7 +470,7 @@ Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
         d = e1->a * e2->b - e1->b * e2->a;
         if (-1.0e-10 < d && d < 1.0e-10)
         {
-            return (Site *)NULL;
+            return (site *)NULL;
         }
 
         xint = (e1->c * e2->b - e2->c * e1->b) / d;
@@ -496,11 +496,11 @@ Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
 
     right_of_site = xint >= e->reg[1]->coord.x;
     if ((right_of_site && el->ELpm == le) || (!right_of_site && el->ELpm == re))
-        return (Site *)NULL;
+        return (site *)NULL;
 
     // create a new site at the point of intersection - this is a new
     // vector event waiting to happen
-    v = (Site *)getfree(&sfl);
+    v = (site *)getfree(&sfl);
     v->refcnt = 0;
     v->coord.x = xint;
     v->coord.y = yint;
@@ -510,10 +510,10 @@ Site *VoronoiDiagramGenerator::intersect(Halfedge *el1, Halfedge *el2
 //HERE
 
 /* returns 1 if p is to right of halfedge e */
-int VoronoiDiagramGenerator::right_of(Halfedge *el, Terra::vec2 *p)
+int voronoi_diagram_generator::right_of(half_edge *el, terra::vec2 *p)
 {
-    Edge *e;
-    Site *topsite;
+    edge *e;
+    site *topsite;
     int right_of_site, above, fast;
     double dxp, dyp, dxs, t1, t2, t3, yl;
 
@@ -563,21 +563,21 @@ int VoronoiDiagramGenerator::right_of(Halfedge *el, Terra::vec2 *p)
     return (el->ELpm == le ? above : !above);
 }
 
-void VoronoiDiagramGenerator::endpoint(Edge *e, int lr, Site *s)
+void voronoi_diagram_generator::endpoint(edge *e, int lr, site *s)
 {
     e->ep[lr] = s;
     ref(s);
-    if (e->ep[re - lr] == (Site *)NULL)
+    if (e->ep[re - lr] == (site *)NULL)
         return;
 
     clip_line(e);
 
     deref(e->reg[le]);
     deref(e->reg[re]);
-    makefree((Freenode *)e, &efl);
+    makefree((free_node *)e, &efl);
 }
 
-double VoronoiDiagramGenerator::dist(Site *s, Site *t)
+double voronoi_diagram_generator::dist(site *s, site *t)
 {
     double dx, dy;
     dx = s->coord.x - t->coord.x;
@@ -585,35 +585,35 @@ double VoronoiDiagramGenerator::dist(Site *s, Site *t)
     return (double)(sqrt(dx * dx + dy * dy));
 }
 
-void VoronoiDiagramGenerator::makevertex(Site *v)
+void voronoi_diagram_generator::makevertex(site *v)
 {
     v->sitenbr = nvertices;
     nvertices += 1;
     //GS unused plot: out_vertex(v);
 }
 
-void VoronoiDiagramGenerator::deref(Site *v)
+void voronoi_diagram_generator::deref(site *v)
 {
     v->refcnt -= 1;
     if (v->refcnt == 0)
-        makefree((Freenode *)v, &sfl);
+        makefree((free_node *)v, &sfl);
 }
 
-void VoronoiDiagramGenerator::ref(Site *v)
+void voronoi_diagram_generator::ref(site *v)
 {
     v->refcnt += 1;
 }
 
-//push the HalfEdge into the ordered linked list of vertices
-void VoronoiDiagramGenerator::PQinsert(Halfedge *he, Site *v, double offset)
+//push the half_edge into the ordered linked list of vertices
+void voronoi_diagram_generator::PQinsert(half_edge *he, site *v, double offset)
 {
-    Halfedge *last, *next;
+    half_edge *last, *next;
 
     he->vertex = v;
     ref(v);
     he->ystar = (double)(v->coord.y + offset);
     last = &PQhash[PQbucket(he)];
-    while ((next = last->PQnext) != (Halfedge *)NULL &&
+    while ((next = last->PQnext) != (half_edge *)NULL &&
            (he->ystar > next->ystar ||
             (he->ystar == next->ystar && v->coord.x > next->vertex->coord.x)))
     {
@@ -624,12 +624,12 @@ void VoronoiDiagramGenerator::PQinsert(Halfedge *he, Site *v, double offset)
     PQcount += 1;
 }
 
-//remove the HalfEdge from the list of vertices
-void VoronoiDiagramGenerator::PQdelete(Halfedge *he)
+//remove the half_edge from the list of vertices
+void voronoi_diagram_generator::PQdelete(half_edge *he)
 {
-    Halfedge *last;
+    half_edge *last;
 
-    if (he->vertex != (Site *)NULL)
+    if (he->vertex != (site *)NULL)
     {
         last = &PQhash[PQbucket(he)];
         while (last->PQnext != he)
@@ -638,11 +638,11 @@ void VoronoiDiagramGenerator::PQdelete(Halfedge *he)
         last->PQnext = he->PQnext;
         PQcount -= 1;
         deref(he->vertex);
-        he->vertex = (Site *)NULL;
+        he->vertex = (site *)NULL;
     };
 }
 
-int VoronoiDiagramGenerator::PQbucket(Halfedge *he)
+int voronoi_diagram_generator::PQbucket(half_edge *he)
 {
     // Gregory Soyez: the original code was
     //
@@ -682,16 +682,16 @@ int VoronoiDiagramGenerator::PQbucket(Halfedge *he)
     return (bucket);
 }
 
-int VoronoiDiagramGenerator::PQempty()
+int voronoi_diagram_generator::PQempty()
 {
     return (PQcount == 0);
 }
 
-Terra::vec2 VoronoiDiagramGenerator::PQ_min()
+terra::vec2 voronoi_diagram_generator::PQ_min()
 {
-    Terra::vec2 answer;
+    terra::vec2 answer;
 
-    while (PQhash[PQmin].PQnext == (Halfedge *)NULL)
+    while (PQhash[PQmin].PQnext == (half_edge *)NULL)
     {
         PQmin += 1;
     };
@@ -700,9 +700,9 @@ Terra::vec2 VoronoiDiagramGenerator::PQ_min()
     return (answer);
 }
 
-Halfedge *VoronoiDiagramGenerator::PQextractmin()
+half_edge *voronoi_diagram_generator::PQextractmin()
 {
-    Halfedge *curr;
+    half_edge *curr;
 
     curr = PQhash[PQmin].PQnext;
     PQhash[PQmin].PQnext = curr->PQnext;
@@ -710,63 +710,63 @@ Halfedge *VoronoiDiagramGenerator::PQextractmin()
     return (curr);
 }
 
-bool VoronoiDiagramGenerator::PQinitialize()
+bool voronoi_diagram_generator::PQinitialize()
 {
     int i;
 
     PQcount = 0;
     PQmin = 0;
     PQhashsize = 4 * sqrt_nsites;
-    //PQhash = (Halfedge *) myalloc(PQhashsize * sizeof *PQhash);
-    PQhash = (Halfedge *)myalloc(PQhashsize * sizeof(Halfedge));
+    //PQhash = (half_edge *) myalloc(PQhashsize * sizeof *PQhash);
+    PQhash = (half_edge *)myalloc(PQhashsize * sizeof(half_edge));
 
     if (PQhash == 0)
         return false;
 
     for (i = 0; i < PQhashsize; i += 1)
-        PQhash[i].PQnext = (Halfedge *)NULL;
+        PQhash[i].PQnext = (half_edge *)NULL;
 
     return true;
 }
 
-void VoronoiDiagramGenerator::freeinit(Freelist *fl, int size)
+void voronoi_diagram_generator::freeinit(free_list *fl, int size)
 {
-    fl->head = (Freenode *)NULL;
+    fl->head = (free_node *)NULL;
     fl->nodesize = size;
 }
 
-char *VoronoiDiagramGenerator::getfree(Freelist *fl)
+char *voronoi_diagram_generator::getfree(free_list *fl)
 {
     int i;
-    Freenode *t;
+    free_node *t;
 
-    if (fl->head == (Freenode *)NULL)
+    if (fl->head == (free_node *)NULL)
     {
-        t = (Freenode *)myalloc(sqrt_nsites * fl->nodesize);
+        t = (free_node *)myalloc(sqrt_nsites * fl->nodesize);
 
         if (t == 0)
             return 0;
 
-        currentMemoryBlock->next = new FreeNodeArrayList;
+        currentMemoryBlock->next = new free_node_array_list;
         currentMemoryBlock = currentMemoryBlock->next;
         currentMemoryBlock->memory = t;
         currentMemoryBlock->next = 0;
 
         for (i = 0; i < sqrt_nsites; i += 1)
-            makefree((Freenode *)((char *)t + i * fl->nodesize), fl);
+            makefree((free_node *)((char *)t + i * fl->nodesize), fl);
     };
     t = fl->head;
     fl->head = (fl->head)->nextfree;
     return ((char *)t);
 }
 
-void VoronoiDiagramGenerator::makefree(Freenode *curr, Freelist *fl)
+void voronoi_diagram_generator::makefree(free_node *curr, free_list *fl)
 {
     curr->nextfree = fl->head;
     fl->head = curr;
 }
 
-void VoronoiDiagramGenerator::cleanup()
+void voronoi_diagram_generator::cleanup()
 {
     if (sites != NULL)
     {
@@ -774,7 +774,7 @@ void VoronoiDiagramGenerator::cleanup()
         sites = 0;
     }
 
-    FreeNodeArrayList *current = NULL, *prev = NULL;
+    free_node_array_list *current = NULL, *prev = NULL;
 
     current = prev = allMemoryList;
 
@@ -796,7 +796,7 @@ void VoronoiDiagramGenerator::cleanup()
         delete current;
     }
 
-    allMemoryList = new FreeNodeArrayList;
+    allMemoryList = new free_node_array_list;
     allMemoryList->next = NULL;
     allMemoryList->memory = NULL;
     currentMemoryBlock = allMemoryList;
@@ -808,10 +808,10 @@ void VoronoiDiagramGenerator::cleanup()
         free(PQhash);
 }
 
-void VoronoiDiagramGenerator::cleanupEdges()
+void voronoi_diagram_generator::cleanupedges()
 {
-    GraphEdge *geCurrent = NULL, *gePrev = NULL;
-    geCurrent = gePrev = allEdges;
+    graph_edge *geCurrent = NULL, *gePrev = NULL;
+    geCurrent = gePrev = alledges;
 
     while (geCurrent != NULL)
     {
@@ -820,25 +820,25 @@ void VoronoiDiagramGenerator::cleanupEdges()
         delete gePrev;
     }
 
-    allEdges = 0;
+    alledges = 0;
 }
 
-void VoronoiDiagramGenerator::pushGraphEdge(double x1, double y1, double x2, double y2,
-                                            Site *s1, Site *s2)
+void voronoi_diagram_generator::pushgraph_edge(double x1, double y1, double x2, double y2,
+                                            site *s1, site *s2)
 {
-    GraphEdge *newEdge = new GraphEdge;
-    newEdge->next = allEdges;
-    allEdges = newEdge;
-    newEdge->x1 = x1;
-    newEdge->y1 = y1;
-    newEdge->x2 = x2;
-    newEdge->y2 = y2;
+    graph_edge *newedge = new graph_edge;
+    newedge->next = alledges;
+    alledges = newedge;
+    newedge->x1 = x1;
+    newedge->y1 = y1;
+    newedge->x2 = x2;
+    newedge->y2 = y2;
 
-    newEdge->point1 = s1->sitenbr;
-    newEdge->point2 = s2->sitenbr;
+    newedge->point1 = s1->sitenbr;
+    newedge->point2 = s2->sitenbr;
 }
 
-char *VoronoiDiagramGenerator::myalloc(unsigned n)
+char *voronoi_diagram_generator::myalloc(unsigned n)
 {
     char *t = 0;
     t = (char *)malloc(n);
@@ -850,32 +850,32 @@ char *VoronoiDiagramGenerator::myalloc(unsigned n)
 //
 // /* for those who don't have Cherry's plot */
 // /* #include <plot.h> */
-// void VoronoiDiagramGenerator::openpl(){}
-// void VoronoiDiagramGenerator::circle(double x, double y, double radius){}
-// void VoronoiDiagramGenerator::range(double minX, double minY, double maxX, double maxY){}
+// void voronoi_diagram_generator::openpl(){}
+// void voronoi_diagram_generator::circle(double x, double y, double radius){}
+// void voronoi_diagram_generator::range(double minX, double minY, double maxX, double maxY){}
 //
 //
 //
-// void VoronoiDiagramGenerator::out_bisector(Edge *e)
+// void voronoi_diagram_generator::out_bisector(edge *e)
 // {
 //
 //
 // }
 //
 //
-// void VoronoiDiagramGenerator::out_ep(Edge *e)
+// void voronoi_diagram_generator::out_ep(edge *e)
 // {
 //
 //
 // }
 //
-// void VoronoiDiagramGenerator::out_vertex(Site *v)
+// void voronoi_diagram_generator::out_vertex(site *v)
 // {
 //
 // }
 //
 //
-// void VoronoiDiagramGenerator::out_site(Site *s)
+// void voronoi_diagram_generator::out_site(site *s)
 // {
 //   // Gregory Soyez:
 //   //   plot was always 0 so the expression below was always false
@@ -887,12 +887,12 @@ char *VoronoiDiagramGenerator::myalloc(unsigned n)
 // }
 //
 //
-// void VoronoiDiagramGenerator::out_triple(Site *s1, Site *s2,Site * s3)
+// void voronoi_diagram_generator::out_triple(site *s1, site *s2,site * s3)
 // {
 //
 // }
 
-void VoronoiDiagramGenerator::plotinit()
+void voronoi_diagram_generator::plotinit()
 {
     double dx, dy, d;
 
@@ -908,9 +908,9 @@ void VoronoiDiagramGenerator::plotinit()
     //GS unused: range(pxmin, pymin, pxmax, pymax);
 }
 
-void VoronoiDiagramGenerator::clip_line(Edge *e)
+void voronoi_diagram_generator::clip_line(edge *e)
 {
-    Site *s1, *s2;
+    site *s1, *s2;
     double x1 = 0, x2 = 0, y1 = 0, y2 = 0; //, temp = 0;
 
     x1 = e->reg[0]->coord.x;
@@ -921,7 +921,7 @@ void VoronoiDiagramGenerator::clip_line(Edge *e)
     //if the distance between the two points this line was created from is less than
     //the square root of 2, then ignore it
     //TODO improve/remove
-    //if(sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))) < minDistanceBetweenSites)
+    //if(sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1))) < minDistanceBetweensites)
     //  {
     //    return;
     //  }
@@ -944,7 +944,7 @@ void VoronoiDiagramGenerator::clip_line(Edge *e)
     if (e->a == 1.0)
     {
         y1 = pymin;
-        if (s1 != (Site *)NULL && s1->coord.y > pymin)
+        if (s1 != (site *)NULL && s1->coord.y > pymin)
         {
             y1 = s1->coord.y;
         }
@@ -956,7 +956,7 @@ void VoronoiDiagramGenerator::clip_line(Edge *e)
         }
         x1 = e->c - e->b * y1;
         y2 = pymax;
-        if (s2 != (Site *)NULL && s2->coord.y < pymax)
+        if (s2 != (site *)NULL && s2->coord.y < pymax)
             y2 = s2->coord.y;
 
         if (y2 < pymin)
@@ -995,7 +995,7 @@ void VoronoiDiagramGenerator::clip_line(Edge *e)
     else
     {
         x1 = pxmin;
-        if (s1 != (Site *)NULL && s1->coord.x > pxmin)
+        if (s1 != (site *)NULL && s1->coord.x > pxmin)
             x1 = s1->coord.x;
         if (x1 > pxmax)
         {
@@ -1005,7 +1005,7 @@ void VoronoiDiagramGenerator::clip_line(Edge *e)
         }
         y1 = e->c - e->a * x1;
         x2 = pxmax;
-        if (s2 != (Site *)NULL && s2->coord.x < pxmax)
+        if (s2 != (site *)NULL && s2->coord.x < pxmax)
             x2 = s2->coord.x;
         if (x2 < pxmin)
         {
@@ -1044,7 +1044,7 @@ void VoronoiDiagramGenerator::clip_line(Edge *e)
     //printf("\nPushing line (%f,%f,%f,%f)",x1,y1,x2,y2);
     //fprintf(stdout, "Line with vertices (%f,%f) and (%f,%f)\n",
     //	e->reg[0]->coord.x, e->reg[1]->coord.x, e->reg[0]->coord.y, e->reg[1]->coord.y);
-    pushGraphEdge(x1, y1, x2, y2, e->reg[0], e->reg[1]);
+    pushgraph_edge(x1, y1, x2, y2, e->reg[0], e->reg[1]);
 }
 
 /* implicit parameters: nsites, sqrt_nsites, xmin, xmax, ymin, ymax,
@@ -1052,14 +1052,14 @@ void VoronoiDiagramGenerator::clip_line(Edge *e)
    Performance suffers if they are wrong; better to make nsites,
    deltax, and deltay too big than too small.  (?) */
 
-bool VoronoiDiagramGenerator::voronoi()
+bool voronoi_diagram_generator::voronoi()
 {
-    Site *newsite, *bot, *top, *temp, *p;
-    Site *v;
-    Terra::vec2 newintstar;
+    site *newsite, *bot, *top, *temp, *p;
+    site *v;
+    terra::vec2 newintstar;
     int pm;
-    Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
-    Edge *e;
+    half_edge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
+    edge *e;
 
     PQinitialize();
     bottomsite = nextone();
@@ -1078,26 +1078,26 @@ bool VoronoiDiagramGenerator::voronoi()
 
         //if the lowest site has a smaller y value than the lowest vector intersection, process the site
         //otherwise process the vector intersection
-        if (newsite != (Site *)NULL && (PQempty() || newsite->coord.y < newintstar.y || (newsite->coord.y == newintstar.y && newsite->coord.x < newintstar.x)))
+        if (newsite != (site *)NULL && (PQempty() || newsite->coord.y < newintstar.y || (newsite->coord.y == newintstar.y && newsite->coord.x < newintstar.x)))
         { /* new site is smallest - this is a site event*/
             //GS unused plot: out_site(newsite);						//output the site
-            lbnd = ELleftbnd(&(newsite->coord)); //get the first HalfEdge to the LEFT of the new site
-            rbnd = ELright(lbnd);                //get the first HalfEdge to the RIGHT of the new site
+            lbnd = ELleftbnd(&(newsite->coord)); //get the first half_edge to the LEFT of the new site
+            rbnd = ELright(lbnd);                //get the first half_edge to the RIGHT of the new site
             bot = rightreg(lbnd);                //if this halfedge has no edge, , bot = bottom site (whatever that is)
             e = bisect(bot, newsite);            //create a new edge that bisects
-            bisector = HEcreate(e, le);          //create a new HalfEdge, setting its ELpm field to 0
+            bisector = HEcreate(e, le);          //create a new half_edge, setting its ELpm field to 0
             ELinsert(lbnd, bisector);            //insert this new bisector edge between the left and right vectors in a linked list
 
-            if ((p = intersect(lbnd, bisector)) != (Site *)NULL) //if the new bisector intersects with the left edge, remove the left edge's vertex, and put in the new one
+            if ((p = intersect(lbnd, bisector)) != (site *)NULL) //if the new bisector intersects with the left edge, remove the left edge's vertex, and put in the new one
             {
                 PQdelete(lbnd);
                 PQinsert(lbnd, p, dist(p, newsite));
             };
             lbnd = bisector;
-            bisector = HEcreate(e, re); //create a new HalfEdge, setting its ELpm field to 1
+            bisector = HEcreate(e, re); //create a new half_edge, setting its ELpm field to 1
             ELinsert(lbnd, bisector);   //insert the new HE to the right of the original bisector earlier in the IF stmt
 
-            if ((p = intersect(bisector, rbnd)) != (Site *)NULL) //if this new bisector intersects with the
+            if ((p = intersect(bisector, rbnd)) != (site *)NULL) //if this new bisector intersects with the
             {
                 PQinsert(bisector, p, dist(p, newsite)); //push the HE into the ordered linked list of vertices
             };
@@ -1105,49 +1105,49 @@ bool VoronoiDiagramGenerator::voronoi()
         }
         else if (!PQempty()) /* intersection is smallest - this is a vector event */
         {
-            lbnd = PQextractmin(); //pop the HalfEdge with the lowest vector off the ordered list of vectors
-            llbnd = ELleft(lbnd);  //get the HalfEdge to the left of the above HE
-            rbnd = ELright(lbnd);  //get the HalfEdge to the right of the above HE
-            rrbnd = ELright(rbnd); //get the HalfEdge to the right of the HE to the right of the lowest HE
-            bot = leftreg(lbnd);   //get the Site to the left of the left HE which it bisects
-            top = rightreg(rbnd);  //get the Site to the right of the right HE which it bisects
+            lbnd = PQextractmin(); //pop the half_edge with the lowest vector off the ordered list of vectors
+            llbnd = ELleft(lbnd);  //get the half_edge to the left of the above HE
+            rbnd = ELright(lbnd);  //get the half_edge to the right of the above HE
+            rrbnd = ELright(rbnd); //get the half_edge to the right of the HE to the right of the lowest HE
+            bot = leftreg(lbnd);   //get the site to the left of the left HE which it bisects
+            top = rightreg(rbnd);  //get the site to the right of the right HE which it bisects
 
             //GS unused plot: out_triple(bot, top, rightreg(lbnd));		//output the triple of sites, stating that a circle goes through them
 
             v = lbnd->vertex;                      //get the vertex that caused this event
             makevertex(v);                         //set the vertex number - couldn't do this earlier since we didn't know when it would be processed
-            endpoint(lbnd->ELedge, lbnd->ELpm, v); //set the endpoint of the left HalfEdge to be this vector
-            endpoint(rbnd->ELedge, rbnd->ELpm, v); //set the endpoint of the right HalfEdge to be this vector
+            endpoint(lbnd->ELedge, lbnd->ELpm, v); //set the endpoint of the left half_edge to be this vector
+            endpoint(rbnd->ELedge, rbnd->ELpm, v); //set the endpoint of the right half_edge to be this vector
             ELdelete(lbnd);                        //mark the lowest HE for deletion - can't delete yet because there might be pointers to it in Hash Map
             PQdelete(rbnd);                        //remove all vertex events to do with the  right HE
             ELdelete(rbnd);                        //mark the right HE for deletion - can't delete yet because there might be pointers to it in Hash Map
             pm = le;                               //set the pm variable to zero
 
-            if (bot->coord.y > top->coord.y) //if the site to the left of the event is higher than the Site
+            if (bot->coord.y > top->coord.y) //if the site to the left of the event is higher than the site
             {                                //to the right of it, then swap them and set the 'pm' variable to 1
                 temp = bot;
                 bot = top;
                 top = temp;
                 pm = re;
             }
-            e = bisect(bot, top); //create an Edge (or line) that is between the two Sites. This creates
+            e = bisect(bot, top); //create an edge (or line) that is between the two sites. This creates
             //the formula of the line, and assigns a line number to it
-            bisector = HEcreate(e, pm); //create a HE from the Edge 'e', and make it point to that edge with its ELedge field
+            bisector = HEcreate(e, pm); //create a HE from the edge 'e', and make it point to that edge with its ELedge field
             ELinsert(llbnd, bisector);  //insert the new bisector to the right of the left HE
             endpoint(e, re - pm, v);    //set one endpoint to the new edge to be the vector point 'v'.
             //If the site to the left of this bisector is higher than the right
-            //Site, then this endpoint is put in position 0; otherwise in pos 1
+            //site, then this endpoint is put in position 0; otherwise in pos 1
             deref(v); //delete the vector 'v'
 
             //if left HE and the new bisector don't intersect, then delete the left HE, and reinsert it
-            if ((p = intersect(llbnd, bisector)) != (Site *)NULL)
+            if ((p = intersect(llbnd, bisector)) != (site *)NULL)
             {
                 PQdelete(llbnd);
                 PQinsert(llbnd, p, dist(p, bot));
             };
 
             //if right HE and the new bisector don't intersect, then reinsert it
-            if ((p = intersect(bisector, rrbnd)) != (Site *)NULL)
+            if ((p = intersect(bisector, rrbnd)) != (site *)NULL)
             {
                 PQinsert(bisector, p, dist(p, bot));
             };
@@ -1170,7 +1170,7 @@ bool VoronoiDiagramGenerator::voronoi()
 
 int scomp(const void *p1, const void *p2)
 {
-    Terra::vec2 *s1 = (Terra::vec2 *)p1, *s2 = (Terra::vec2 *)p2;
+    terra::vec2 *s1 = (terra::vec2 *)p1, *s2 = (terra::vec2 *)p2;
     if (s1->y < s2->y)
         return (-1);
     if (s1->y > s2->y)
@@ -1183,9 +1183,9 @@ int scomp(const void *p1, const void *p2)
 }
 
 /* return a single in-storage site */
-Site* VoronoiDiagramGenerator::nextone()
+site* voronoi_diagram_generator::nextone()
 {
-    Site *s;
+    site *s;
     if (siteidx < nsites)
     {
         s = &sites[siteidx];
@@ -1193,5 +1193,5 @@ Site* VoronoiDiagramGenerator::nextone()
         return (s);
     }
     else
-        return ((Site *)NULL);
+        return ((site *)NULL);
 }

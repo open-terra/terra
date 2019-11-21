@@ -2,7 +2,7 @@
 
 #include <glm/vec2.hpp>
 
-namespace Terra
+namespace terra
 {
     typedef glm::dvec2 vec2;
 

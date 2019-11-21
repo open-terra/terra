@@ -2,20 +2,20 @@
 
 #include <limits>   
 
-namespace Utils
+namespace utils
 {
-    constexpr double _sqrtNewtonRaphson(double x, double curr, double prev)
+    constexpr double _sqrt_newton_raphson(double x, double curr, double prev)
     {
         return curr == prev
             ? curr
-            : _sqrtNewtonRaphson(x, 0.5 * (curr + x / curr), curr);
+            : _sqrt_newton_raphson(x, 0.5 * (curr + x / curr), curr);
     }
 
     // Constant expresion square root implementation https://stackoverflow.com/questions/8622256/in-c11-is-sqrt-defined-as-constexpr
-    constexpr double FastSqrt(double x)
+    constexpr double fast_sqrt(double x)
     {
         return (x >= 0 && x < std::numeric_limits<double>::infinity())
-            ? _sqrtNewtonRaphson(x, x, 0)
+            ? _sqrt_newton_raphson(x, x, 0)
             : std::numeric_limits<double>::quiet_NaN();
     }
 }

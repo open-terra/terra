@@ -1,9 +1,9 @@
 #pragma once
 
-namespace Utils
+namespace utils
 {
     template <typename T>
-    constexpr T FastCeil(double x)
+    constexpr T fast_ceil(double x)
     {
         T xi = static_cast<T>(x);
         return x > xi ? xi + 1 : xi;

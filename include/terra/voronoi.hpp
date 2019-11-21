@@ -11,13 +11,13 @@
 #define le 0
 #define re 1
 
-namespace Terra
+namespace terra
 {
     /*
-    * GraphEdge
+    * graph_edge
     * handle an edge of the Voronoi Diagram.
     */
-    class GraphEdge
+    class graph_edge
     {
     public:
         /// coordinates of the extreme points
@@ -27,186 +27,186 @@ namespace Terra
         int point1, point2;
 
         /// pointer to the next edge
-        GraphEdge* next;
+        graph_edge* next;
     };
 
     /*
-    * Site
+    * site
     * structure used both for particle sites and for vertices.
     */
-    class Site
+    class site
     {
     public:
-        Terra::vec2	coord;
+        terra::vec2	coord;
         int sitenbr;
         int refcnt;
     };
 
 
 
-    class Freenode
+    class free_node
     {
     public:
-        Freenode *nextfree;
+        free_node *nextfree;
     };
 
 
-    class FreeNodeArrayList
+    class free_node_array_list
     {
     public:
-        Freenode* memory;
-        FreeNodeArrayList* next;
+        free_node* memory;
+        free_node_array_list* next;
     };
 
 
-    class Freelist
+    class free_list
     {
     public:
-        Freenode *head;
+        free_node *head;
         int nodesize;
     };
 
-    class Edge
+    class edge
     {
     public:
         double a,b,c;
-        Site *ep[2];
-        Site *reg[2];
+        site *ep[2];
+        site *reg[2];
         int edgenbr;
     };
 
 
-    class Halfedge
+    class half_edge
     {
     public:
-        Halfedge *ELleft, *ELright;
-        Edge *ELedge;
+        half_edge *ELleft, *ELright;
+        edge *ELedge;
         int ELrefcnt;
         char ELpm;
-        Site *vertex;
+        site *vertex;
         volatile double ystar;
-        Halfedge *PQnext;
+        half_edge *PQnext;
     };
 
     /*
-    * VoronoiDiagramGenerator
+    * voronoi_diagram_generator
     * Shane O'Sullivan C++ version of Stephan Fortune Voronoi diagram
     * generator
     */
-    class VoronoiDiagramGenerator
+    class voronoi_diagram_generator
     {
     public:
-        VoronoiDiagramGenerator();
-        ~VoronoiDiagramGenerator();
+        voronoi_diagram_generator();
+        ~voronoi_diagram_generator();
 
-        bool generateVoronoi(std::vector<Terra::vec2> *_parent_sites,
+        bool generate_voronoi(std::vector<terra::vec2> *_parent_sites,
             double minX, double maxX, double minY, double maxY,
             double minDist=0);
 
-        inline void resetIterator()
+        inline void reset_iterator()
         {
-            iteratorEdges = allEdges;
+            iteratoredges = alledges;
         }
 
-        bool getNext(GraphEdge **e)
+        bool get_next(graph_edge **e)
         {
-            if(iteratorEdges == 0)
+            if(iteratoredges == 0)
                 return false;
 
-            *e = iteratorEdges;
-            iteratorEdges = iteratorEdges->next;
+            *e = iteratoredges;
+            iteratoredges = iteratoredges->next;
             return true;
         }
 
-        std::vector<Terra::vec2> *parent_sites;
+        std::vector<terra::vec2> *parent_sites;
         int n_parent_sites;
 
     private:
         void cleanup();
-        void cleanupEdges();
-        char *getfree(Freelist *fl);
-        Halfedge *PQfind();
+        void cleanupedges();
+        char *getfree(free_list *fl);
+        half_edge *PQfind();
         int PQempty();
 
-        Halfedge **ELhash;
-        Halfedge *HEcreate(), *ELleft(), *ELright(), *ELleftbnd();
-        Halfedge *HEcreate(Edge *e,int pm);
+        half_edge **ELhash;
+        half_edge *HEcreate(), *ELleft(), *ELright(), *ELleftbnd();
+        half_edge *HEcreate(edge *e,int pm);
 
-        Terra::vec2 PQ_min();
-        Halfedge *PQextractmin();
-        void freeinit(Freelist *fl,int size);
-        void makefree(Freenode *curr,Freelist *fl);
+        terra::vec2 PQ_min();
+        half_edge *PQextractmin();
+        void freeinit(free_list *fl,int size);
+        void makefree(free_node *curr,free_list *fl);
         void geominit();
         void plotinit();
 
         // GS: removed the unused (always ==0) argument
         bool voronoi(/*int triangulate*/);
-        void ref(Site *v);
-        void deref(Site *v);
-        void endpoint(Edge *e,int lr,Site * s);
+        void ref(site *v);
+        void deref(site *v);
+        void endpoint(edge *e,int lr,site * s);
 
-        void ELdelete(Halfedge *he);
-        Halfedge *ELleftbnd(Terra::vec2 *p);
-        Halfedge *ELright(Halfedge *he);
-        void makevertex(Site *v);
+        void ELdelete(half_edge *he);
+        half_edge *ELleftbnd(terra::vec2 *p);
+        half_edge *ELright(half_edge *he);
+        void makevertex(site *v);
 
-        void PQinsert(Halfedge *he,Site * v, double offset);
-        void PQdelete(Halfedge *he);
+        void PQinsert(half_edge *he,site * v, double offset);
+        void PQdelete(half_edge *he);
         bool ELinitialize();
-        void ELinsert(Halfedge *lb, Halfedge *newHe);
-        Halfedge * ELgethash(int b);
-        Halfedge *ELleft(Halfedge *he);
-        Site *leftreg(Halfedge *he);
+        void ELinsert(half_edge *lb, half_edge *newHe);
+        half_edge * ELgethash(int b);
+        half_edge *ELleft(half_edge *he);
+        site *leftreg(half_edge *he);
         bool PQinitialize();
-        int PQbucket(Halfedge *he);
-        void clip_line(Edge *e);
+        int PQbucket(half_edge *he);
+        void clip_line(edge *e);
         char *myalloc(unsigned n);
-        int right_of(Halfedge *el,Terra::vec2 *p);
+        int right_of(half_edge *el,terra::vec2 *p);
 
-        Site *rightreg(Halfedge *he);
-        Edge *bisect(Site *s1, Site *s2);
-        double dist(Site *s,Site *t);
+        site *rightreg(half_edge *he);
+        edge *bisect(site *s1, site *s2);
+        double dist(site *s,site *t);
 
         // GS: 'p' is unused and always ==0 (see also comment by
         //     S. O'Sullivan in the source file), so we remove it
-        Site *intersect(Halfedge *el1, Halfedge *el2 /*, Terra::vec2 *p=0*/);
+        site *intersect(half_edge *el1, half_edge *el2 /*, terra::vec2 *p=0*/);
 
-        Site *nextone();
+        site *nextone();
 
-        void pushGraphEdge(double x1, double y1, double x2, double y2,
-            Site *s1, Site *s2);
+        void pushgraph_edge(double x1, double y1, double x2, double y2,
+            site *s1, site *s2);
 
         // Gregory Soyez: unused plotting methods
         // void openpl();
         // void circle(double x, double y, double radius);
         // void range(double minX, double minY, double maxX, double maxY);
         //
-        // void out_bisector(Edge *e);
-        // void out_ep(Edge *e);
-        // void out_vertex(Site *v);
-        // void out_site(Site *s);
+        // void out_bisector(edge *e);
+        // void out_ep(edge *e);
+        // void out_vertex(site *v);
+        // void out_site(site *s);
         //
-        // void out_triple(Site *s1, Site *s2,Site * s3);
+        // void out_triple(site *s1, site *s2,site * s3);
 
-        Freelist hfl;
-        Halfedge *ELleftend, *ELrightend;
+        free_list hfl;
+        half_edge *ELleftend, *ELrightend;
         int ELhashsize;
 
         int sorted, debug;
         double xmin, xmax, ymin, ymax, deltax, deltay;
 
-        Site *sites;
+        site *sites;
         int nsites;
         int siteidx;
         int sqrt_nsites;
         int nvertices;
-        Freelist sfl;
-        Site *bottomsite;
+        free_list sfl;
+        site *bottomsite;
 
         int nedges;
-        Freelist efl;
+        free_list efl;
         int PQhashsize;
-        Halfedge *PQhash;
+        half_edge *PQhash;
         int PQcount;
         int PQmin;
 
@@ -216,13 +216,13 @@ namespace Terra
 
         double borderMinX, borderMaxX, borderMinY, borderMaxY;
 
-        FreeNodeArrayList* allMemoryList;
-        FreeNodeArrayList* currentMemoryBlock;
+        free_node_array_list* allMemoryList;
+        free_node_array_list* currentMemoryBlock;
 
-        GraphEdge* allEdges;
-        GraphEdge* iteratorEdges;
+        graph_edge* alledges;
+        graph_edge* iteratoredges;
 
-        double minDistanceBetweenSites;
+        double minDistanceBetweensites;
     };
 
     int scomp(const void *p1,const void *p2);

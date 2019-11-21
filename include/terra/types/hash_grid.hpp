@@ -9,9 +9,9 @@
 #include "vec2.hpp"
 #include "../utils/utils.hpp"
 
-namespace Terra
+namespace terra
 {
-    class HashGrid
+    class hash_grid
     {
         class double_index_error : public std::exception
         {
@@ -21,20 +21,23 @@ namespace Terra
             }
         };
 
-        int64_t gridSizeX;
-        int64_t gridSizeY;
-        int64_t neighbours;
-        double bucketSize;
+
+        const double sqrt1_2 = 0.7071067811865476;
+
+        int64_t grid_size_x;
+        int64_t grid_size_y;
+        int64_t n;
+        double bucket_size;
 
         std::vector<int64_t> hashtable;
 
     public:
-        HashGrid();
-        HashGrid(int64_t sizeX, int64_t sizeY, double radius);
+        hash_grid();
+        hash_grid(int64_t size_x, int64_t size_y, double radius);
 
-        void Set(const Terra::vec2 &point, int64_t index);
-        int64_t At(const Terra::vec2 &point);
+        void set(const terra::vec2 &point, int64_t index);
+        int64_t at(const terra::vec2 &point);
 
-        std::vector<int64_t> Neighbours(const Terra::vec2& point);
+        std::vector<int64_t> neighbours(const terra::vec2& point);
     };
 }

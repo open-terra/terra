@@ -27,7 +27,7 @@ std::mt19937 gen(rd());
 
 Now we have our random engine wew can create a random distribution within the bounds of the grid and thus sample to random points to get our first position.
 ```CPP
-std::uniform_real_distribution<> dis(0.0, (double)std::min(sizeX, sizeY));
+std::uniform_real_distribution<> dis(0.0, (double)std::min(size_x, size_y));
 points.push_back(cp::Vector3(dis(gen), dis(gen)));
 active.push_back(0);
 ```
@@ -36,8 +36,8 @@ We can also set the valid bounds for the next point as the "_radius_" to the "_s
 ```CPP
 double bx0 = radius;
 double by0 = radius;
-double bx1 = sizeX - radius;
-double by1 = sizeY - radius;
+double bx1 = size_x - radius;
+double by1 = size_y - radius;
 ```
 
 ### Creating the rest of the points
@@ -63,7 +63,7 @@ double inner = this->radius * this->radius;
 double outer = (4 * inner) - inner;
 
 double theta = normal(gen) * 2 * pi; // Random radian on the circumference of the circle
-double r = Utils::FastSqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
+double r = utils::fast_sqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
 cp::Vector3 point(  points[i].x + (r * std::cos(theta)),
                     points[i].y + (r * std::sin(theta)));
 ```
@@ -88,7 +88,7 @@ int64_t y1 = std::min<int64_t>(y + n + 1, hashtableY);
 ```
 Then the all of the location are visited via a loop and we check if the location holds a point and if so whether the new point is to close.
 ```CPP
-int64_t index = hashtable[(y * sizeY) + x];
+int64_t index = hashtable[(y * size_y) + x];
 if (index == -1)
 {
     continue;
@@ -108,7 +108,7 @@ count++;
 active.push_back(count);
 hashtable
 [
-    std::max((int64_t)(point.y / cellSize) * sizeY, 0ll) +
+    std::max((int64_t)(point.y / cellSize) * size_y, 0ll) +
     std::max((int64_t)(point.x / cellSize), 0ll)
 ] = count;
 ```

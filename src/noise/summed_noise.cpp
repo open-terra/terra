@@ -1,10 +1,10 @@
 #include "terra/noise/summed_noise.hpp"
 
-using namespace Terra::Noise;
+using namespace terra::noise;
 
 template<class T>
-constexpr SummedNoise<T>::SummedNoise(int64_t seed, size_t octaves, double lunacracity, double persistence) :
-    noise(T(seed)),
+constexpr summed_noise<T>::summed_noise(int64_t seed, size_t octaves, double lunacracity, double persistence) :
+    noise_source(T(seed)),
     octaves(octaves),
     lunacracity(lunacracity),
     persistence(persistence)
@@ -12,8 +12,8 @@ constexpr SummedNoise<T>::SummedNoise(int64_t seed, size_t octaves, double lunac
 }
 
 template<class T>
-constexpr SummedNoise<T>::SummedNoise(T& noise, size_t octaves, double lunacracity, double persistence) :
-    noise(noise),
+constexpr summed_noise<T>::summed_noise(T& noise_source, size_t octaves, double lunacracity, double persistence) :
+    noise_source(noise),
     octaves(octaves),
     lunacracity(lunacracity),
     persistence(persistence)
@@ -21,16 +21,16 @@ constexpr SummedNoise<T>::SummedNoise(T& noise, size_t octaves, double lunacraci
 }
 
 template<class T>
-constexpr double SummedNoise<T>::Noise(double x, double y)
+constexpr double summed_noise<T>::noise(double x, double y)
 {
     double frequency = lunacracity;
     double amplitude = persistence;
     double maxValue = amplitude;  // Used for normalizing result to 0.0 - 1.0
 
-    double result = noise.Noise(x, y) * amplitude;
+    double result = noise.noise(x, y) * amplitude;
     for(int i = 1; i < octaves; i++)
     {
-        result += noise.Noise(x * frequency, y * frequency) * amplitude;
+        result += noise.noise(x * frequency, y * frequency) * amplitude;
         
         maxValue += amplitude;
         
@@ -42,16 +42,16 @@ constexpr double SummedNoise<T>::Noise(double x, double y)
 }
 
 template<class T>
-constexpr double SummedNoise<T>::Noise(double x, double y, double z)
+constexpr double summed_noise<T>::noise(double x, double y, double z)
 {
     double frequency = lunacracity;
     double amplitude = persistence;
     double maxValue = amplitude;  // Used for normalizing result to 0.0 - 1.0
 
-    double result = noise.Noise(x, y, z) * amplitude;
+    double result = noise.noise(x, y, z) * amplitude;
     for(int i = 1; i < octaves; i++)
     {
-        result += noise.Noise(x * frequency, y * frequency, z * frequency) * amplitude;
+        result += noise.noise(x * frequency, y * frequency, z * frequency) * amplitude;
         
         maxValue += amplitude;
         
@@ -63,16 +63,16 @@ constexpr double SummedNoise<T>::Noise(double x, double y, double z)
 }
 
 template<class T>
-constexpr double SummedNoise<T>::Noise(double x, double y, double z, double w)
+constexpr double summed_noise<T>::noise(double x, double y, double z, double w)
 {
     double frequency = lunacracity;
     double amplitude = persistence;
     double maxValue = amplitude;  // Used for normalizing result to 0.0 - 1.0
 
-    double result = noise.Noise(x, y, z, w) * amplitude;
+    double result = noise.noise(x, y, z, w) * amplitude;
     for(int i = 1; i < octaves; i++)
     {
-        result += noise.Noise(x * frequency, y * frequency, z * frequency, w * frequency) * amplitude;
+        result += noise.noise(x * frequency, y * frequency, z * frequency, w * frequency) * amplitude;
         
         maxValue += amplitude;
         

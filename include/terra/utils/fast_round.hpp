@@ -3,11 +3,11 @@
 #include "fast_ceil.hpp"
 #include "fast_floor.hpp"
 
-namespace Utils
+namespace utils
 {
     template <typename T>
-    constexpr T FastRound(double x)
+    constexpr T fast_round(double x)
     {
-        return x > 0.0 ? FastFloor<T>(x + 0.5)  : FastCeil<T>(x - 0.5);
+        return x > 0.0 ? fast_floor<T>(x + 0.5)  : fast_ceil<T>(x - 0.5);
     }
 }

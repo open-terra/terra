@@ -11,16 +11,16 @@
 #include "terra/types/hash_grid.hpp"
 #include "terra/poisson_disc_sampler.hpp"
 
-TEST_CASE("can sample points correctly", "[PoissonDiscSampler]")
+TEST_CASE("can sample points correctly", "[poisson_disc_sampler]")
 {
 	const int64_t size_x = 1000;
 	const int64_t size_y = 500;
 	const double radius = 10.0;
 
-	std::vector<Terra::vec2> points;
-	Terra::HashGrid grid(size_x, size_y, radius);
+	std::vector<terra::vec2> points;
+	terra::hash_grid grid(size_x, size_y, radius);
 
-    Terra::PoissonDiscSampler sampler(points, grid, size_x, size_y, radius, 100);
+    terra::poisson_disc_sampler sampler(points, grid, size_x, size_y, radius, 100);
 
-	REQUIRE(sampler.Sample() >= 2500);
+	REQUIRE(sampler.sample() >= 2500);
 }

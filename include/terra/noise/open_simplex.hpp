@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <memory>
 
-namespace Terra::Noise
+namespace terra::noise
 {
-    class OpenSimplex
+    class open_simplex
     {
     private:
         const double STRETCH_CONSTANT_2D    = -0.211324865405187;   // (1 / sqrt(2 + 1) - 1 ) / 2;
@@ -80,15 +80,15 @@ namespace Terra::Noise
         std::array<int16_t, 256> permGradIndex3D;
 
     public:
-        constexpr OpenSimplex(int64_t seed);
+        constexpr open_simplex(int64_t seed);
 
-        constexpr double Noise(double x, double y);
-        constexpr double Noise(double x, double y, double z);
-        constexpr double Noise(double x, double y, double z, double w);
+        constexpr double noise(double x, double y);
+        constexpr double noise(double x, double y, double z);
+        constexpr double noise(double x, double y, double z, double w);
 
     private:
-        constexpr double Extrapolate2(int xsb, int ysb, double dx, double dy);
-        constexpr double Extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz);
-        constexpr double Extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw);
+        constexpr double extrapolate2(int xsb, int ysb, double dx, double dy);
+        constexpr double extrapolate3(int xsb, int ysb, int zsb, double dx, double dy, double dz);
+        constexpr double extrapolate4(int xsb, int ysb, int zsb, int wsb, double dx, double dy, double dz, double dw);
     };
 }
