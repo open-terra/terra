@@ -1,16 +1,9 @@
 #pragma once
 
-#include <algorithm>
-#include <cmath>
-#include <exception>
-#include <iostream>
 #include <limits>
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include "types/vec2.hpp"
-#include "math/fast_mod.hpp"
 
 namespace terra
 {

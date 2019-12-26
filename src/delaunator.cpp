@@ -1,5 +1,18 @@
 #include "terra/delaunator.hpp"
 
+#include <algorithm>
+#include <cmath>
+#include <exception>
+#include <memory>
+#include <stdexcept>
+#include <utility>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
+
+#include "terra/math/fast_abs.hpp"
+#include "terra/math/fast_mod.hpp"
+
 using namespace terra;
 
 // Kahan and Babuska summation, Neumaier variant; accumulates less FP error
@@ -12,19 +25,11 @@ inline double sum(const std::vector<double>& x)
     {
         const double k = x[i];
         const double m = sum + k;
-        err += std::fabs(sum) >= std::fabs(k) ? sum - m + k : k - m + sum;
+        err += terra::fast_abs(sum) >= terra::fast_abs(k) ? sum - m + k : k - m + sum;
         sum = m;
     }
 
     return sum + err;
-}
-
-inline double dist(const terra::vec2& a, const terra::vec2& b)
-{
-    const double dx = a.x - b.x;
-    const double dy = a.y - b.y;
-
-    return dx * dx + dy * dy;
 }
 
 inline double
@@ -42,8 +47,7 @@ circumradius(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
     const double x = (ey * bl - dy * cl) * 0.5 / d;
     const double y = (dx * cl - ex * bl) * 0.5 / d;
 
-    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) &&
-        (d > 0.0 || d < 0.0))
+    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) && (d > 0.0 || d < 0.0))
     {
         return x * x + y * y;
     }
@@ -87,8 +91,8 @@ struct compare
         const terra::vec2& iv = coords[i];
         const terra::vec2& jv = coords[j];
 
-        const double d1 = dist(iv, c);
-        const double d2 = dist(jv, c);
+        const double d1 = glm::distance2(iv, c);
+        const double d2 = glm::distance2(jv, c);
 
         const double diff1 = d1 - d2;
         const double diff2 = iv.x - jv.x;
@@ -131,7 +135,7 @@ inline bool in_circle(const terra::vec2& a,
 
 inline bool check_pts_equal(const terra::vec2& a, const terra::vec2& b)
 {
-    return std::fabs(a.x - b.x) <= EPSILON && std::fabs(a.y - b.y) <= EPSILON;
+    return terra::fast_abs(a.x - b.x) <= EPSILON && terra::fast_abs(a.y - b.y) <= EPSILON;
 }
 
 // monotonically increases with real angle, but doesn't need expensive
@@ -147,7 +151,7 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
     coords(in_coords), triangles(), halfedges(), hull_prev(), hull_next(),
     hull_tri(), hull_start(), m_hash(), m_hash_size(), m_edge_stack()
 {
-    size_t n = coords.size();
+    size_t n = this->coords.size();
 
     double max_x = std::numeric_limits<double>::min();
     double max_y = std::numeric_limits<double>::min();
@@ -156,9 +160,9 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
     std::vector<size_t> ids;
     ids.reserve(n);
 
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; ++i)
     {
-        auto p = coords[2 * i];
+        terra::vec2 p = this->coords[i];
         const double x = p.x;
         const double y = p.y;
 
@@ -182,9 +186,9 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
     size_t i2 = INVALID_INDEX;
 
     // pick a seed point close to the centroid
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; ++i)
     {
-        const double d = dist(c, coords[i]);
+        const double d = glm::distance2(c, coords[i]);
         if (d < min_dist)
         {
             i0 = i;
@@ -192,16 +196,16 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         }
     }
 
-    auto i0v = coords[i0];
+    terra::vec2 i0v = this->coords[i0];
 
     min_dist = std::numeric_limits<double>::max();
 
     // find the point closest to the seed
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; ++i)
     {
         if (i == i0)
             continue;
-        const double d = dist(i0v, coords[i]);
+        const double d = glm::distance2(i0v, coords[i]);
         if (d < min_dist && d > 0.0)
         {
             i1 = i;
@@ -209,7 +213,7 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         }
     }
 
-    auto i1v = coords[i1];
+    terra::vec2 i1v = this->coords[i1];
 
     double min_radius = std::numeric_limits<double>::max();
 
@@ -233,7 +237,7 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         throw std::runtime_error("not triangulation");
     }
 
-    auto i2v = coords[i2];
+    terra::vec2 i2v = this->coords[i2];
 
     if (orient(i0v, i1v, i2v))
     {
