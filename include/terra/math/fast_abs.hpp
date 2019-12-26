@@ -1,6 +1,6 @@
 #pragma once
 
-namespace utils
+namespace terra
 {
     template<typename T>
     constexpr T fast_abs(T x)

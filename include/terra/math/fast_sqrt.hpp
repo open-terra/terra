@@ -2,7 +2,7 @@
 
 #include <limits>
 
-namespace utils
+namespace terra
 {
     constexpr double _sqrt_newton_raphson(double x, double curr, double prev)
     {

@@ -1,6 +1,6 @@
 #include "terra/noise/open_simplex.hpp"
 
-#include "terra/utils/fast_floor.hpp"
+#include "terra/math/fast_floor.hpp"
 
 using namespace terra::noise;
 
@@ -40,8 +40,8 @@ constexpr double open_simplex::noise(double x, double y)
 
     /* Floor to get grid coordinates of rhombus (stretched square) super-cell
      * origin. */
-    int xsb = utils::fast_floor<int>(xs);
-    int ysb = utils::fast_floor<int>(ys);
+    int xsb = terra::fast_floor<int>(xs);
+    int ysb = terra::fast_floor<int>(ys);
 
     /* Skew out to get actual coordinates of rhombus origin. We'll need these
      * later. */
@@ -189,9 +189,9 @@ constexpr double open_simplex::noise(double x, double y, double z)
 
     /* Floor to get simplectic honeycomb coordinates of rhombohedron (stretched
      * cube) super-cell origin. */
-    int xsb = utils::fast_floor<int>(xs);
-    int ysb = utils::fast_floor<int>(ys);
-    int zsb = utils::fast_floor<int>(zs);
+    int xsb = terra::fast_floor<int>(xs);
+    int ysb = terra::fast_floor<int>(ys);
+    int zsb = terra::fast_floor<int>(zs);
 
     /* Skew out to get actual coordinates of rhombohedron origin. We'll need
      * these later. */
@@ -950,10 +950,10 @@ constexpr double open_simplex::noise(double x, double y, double z, double w)
 
     /* Floor to get simplectic honeycomb coordinates of rhombo-hypercube
      * super-cell origin. */
-    int xsb = utils::fast_floor<int>(xs);
-    int ysb = utils::fast_floor<int>(ys);
-    int zsb = utils::fast_floor<int>(zs);
-    int wsb = utils::fast_floor<int>(ws);
+    int xsb = terra::fast_floor<int>(xs);
+    int ysb = terra::fast_floor<int>(ys);
+    int zsb = terra::fast_floor<int>(zs);
+    int wsb = terra::fast_floor<int>(ws);
 
     /* Skew out to get actual coordinates of stretched rhombo-hypercube origin.
      * We'll need these later. */

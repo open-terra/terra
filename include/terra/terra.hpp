@@ -8,5 +8,6 @@
 #include "types/vec3.hpp"
 
 #include "delaunator.hpp"
+#include "math.hpp"
 #include "poisson_disc_sampler.hpp"
 #include "voronoi.hpp"

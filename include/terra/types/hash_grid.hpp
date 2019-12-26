@@ -6,7 +6,6 @@
 #include <memory>
 #include <vector>
 
-#include "../utils/utils.hpp"
 #include "vec2.hpp"
 
 namespace terra

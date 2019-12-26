@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "../utils/fast_abs.hpp"
+#include "../math/fast_abs.hpp"
 
 namespace terra::noise
 {

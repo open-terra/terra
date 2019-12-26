@@ -1,8 +1,8 @@
 #include <catch2/catch.hpp>
 
-#include "terra/utils/utils.hpp"
+#include "terra/math.hpp"
 
-using namespace utils;
+using namespace terra;
 
 TEST_CASE("fast_abs", "[utils]")
 {

@@ -3,7 +3,7 @@
 #include "fast_ceil.hpp"
 #include "fast_floor.hpp"
 
-namespace utils
+namespace terra
 {
     template<typename T>
     constexpr T fast_round(double x)

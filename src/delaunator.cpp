@@ -300,7 +300,7 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         size_t key = hash_key(current_point);
         for (size_t j = 0; j < m_hash_size; j++)
         {
-            start = m_hash[utils::fast_mod<size_t>(key + j, m_hash_size)];
+            start = m_hash[terra::fast_mod<size_t>(key + j, m_hash_size)];
             if (start != INVALID_INDEX && start != hull_next[start])
                 break;
         }
@@ -503,7 +503,7 @@ inline size_t delaunator::hash_key(const terra::vec2& vec) const
 {
     const double dx = vec.x - m_centre.x;
     const double dy = vec.y - m_centre.y;
-    return utils::fast_mod<size_t>(
+    return terra::fast_mod<size_t>(
         static_cast<size_t>(std::llround(std::floor(
             pseudo_angle(dx, dy) * static_cast<double>(m_hash_size)))),
         m_hash_size);

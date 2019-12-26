@@ -5,7 +5,7 @@
 #include <stack>
 #include <vector>
 
-#include "terra/types/vec2.hpp"
+#include "types/vec2.hpp"
 
 namespace terra
 {

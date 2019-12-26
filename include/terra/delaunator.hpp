@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "types/vec2.hpp"
-#include "utils/fast_mod.hpp"
+#include "math/fast_mod.hpp"
 
 namespace terra
 {

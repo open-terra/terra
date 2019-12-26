@@ -8,7 +8,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 
-#include "terra/utils/fast_sqrt.hpp"
+#include "terra/math/fast_sqrt.hpp"
 
 using namespace terra;
 
