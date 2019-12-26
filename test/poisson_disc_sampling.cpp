@@ -1,9 +1,7 @@
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
+#include <chrono>
+#include <cstdlib>
 #include <iostream>
-#include <iterator>
-#include <vector>
+#include <random>
 
 #include <catch2/catch.hpp>
 
@@ -13,15 +11,11 @@
 
 TEST_CASE("can sample points correctly", "[poisson_disc_sampler]")
 {
-    const int64_t size_x = 1000;
-    const int64_t size_y = 500;
-    const double radius = 10.0;
+    constexpr auto width = 1000;
+    constexpr auto height = 500;
+    constexpr auto radius = 10.0;
 
-    std::vector<terra::vec2> points;
-    terra::hash_grid grid(size_x, size_y, radius);
+    auto sampler = terra::poisson_disc_sampler(width, height, radius);
 
-    terra::poisson_disc_sampler sampler(
-        points, grid, size_x, size_y, radius, 100);
-
-    REQUIRE(sampler.sample() >= 2500);
+    REQUIRE(sampler.sample() > 2500);
 }
