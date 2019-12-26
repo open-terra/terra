@@ -8,6 +8,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 
+#include "terra/math/fast_floor.hpp"
 #include "terra/math/fast_sqrt.hpp"
 
 using namespace terra;
@@ -76,10 +77,10 @@ double poisson_disc_sampler::random(float range)
 
 terra::vec2 poisson_disc_sampler::point_around(terra::vec2 p)
 {
-    constexpr auto M_PI = 3.141592653589793238462643383279502884;
+    constexpr double PI = 3.141592653589793238462643383279502884;
 
     auto radius = this->min_distance * std::sqrt(this->random(3) + 1);
-    auto angle = this->random(2 * M_PI);
+    auto angle = this->random(2 * PI);
 
     p.x += std::cos(angle) * radius;
     p.y += std::sin(angle) * radius;
@@ -108,8 +109,8 @@ void poisson_disc_sampler::add(const terra::vec2& p)
 
 bool poisson_disc_sampler::point_too_close(const terra::vec2& p)
 {
-    int64_t x_index = std::floor(p.x / cell_size);
-    int64_t y_index = std::floor(p.y / cell_size);
+    int64_t x_index = terra::fast_floor<int64_t>(p.x / cell_size);
+    int64_t y_index = terra::fast_floor<int64_t>(p.y / cell_size);
 
     if (this->grid[y_index * this->grid_width + x_index].x != infinity)
     {
@@ -117,10 +118,10 @@ bool poisson_disc_sampler::point_too_close(const terra::vec2& p)
     }
 
     auto min_dist_squared = this->min_distance * this->min_distance;
-    auto min_x = std::max(x_index - 2, 0ll);
-    auto min_y = std::max(y_index - 2, 0ll);
-    auto max_x = std::min(x_index + 2, grid_width - 1);
-    auto max_y = std::min(y_index + 2, grid_height - 1);
+    auto min_x = std::max<int64_t>(x_index - 2, 0ll);
+    auto min_y = std::max<int64_t>(y_index - 2, 0ll);
+    auto max_x = std::min<int64_t>(x_index + 2, grid_width - 1);
+    auto max_y = std::min<int64_t>(y_index + 2, grid_height - 1);
 
     for (auto y = min_y; y <= max_y; ++y)
     {
