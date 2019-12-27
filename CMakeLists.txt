@@ -34,4 +34,7 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include(src/terra.cmake)
-include(test/tests.cmake)
+
+if(BUILD_TESTING)
+    include(test/tests.cmake)
+endif()
