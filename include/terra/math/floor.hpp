@@ -1,9 +1,9 @@
 #pragma once
 
-namespace terra
+namespace terra::math
 {
     template<typename T>
-    constexpr T fast_floor(double x)
+    constexpr T floor(double x)
     {
         T xi = static_cast<T>(x);
         return x < xi ? xi - 1 : xi;

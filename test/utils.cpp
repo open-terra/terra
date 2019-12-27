@@ -2,40 +2,40 @@
 
 #include "terra/math.hpp"
 
-using namespace terra;
+using namespace terra::math;
 
-TEST_CASE("fast_abs", "[utils]")
+TEST_CASE("abs", "[utils]")
 {
-    REQUIRE(fast_abs(1) == 1);
-    REQUIRE(fast_abs(0) == 0);
-    REQUIRE(fast_abs(-1) == 1);
+    REQUIRE(abs(1) == 1);
+    REQUIRE(abs(0) == 0);
+    REQUIRE(abs(-1) == 1);
 
-    REQUIRE(fast_abs(1.0) == 1.0);
-    REQUIRE(fast_abs(0.0) == 0.0);
-    REQUIRE(fast_abs(-1.0) == 1.0);
+    REQUIRE(abs(1.0) == 1.0);
+    REQUIRE(abs(0.0) == 0.0);
+    REQUIRE(abs(-1.0) == 1.0);
 }
 
-TEST_CASE("fast_ceil", "[utils]")
+TEST_CASE("ceil", "[utils]")
 {
-    REQUIRE(fast_ceil<int>(1.0) == 1);
-    REQUIRE(fast_ceil<int>(0.1) == 1);
-    REQUIRE(fast_ceil<int>(0.0) == 0);
-    REQUIRE(fast_ceil<int>(-0.1) == 0);
-    REQUIRE(fast_ceil<int>(-1.0) == -1);
+    REQUIRE(ceil<int>(1.0) == 1);
+    REQUIRE(ceil<int>(0.1) == 1);
+    REQUIRE(ceil<int>(0.0) == 0);
+    REQUIRE(ceil<int>(-0.1) == 0);
+    REQUIRE(ceil<int>(-1.0) == -1);
 }
 
-TEST_CASE("fast_floor", "[utils]")
+TEST_CASE("floor", "[utils]")
 {
-    REQUIRE(fast_floor<int>(1.0) == 1);
-    REQUIRE(fast_floor<int>(0.1) == 0);
-    REQUIRE(fast_floor<int>(0.0) == 0);
-    REQUIRE(fast_floor<int>(-0.1) == -1);
-    REQUIRE(fast_floor<int>(-1.0) == -1);
+    REQUIRE(floor<int>(1.0) == 1);
+    REQUIRE(floor<int>(0.1) == 0);
+    REQUIRE(floor<int>(0.0) == 0);
+    REQUIRE(floor<int>(-0.1) == -1);
+    REQUIRE(floor<int>(-1.0) == -1);
 }
 
-TEST_CASE("fast_mod", "[utils]")
+TEST_CASE("mod", "[utils]")
 {
-    REQUIRE(fast_mod<int>(3, 2) == 1);
-    REQUIRE(fast_mod<int>(2, 2) == 0);
-    REQUIRE(fast_mod<int>(1, 2) == 1);
+    REQUIRE(mod<int>(3, 2) == 1);
+    REQUIRE(mod<int>(2, 2) == 0);
+    REQUIRE(mod<int>(1, 2) == 1);
 }

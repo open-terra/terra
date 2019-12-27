@@ -1,9 +1,9 @@
 #pragma once
 
-namespace terra
+namespace terra::math
 {
     template<typename T>
-    constexpr T fast_abs(T x)
+    constexpr T abs(T x)
     {
         return x >= 0 ? x : -x;
     }

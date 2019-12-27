@@ -8,8 +8,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 
-#include "terra/math/fast_floor.hpp"
-#include "terra/math/fast_sqrt.hpp"
+#include "terra/math/floor.hpp"
+#include "terra/math/sqrt.hpp"
 
 using namespace terra;
 
@@ -95,8 +95,8 @@ bool poisson_disc_sampler::in_area(const terra::vec2& p)
 
 void poisson_disc_sampler::set(const terra::vec2& p, const size_t index)
 {
-    size_t x = terra::fast_floor<size_t>(p.x / this->cell_size);
-    size_t y = terra::fast_floor<size_t>(p.y / this->cell_size);
+    size_t x = math::floor<size_t>(p.x / this->cell_size);
+    size_t y = math::floor<size_t>(p.y / this->cell_size);
 
     this->grid[y * this->grid_width + x] = index;
 }
@@ -113,8 +113,8 @@ void poisson_disc_sampler::add(const terra::vec2& p)
 
 bool poisson_disc_sampler::point_too_close(const terra::vec2& p)
 {
-    size_t x_index = terra::fast_floor<size_t>(p.x / this->cell_size);
-    size_t y_index = terra::fast_floor<size_t>(p.y / this->cell_size);
+    size_t x_index = math::floor<size_t>(p.x / this->cell_size);
+    size_t y_index = math::floor<size_t>(p.y / this->cell_size);
 
     if (this->grid[y_index * this->grid_width + x_index] != grid_empty)
     {

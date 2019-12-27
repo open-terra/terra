@@ -10,8 +10,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 
-#include "terra/math/fast_abs.hpp"
-#include "terra/math/fast_mod.hpp"
+#include "terra/math/abs.hpp"
+#include "terra/math/mod.hpp"
 
 using namespace terra;
 
@@ -25,7 +25,7 @@ inline double sum(const std::vector<double>& x)
     {
         const double k = x[i];
         const double m = sum + k;
-        err += terra::fast_abs(sum) >= terra::fast_abs(k) ? sum - m + k : k - m + sum;
+        err += math::abs(sum) >= math::abs(k) ? sum - m + k : k - m + sum;
         sum = m;
     }
 
@@ -135,14 +135,14 @@ inline bool in_circle(const terra::vec2& a,
 
 inline bool check_pts_equal(const terra::vec2& a, const terra::vec2& b)
 {
-    return terra::fast_abs(a.x - b.x) <= EPSILON && terra::fast_abs(a.y - b.y) <= EPSILON;
+    return math::abs(a.x - b.x) <= EPSILON && math::abs(a.y - b.y) <= EPSILON;
 }
 
 // monotonically increases with real angle, but doesn't need expensive
 // trigonometry
 inline double pseudo_angle(const double dx, const double dy)
 {
-    const double p = dx / (std::abs(dx) + std::abs(dy));
+    const double p = dx / (math::abs(dx) + math::abs(dy));
 
     return (dy > 0.0 ? 3.0 - p : 1.0 + p) / 4.0; // [0..1)
 }
@@ -304,7 +304,7 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         size_t key = hash_key(current_point);
         for (size_t j = 0; j < m_hash_size; j++)
         {
-            start = m_hash[terra::fast_mod<size_t>(key + j, m_hash_size)];
+            start = m_hash[math::mod<size_t>(key + j, m_hash_size)];
             if (start != INVALID_INDEX && start != hull_next[start])
                 break;
         }
@@ -507,7 +507,7 @@ inline size_t delaunator::hash_key(const terra::vec2& vec) const
 {
     const double dx = vec.x - m_centre.x;
     const double dy = vec.y - m_centre.y;
-    return terra::fast_mod<size_t>(
+    return math::mod<size_t>(
         static_cast<size_t>(std::llround(std::floor(
             pseudo_angle(dx, dy) * static_cast<double>(m_hash_size)))),
         m_hash_size);

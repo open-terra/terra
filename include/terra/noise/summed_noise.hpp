@@ -3,8 +3,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "../math/fast_abs.hpp"
-
 namespace terra::noise
 {
     template<class T>
