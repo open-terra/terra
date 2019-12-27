@@ -10,11 +10,13 @@ project(Terra
 # Use C++17
 set(CMAKE_CXX_STANDARD 17)
 
-# Use C99
+# Use C11
 set(CMAKE_C_STANDARD 11)
 
-# Catch2 needed for testing
-find_package(Catch2 CONFIG REQUIRED)
+if(BUILD_TESTING)
+    # Catch2 needed for testing
+    find_package(Catch2 CONFIG REQUIRED)
+endif()
 
 # GLM used for vecN types
 find_package(glm CONFIG REQUIRED)
