@@ -22,16 +22,16 @@ poisson_disc_sampler::poisson_disc_sampler() :
 poisson_disc_sampler::poisson_disc_sampler(double width,
                                            double height,
                                            double min_distance,
-                                           int64_t max_attempts,
+                                           size_t max_attempts,
                                            terra::vec2 start) :
     engine(std::chrono::system_clock::now().time_since_epoch().count()),
     distribution(0.0, 1.0), width(width), height(height),
     min_distance(min_distance), max_attempts(max_attempts), start(start),
-    cell_size(min_distance / std::sqrt(2)), count(0)
+    cell_size(min_distance / std::sqrt(2))
 {
     this->grid_width = std::ceil(this->width / cell_size);
     this->grid_height = std::ceil(this->height / cell_size);
-    this->grid.resize(grid_width * grid_height, terra::vec2(this->infinity, this->infinity));
+    this->grid.resize(grid_width * grid_height, grid_empty);
 }
 
 poisson_disc_sampler::~poisson_disc_sampler()
@@ -53,7 +53,7 @@ int64_t poisson_disc_sampler::sample()
 
     while (!(this->active.empty()))
     {
-        auto point = this->active.top();
+        auto point = this->points[this->active.top()];
         this->active.pop();
 
         for (int64_t i = 0; i != this->max_attempts; ++i)
@@ -67,7 +67,7 @@ int64_t poisson_disc_sampler::sample()
         }
     }
 
-    return count;
+    return this->points.size();
 }
 
 double poisson_disc_sampler::random(float range)
@@ -93,44 +93,48 @@ bool poisson_disc_sampler::in_area(const terra::vec2& p)
     return p.x > 0 && p.x < this->width && p.y > 0 && p.y < this->height;
 }
 
-void poisson_disc_sampler::set(const terra::vec2& p)
+void poisson_disc_sampler::set(const terra::vec2& p, const size_t index)
 {
-    int x = p.x / cell_size;
-    int y = p.y / cell_size;
-    this->grid[y * this->grid_width + x] = p;
+    size_t x = terra::fast_floor<size_t>(p.x / this->cell_size);
+    size_t y = terra::fast_floor<size_t>(p.y / this->cell_size);
+
+    this->grid[y * this->grid_width + x] = index;
 }
 
 void poisson_disc_sampler::add(const terra::vec2& p)
 {
-    ++(this->count);
-    this->active.push(p);
-    this->set(p);
+    size_t index = this->points.size();
+
+    this->active.push(index);
+    this->set(p, index);
+
+    this->points.push_back(p);
 };
 
 bool poisson_disc_sampler::point_too_close(const terra::vec2& p)
 {
-    int64_t x_index = terra::fast_floor<int64_t>(p.x / cell_size);
-    int64_t y_index = terra::fast_floor<int64_t>(p.y / cell_size);
+    size_t x_index = terra::fast_floor<size_t>(p.x / this->cell_size);
+    size_t y_index = terra::fast_floor<size_t>(p.y / this->cell_size);
 
-    if (this->grid[y_index * this->grid_width + x_index].x != infinity)
+    if (this->grid[y_index * this->grid_width + x_index] != grid_empty)
     {
         return true;
     }
 
     auto min_dist_squared = this->min_distance * this->min_distance;
-    auto min_x = std::max<int64_t>(x_index - 2, 0ll);
-    auto min_y = std::max<int64_t>(y_index - 2, 0ll);
-    auto max_x = std::min<int64_t>(x_index + 2, grid_width - 1);
-    auto max_y = std::min<int64_t>(y_index + 2, grid_height - 1);
+    auto min_x = std::max<size_t>(x_index - 2, 0ull);
+    auto min_y = std::max<size_t>(y_index - 2, 0ull);
+    auto max_x = std::min<size_t>(x_index + 2, this->grid_width - 1);
+    auto max_y = std::min<size_t>(y_index + 2, this->grid_height - 1);
 
     for (auto y = min_y; y <= max_y; ++y)
     {
         for (auto x = min_x; x <= max_x; ++x)
         {
-            auto point = grid[y * grid_width + x];
-            auto exists = point.x != infinity;
+            size_t i = this->grid[y * grid_width + x];
 
-            if (exists && glm::distance2(p, point) < min_dist_squared)
+            auto exists = i != grid_empty;
+            if (exists && glm::distance2(p, this->points[i]) < min_dist_squared)
             {
                 return true;
             }

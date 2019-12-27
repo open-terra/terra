@@ -46,33 +46,36 @@ namespace terra
        public:
         //   width, height - Defines the range of x as (0, width] and the range
         //                   of y as (0, height].
-        double width = 1.0f;
-        double height = 1.0f;
+        double width = 1.0;
+        double height = 1.0;
 
-        //   min_distance  - The smallest distance allowed between two
-        //   terra:vec2s.
-        //
-        //   Also, terra:vec2s will never be further apart than twice
-        //   this distance.
-        double min_distance = 0.05f;
+        // min_distance - The smallest distance allowed between two
+        //                terra:vec2s.
+        //                Also, terra:vec2s will never be further apart than
+        //                twice this distance.
+        double min_distance = 0.05;
 
-        //   max_attempts  - The algorithm stochastically attempts to place a
-        //   new
-        //   terra:vec2
-        //      around a current terra:vec2. This number limits the
-        //      number of attempts per terra:vec2. A lower number
-        //      will speed up the algorithm but at some cost,
-        //      possibly significant, to the result's aesthetics.
-        int64_t max_attempts = 30;
+        // max_attempts - The algorithm stochastically attempts to place a new
+        //                terra:vec2 around a current terra:vec2.
+        //                This number limits the number of attempts per 
+        //                terra:vec2.
+        //                A lower number will speed up the algorithm but at some
+        //                cost, possibly significant, to the result's
+        //                aesthetics.
+        size_t max_attempts = 30;
 
-        //   start         - An optional parameter. If set to anything other
-        //   than
-        //      terra:vec2's default values (infinity, infinity)
-        //      the algorithm will start from this terra:vec2.
-        //      Otherwise a terra:vec2 is chosen randomly. Expected
-        //      to be within the region defined by width and
-        //      height.
-        terra::vec2 start;
+        // start - An optional parameter. If set to anything other than
+        //         terra:vec2's default values (infinity, infinity) the
+        //         algorithm will start from this terra:vec2.
+        //         Otherwise a terra:vec2 is chosen randomly.
+        //         Expected to be within the region defined by width and height.
+        terra::vec2 start = {infinity, infinity};
+
+        // points
+        std::vector<terra::vec2> points;
+
+        constexpr static size_t grid_empty =
+            std::numeric_limits<size_t>::max();
 
         constexpr static double infinity =
             std::numeric_limits<double>::infinity();
@@ -81,9 +84,8 @@ namespace terra
         poisson_disc_sampler(double width,
                              double height,
                              double min_distance,
-                             int64_t max_attempts = 30,
-                             terra::vec2 start = terra::vec2(infinity,
-                                                             infinity));
+                             size_t max_attempts = 30,
+                             terra::vec2 start = {infinity, infinity});
         ~poisson_disc_sampler();
 
         int64_t sample();
@@ -96,12 +98,11 @@ namespace terra
         terra::vec2 point_around(terra::vec2 p);
         bool in_area(const terra::vec2& p);
 
-        int64_t count;
         double cell_size;
-        int64_t grid_width, grid_height;
-        std::vector<terra::vec2> grid;
-        std::stack<terra::vec2> active;
-        void set(const terra::vec2& p);
+        size_t grid_width, grid_height;
+        std::vector<size_t> grid;
+        std::stack<size_t> active;
+        void set(const terra::vec2& p, size_t index);
         void add(const terra::vec2& p);
         bool point_too_close(const terra::vec2& p);
     };
