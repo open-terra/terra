@@ -29,10 +29,10 @@ constexpr double summed_noise<T>::noise(double x, double y)
     double amplitude = persistence;
     double maxValue = amplitude; // Used for normalizing result to 0.0 - 1.0
 
-    double result = noise.noise(x, y) * amplitude;
+    double result = noise_source.noise(x, y) * amplitude;
     for (int i = 1; i < octaves; i++)
     {
-        result += noise.noise(x * frequency, y * frequency) * amplitude;
+        result += noise_source.noise(x * frequency, y * frequency) * amplitude;
 
         maxValue += amplitude;
 
@@ -50,10 +50,10 @@ constexpr double summed_noise<T>::noise(double x, double y, double z)
     double amplitude = persistence;
     double maxValue = amplitude; // Used for normalizing result to 0.0 - 1.0
 
-    double result = noise.noise(x, y, z) * amplitude;
+    double result = noise_source.noise(x, y, z) * amplitude;
     for (int i = 1; i < octaves; i++)
     {
-        result += noise.noise(x * frequency, y * frequency, z * frequency) *
+        result += noise_source.noise(x * frequency, y * frequency, z * frequency) *
                   amplitude;
 
         maxValue += amplitude;
@@ -72,11 +72,11 @@ constexpr double summed_noise<T>::noise(double x, double y, double z, double w)
     double amplitude = persistence;
     double maxValue = amplitude; // Used for normalizing result to 0.0 - 1.0
 
-    double result = noise.noise(x, y, z, w) * amplitude;
+    double result = noise_source.noise(x, y, z, w) * amplitude;
     for (int i = 1; i < octaves; i++)
     {
         result +=
-            noise.noise(
+            noise_source.noise(
                 x * frequency, y * frequency, z * frequency, w * frequency) *
             amplitude;
 

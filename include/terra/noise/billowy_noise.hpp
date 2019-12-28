@@ -11,27 +11,27 @@ namespace terra::noise
     class billowy_noise
     {
        private:
-        T& noise;
+        T& noise_source;
 
        public:
-        constexpr billowy_noise(int64_t seed) : noise(T(seed))
+        constexpr billowy_noise(int64_t seed) : noise_source(T(seed))
         {
         }
-        constexpr billowy_noise(T& noise) : noise(noise)
+        constexpr billowy_noise(T& noise) : noise_source(noise)
         {
         }
 
         constexpr double noise(double x, double y)
         {
-            return terra::math::abs(noise.noise(x, y));
+            return terra::math::abs(noise_source.noise(x, y));
         }
         constexpr double noise(double x, double y, double z)
         {
-            return terra::math::abs(noise.noise(x, y, z));
+            return terra::math::abs(noise_source.noise(x, y, z));
         }
         constexpr double noise(double x, double y, double z, double w)
         {
-            return terra::math::abs(noise.noise(x, y, z, w));
+            return terra::math::abs(noise_source.noise(x, y, z, w));
         }
     };
 } // namespace terra::noise
