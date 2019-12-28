@@ -1,11 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
 
+# detect if Catch is being bundled,
+# disable testsuite in that case
+if(NOT DEFINED PROJECT_NAME)
+  set(NOT_SUBPROJECT ON)
+endif()
+
 # Project name
 project(Terra
     VERSION 0.1.0
     DESCRIPTION ""
     LANGUAGES C CXX
 )
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 # Use C++17
 set(CMAKE_CXX_STANDARD 17)
@@ -32,12 +41,58 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2")
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include(src/terra.cmake)
+add_library(terra STATIC
+    src/noise/open_simplex.cpp
+    src/noise/summed_noise.cpp
+    src/types/hash_grid.cpp
+    src/delaunator.cpp
+    src/poisson_disc_sampler.cpp
+    src/voronoi.cpp
+)
+
+target_include_directories(terra PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_link_libraries(terra glm)
 
 if(BUILD_TESTING)
     include(test/tests.cmake)
 endif()
 
-INSTALL(TARGETS terra LIBRARY DESTINATION lib)
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include)
+# Only perform the installation steps when not being used as
+# a subproject via `add_subdirectory`, or the destinations will break
+if (NOT_SUBPROJECT)
+    set(TERRA_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Terra")
+
+    configure_package_config_file(
+        ${CMAKE_CURRENT_LIST_DIR}/cmake/TerraConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/TerraConfig.cmake
+        INSTALL_DESTINATION ${TERRA_CMAKE_CONFIG_DESTINATION}
+    )
+
+    # create and install an export set for terra target as Terra
+    install(
+        TARGETS terra EXPORT TerraTargets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+
+
+    install(EXPORT TerraTargets DESTINATION ${TERRA_CMAKE_CONFIG_DESTINATION})
+
+    write_basic_package_version_file(
+      "${CMAKE_CURRENT_BINARY_DIR}/TerraConfigVersion.cmake"
+      COMPATIBILITY SameMajorVersion
+    )
+
+    install(TARGETS terra LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    install(DIRECTORY "include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+    install(
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/TerraConfig.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/TerraConfigVersion.cmake"
+        DESTINATION ${TERRA_CMAKE_CONFIG_DESTINATION}
+    )
+endif(NOT_SUBPROJECT)

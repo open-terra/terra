@@ -1,0 +1,7 @@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: Terra
+Description: 
+URL: https://github.com/open-terra/terra
+Version: @Terra_VERSION@
+Cflags: -I${includedir}
