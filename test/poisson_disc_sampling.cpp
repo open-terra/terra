@@ -11,11 +11,12 @@
 
 TEST_CASE("can sample points correctly", "[poisson_disc_sampler]")
 {
-    constexpr auto width = 1000;
-    constexpr auto height = 500;
-    constexpr auto radius = 10.0;
+    auto width = 1000;
+    auto height = 500;
+    auto radius = 10.0;
 
-    auto sampler = terra::poisson_disc_sampler(width, height, radius);
+    auto sampler = terra::poisson_disc_sampler();
 
-    REQUIRE(sampler.sample() > 2500);
+    auto points = sampler.sample(width, height, radius);
+    REQUIRE(points.size() > 2500);
 }

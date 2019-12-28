@@ -15,19 +15,9 @@ using namespace terra;
 
 poisson_disc_sampler::poisson_disc_sampler() :
     engine(std::chrono::system_clock::now().time_since_epoch().count()),
-    distribution(0.0, 1.0)
-{
-}
-
-poisson_disc_sampler::poisson_disc_sampler(double width,
-                                           double height,
-                                           double min_distance,
-                                           size_t max_attempts,
-                                           terra::vec2 start) :
-    engine(std::chrono::system_clock::now().time_since_epoch().count()),
-    distribution(0.0, 1.0), width(width), height(height),
-    min_distance(min_distance), max_attempts(max_attempts), start(start),
-    cell_size(min_distance / std::sqrt(2))
+    distribution(0.0, 1.0), width(1.0), height(1.0),
+    min_distance(0.0),
+    cell_size(0.0)
 {
     this->grid_width = std::ceil(this->width / cell_size);
     this->grid_height = std::ceil(this->height / cell_size);
@@ -38,25 +28,38 @@ poisson_disc_sampler::~poisson_disc_sampler()
 {
 }
 
-int64_t poisson_disc_sampler::sample()
+std::vector<terra::vec2> poisson_disc_sampler::sample(double width,
+                                                      double height,
+                                                      double min_distance,
+                                                      size_t max_attempts,
+                                                      terra::vec2 start)
 {
-    if (this->start.x == infinity)
+    this->width = width;
+    this->height = height;
+    this->min_distance = min_distance;
+
+    this->cell_size = min_distance / terra::math::sqrt(2);
+    this->grid_width = std::ceil(this->width / cell_size);
+    this->grid_height = std::ceil(this->height / cell_size);
+    this->grid.resize(grid_width * grid_height, grid_empty);
+
+    if (start.x == infinity)
     {
         do
         {
-            this->start.x = this->random(this->width);
-            this->start.y = this->random(this->height);
-        } while (!in_area(this->start));
+            start.x = this->random(this->width);
+            start.y = this->random(this->height);
+        } while (!in_area(start));
     }
 
-    this->add(this->start);
+    this->add(start);
 
     while (!(this->active.empty()))
     {
         auto point = this->points[this->active.top()];
         this->active.pop();
 
-        for (int64_t i = 0; i != this->max_attempts; ++i)
+        for (int64_t i = 0; i != max_attempts; ++i)
         {
             auto p = this->point_around(point);
 
@@ -67,7 +70,7 @@ int64_t poisson_disc_sampler::sample()
         }
     }
 
-    return this->points.size();
+    return std::move(this->points);
 }
 
 double poisson_disc_sampler::random(float range)
