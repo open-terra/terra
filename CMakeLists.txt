@@ -38,3 +38,6 @@ include(src/terra.cmake)
 if(BUILD_TESTING)
     include(test/tests.cmake)
 endif()
+
+INSTALL(TARGETS terra LIBRARY DESTINATION lib)
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION include)
