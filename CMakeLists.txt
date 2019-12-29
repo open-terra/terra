@@ -57,7 +57,7 @@ target_include_directories(Terra PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-target_link_libraries(Terra glm)
+target_link_libraries(Terra PUBLIC glm)
 
 if(BUILD_TESTING)
     include(test/tests.cmake)
