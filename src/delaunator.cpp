@@ -147,10 +147,15 @@ inline double pseudo_angle(const double dx, const double dy)
     return (dy > 0.0 ? 3.0 - p : 1.0 + p) / 4.0; // [0..1)
 }
 
-delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
-    coords(in_coords), triangles(), halfedges(), hull_prev(), hull_next(),
-    hull_tri(), hull_start(), m_hash(), m_hash_size(), m_edge_stack()
+delaunator::delaunator() :
+    coords(), triangles(), halfedges(), hull_prev(), hull_next(),
+    hull_tri(), hull_start(), hash(), hash_size(), edge_stack()
 {
+}
+
+void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
+{
+    this->coords = in_coords;
     size_t n = this->coords.size();
 
     double max_x = std::numeric_limits<double>::min();
@@ -245,15 +250,15 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         std::swap(i1v, i2v);
     }
 
-    m_centre = circumcentre(i0v, i1v, i2v);
+    centre = circumcentre(i0v, i1v, i2v);
 
     // sort the points by distance from the seed triangle circumcentre
-    std::sort(ids.begin(), ids.end(), compare{coords, m_centre});
+    std::sort(ids.begin(), ids.end(), compare{coords, centre});
 
     // initialize a hash table for storing edges of the advancing convex hull
-    m_hash_size = static_cast<size_t>(std::llround(std::ceil(std::sqrt(n))));
-    m_hash.resize(m_hash_size);
-    std::fill(m_hash.begin(), m_hash.end(), INVALID_INDEX);
+    hash_size = static_cast<size_t>(std::llround(std::ceil(std::sqrt(n))));
+    hash.resize(hash_size);
+    std::fill(hash.begin(), hash.end(), INVALID_INDEX);
 
     // initialize arrays for tracking the edges of the advancing convex hull
     hull_prev.resize(n);
@@ -272,9 +277,9 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
     hull_tri[i1] = 1;
     hull_tri[i2] = 2;
 
-    m_hash[hash_key(i0v)] = i0;
-    m_hash[hash_key(i1v)] = i1;
-    m_hash[hash_key(i2v)] = i2;
+    hash[hash_key(i0v)] = i0;
+    hash[hash_key(i1v)] = i1;
+    hash[hash_key(i2v)] = i2;
 
     size_t max_triangles = n < 3 ? 1 : 2 * n - 5;
     triangles.reserve(max_triangles * 3);
@@ -302,9 +307,9 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         size_t start = 0;
 
         size_t key = hash_key(current_point);
-        for (size_t j = 0; j < m_hash_size; j++)
+        for (size_t j = 0; j < hash_size; j++)
         {
-            start = m_hash[math::mod<size_t>(key + j, m_hash_size)];
+            start = hash[math::mod<size_t>(key + j, hash_size)];
             if (start != INVALID_INDEX && start != hull_next[start])
                 break;
         }
@@ -372,8 +377,8 @@ delaunator::delaunator(const std::vector<terra::vec2>& in_coords) :
         hull_next[e] = i;
         hull_next[i] = next;
 
-        m_hash[hash_key(current_point)] = i;
-        m_hash[hash_key(coords[e])] = e;
+        hash[hash_key(current_point)] = i;
+        hash[hash_key(coords[e])] = e;
     }
 }
 
@@ -397,7 +402,7 @@ size_t delaunator::legalize(size_t a)
 {
     size_t i = 0;
     size_t ar = 0;
-    m_edge_stack.clear();
+    edge_stack.clear();
 
     // recursion eliminated with a fixed-size stack
     while (true)
@@ -427,7 +432,7 @@ size_t delaunator::legalize(size_t a)
             if (i > 0)
             {
                 i--;
-                a = m_edge_stack[i];
+                a = edge_stack[i];
                 continue;
             }
             else
@@ -476,13 +481,13 @@ size_t delaunator::legalize(size_t a)
             link(ar, bl);
             size_t br = b0 + (b + 1) % 3;
 
-            if (i < m_edge_stack.size())
+            if (i < edge_stack.size())
             {
-                m_edge_stack[i] = br;
+                edge_stack[i] = br;
             }
             else
             {
-                m_edge_stack.push_back(br);
+                edge_stack.push_back(br);
             }
             i++;
         }
@@ -491,7 +496,7 @@ size_t delaunator::legalize(size_t a)
             if (i > 0)
             {
                 i--;
-                a = m_edge_stack[i];
+                a = edge_stack[i];
                 continue;
             }
             else
@@ -505,12 +510,12 @@ size_t delaunator::legalize(size_t a)
 
 inline size_t delaunator::hash_key(const terra::vec2& vec) const
 {
-    const double dx = vec.x - m_centre.x;
-    const double dy = vec.y - m_centre.y;
+    const double dx = vec.x - centre.x;
+    const double dy = vec.y - centre.y;
     return math::mod<size_t>(
         static_cast<size_t>(std::llround(std::floor(
-            pseudo_angle(dx, dy) * static_cast<double>(m_hash_size)))),
-        m_hash_size);
+            pseudo_angle(dx, dy) * static_cast<double>(hash_size)))),
+        hash_size);
 }
 
 size_t delaunator::add_triangle(size_t i0,

@@ -27,20 +27,21 @@ namespace terra
         const std::vector<terra::vec2>& coords;
         std::vector<size_t> triangles;
         std::vector<size_t> halfedges;
-        std::vector<size_t> hull_prev;
-        std::vector<size_t> hull_next;
-        std::vector<size_t> hull_tri;
         size_t hull_start;
 
-        delaunator(const std::vector<terra::vec2>& in_coords);
+        delaunator();
 
+        void triangulate(const std::vector<terra::vec2>& in_coords);
         double get_hull_area();
 
        private:
-        std::vector<size_t> m_hash;
-        terra::vec2 m_centre;
-        size_t m_hash_size;
-        std::vector<size_t> m_edge_stack;
+        std::vector<size_t> hull_prev;
+        std::vector<size_t> hull_next;
+        std::vector<size_t> hull_tri;
+        std::vector<size_t> hash;
+        terra::vec2 centre;
+        size_t hash_size;
+        std::vector<size_t> edge_stack;
 
         size_t legalize(size_t a);
         size_t hash_key(const terra::vec2& vec) const;
