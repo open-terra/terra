@@ -19,9 +19,8 @@ poisson_disc_sampler::poisson_disc_sampler() :
     min_distance(0.0),
     cell_size(0.0)
 {
-    this->grid_width = std::ceil(this->width / cell_size);
-    this->grid_height = std::ceil(this->height / cell_size);
-    this->grid.resize(grid_width * grid_height, grid_empty);
+    this->grid_width = 0;
+    this->grid_height = 0;
 }
 
 poisson_disc_sampler::~poisson_disc_sampler()
