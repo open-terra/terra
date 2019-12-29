@@ -28,6 +28,7 @@ static const std::vector<terra::vec2> vertices = {
 
 TEST_CASE("can triangulate correctly", "[delaunator]")
 {
-    terra::delaunator delaunator(vertices);
-    REQUIRE(delaunator.triangles.size() > 0);
+    terra::delaunator d;
+    d.triangulate(vertices);
+    REQUIRE(d.triangles.size() > 0);
 }
