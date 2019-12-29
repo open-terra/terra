@@ -155,8 +155,8 @@ delaunator::delaunator() :
 
 void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
 {
-    this->coords = in_coords;
-    size_t n = this->coords.size();
+    this->coords = &in_coords;
+    size_t n = this->coords->size();
 
     double max_x = std::numeric_limits<double>::min();
     double max_y = std::numeric_limits<double>::min();
@@ -167,7 +167,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
 
     for (size_t i = 0; i < n; ++i)
     {
-        terra::vec2 p = this->coords[i];
+        terra::vec2 p = this->coords->at(i);
         const double x = p.x;
         const double y = p.y;
 
@@ -193,7 +193,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     // pick a seed point close to the centroid
     for (size_t i = 0; i < n; ++i)
     {
-        const double d = glm::distance2(c, coords[i]);
+        const double d = glm::distance2(c, coords->at(i));
         if (d < min_dist)
         {
             i0 = i;
@@ -201,7 +201,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         }
     }
 
-    terra::vec2 i0v = this->coords[i0];
+    terra::vec2 i0v = this->coords->at(i0);
 
     min_dist = std::numeric_limits<double>::max();
 
@@ -210,7 +210,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     {
         if (i == i0)
             continue;
-        const double d = glm::distance2(i0v, coords[i]);
+        const double d = glm::distance2(i0v, coords->at(i));
         if (d < min_dist && d > 0.0)
         {
             i1 = i;
@@ -218,7 +218,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         }
     }
 
-    terra::vec2 i1v = this->coords[i1];
+    terra::vec2 i1v = this->coords->at(i1);
 
     double min_radius = std::numeric_limits<double>::max();
 
@@ -229,7 +229,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         if (i == i0 || i == i1)
             continue;
 
-        const double r = circumradius(i0v, i1v, coords[i]);
+        const double r = circumradius(i0v, i1v, coords->at(i));
         if (r < min_radius)
         {
             i2 = i;
@@ -242,7 +242,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         throw std::runtime_error("not triangulation");
     }
 
-    terra::vec2 i2v = this->coords[i2];
+    terra::vec2 i2v = this->coords->at(i2);
 
     if (orient(i0v, i1v, i2v))
     {
@@ -253,7 +253,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     centre = circumcentre(i0v, i1v, i2v);
 
     // sort the points by distance from the seed triangle circumcentre
-    std::sort(ids.begin(), ids.end(), compare{coords, centre});
+    std::sort(ids.begin(), ids.end(), compare{*coords, centre});
 
     // initialize a hash table for storing edges of the advancing convex hull
     hash_size = static_cast<size_t>(std::llround(std::ceil(std::sqrt(n))));
@@ -290,7 +290,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     for (size_t k = 0; k < n; k++)
     {
         const size_t i = ids[k];
-        const auto current_point = coords[i];
+        const auto current_point = coords->at(i);
 
         // skip near-duplicate points
         if (k > 0 && check_pts_equal(current_point, last_point))
@@ -319,7 +319,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         size_t q;
 
         // TODO: does it works in a same way as in JS
-        while (q = hull_next[e], !orient(current_point, coords[e], coords[q]))
+        while (q = hull_next[e], !orient(current_point, coords->at(e), coords->at(q)))
         {
             e = q;
             if (e == start)
@@ -344,7 +344,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         // recursively
         size_t next = hull_next[e];
         while (q = hull_next[next],
-               orient(current_point, coords[next], coords[q]))
+               orient(current_point, coords->at(next), coords->at(q)))
         {
             t = add_triangle(
                 next, i, q, hull_tri[i], INVALID_INDEX, hull_tri[next]);
@@ -358,7 +358,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         if (e == start)
         {
             while (q = hull_prev[e],
-                   orient(current_point, coords[q], coords[e]))
+                   orient(current_point, coords->at(q), coords->at(e)))
             {
                 t = add_triangle(
                     q, i, e, INVALID_INDEX, hull_tri[e], hull_tri[q]);
@@ -378,7 +378,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         hull_next[i] = next;
 
         hash[hash_key(current_point)] = i;
-        hash[hash_key(coords[e])] = e;
+        hash[hash_key(coords->at(e))] = e;
     }
 }
 
@@ -388,8 +388,8 @@ double delaunator::get_hull_area()
     size_t e = hull_start;
     do
     {
-        const auto ev = coords[e];
-        const auto pv = coords[hull_prev[e]];
+        const auto ev = coords->at(e);
+        const auto pv = coords->at(hull_prev[e]);
 
         hull_area.push_back((ev.x - pv.x) * (ev.y - pv.y));
         e = hull_next[e];
@@ -452,7 +452,7 @@ size_t delaunator::legalize(size_t a)
         const size_t p1 = triangles[bl];
 
         const bool illegal =
-            in_circle(coords[p0], coords[pr], coords[pl], coords[p1]);
+            in_circle(coords->at(p0), coords->at(pr), coords->at(pl), coords->at(p1));
 
         if (illegal)
         {

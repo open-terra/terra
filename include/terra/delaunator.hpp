@@ -24,7 +24,6 @@ namespace terra
     class delaunator
     {
        public:
-        const std::vector<terra::vec2>& coords;
         std::vector<size_t> triangles;
         std::vector<size_t> halfedges;
         size_t hull_start;
@@ -35,6 +34,7 @@ namespace terra
         double get_hull_area();
 
        private:
+        const std::vector<terra::vec2>* coords;
         std::vector<size_t> hull_prev;
         std::vector<size_t> hull_next;
         std::vector<size_t> hull_tri;
