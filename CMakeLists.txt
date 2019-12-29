@@ -19,6 +19,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # Use C++17
 set(CMAKE_CXX_STANDARD 17)
 
