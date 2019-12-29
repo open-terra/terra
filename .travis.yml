@@ -18,6 +18,7 @@ addons:
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty
     update: true
+    packages:
     - libglm-dev
     dist: string
 
