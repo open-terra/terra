@@ -40,8 +40,12 @@ std::vector<terra::vec2> poisson_disc_sampler::sample(double width,
     this->cell_size = min_distance / terra::math::sqrt(2);
     this->grid_width = std::ceil(this->width / cell_size);
     this->grid_height = std::ceil(this->height / cell_size);
-    this->grid.resize(grid_width * grid_height, grid_empty);
 
+    size_t grid_size = this->grid_width * this->grid_height;
+    this->points.reserve(grid_size);
+    this->grid.resize(grid_size, grid_empty);
+
+    // initialise random starting point if one is not passed to the function
     if (start.x == infinity)
     {
         do
@@ -69,6 +73,9 @@ std::vector<terra::vec2> poisson_disc_sampler::sample(double width,
         }
     }
 
+    // shrink then move the vector to clear the data in the class and free
+    // unused memory
+    this->points.shrink_to_fit();
     return std::move(this->points);
 }
 
