@@ -14,17 +14,12 @@ compiler: gcc
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty
     update: true
     packages:
     - libglm-dev
-    dist: string
-
-before_install:
 
 install:
+  - ./install-cmake.sh
   - ./install-catch2.sh
 
 # Build steps
