@@ -19,12 +19,15 @@ addons:
       - llvm-toolchain-trusty
     update: true
     packages:
-    - cmake
-    - cmake-data
     - libglm-dev
     dist: string
 
-before_install:
+install:
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+  - CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz"
+    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+    export PATH=${DEPS_DIR}/cmake/bin:${PATH}
   - ./install-catch2.sh
 
 # Build steps
