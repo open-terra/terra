@@ -16,8 +16,6 @@ project(Terra
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 # Use C++17
 set(CMAKE_CXX_STANDARD 17)
 
@@ -68,7 +66,7 @@ endif()
 # Only perform the installation steps when not being used as
 # a subproject via `add_subdirectory`, or the destinations will break
 if(NOT_SUBPROJECT)
-    set(Terra_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/terra")
+    set(Terra_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Terra")
 
     configure_package_config_file(
         ${CMAKE_CURRENT_LIST_DIR}/cmake/TerraConfig.cmake.in
