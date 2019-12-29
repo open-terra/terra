@@ -12,13 +12,18 @@ dist: bionic
 # Compiler selection
 compiler: gcc
 
-before_install:
-  - CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz"
-    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-    export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty
+    update: true
+    packages:
+    - cmake
+    - cmake-data
+    - libglm-dev
 
-install:
-  - sudo apt-get -y install libglm-dev
+before_install:
   - ./install-catch2.sh
 
 # Build steps
