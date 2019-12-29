@@ -7,7 +7,7 @@ language: cpp
 os: linux
 
 # Use Ubuntu 18.04 for GCC 7.4.0
-# dist: bionic
+dist: bionic
 
 # Compiler selection
 compiler: gcc
@@ -19,13 +19,12 @@ addons:
       - llvm-toolchain-trusty
     update: true
     packages:
+    - cmake
+    - cmake-data
     - libglm-dev
     dist: string
 
 before_install:
-  - CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz"
-    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-    export PATH=${DEPS_DIR}/cmake/bin:${PATH}
   - ./install-catch2.sh
 
 # Build steps
