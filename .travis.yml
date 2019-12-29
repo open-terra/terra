@@ -22,6 +22,7 @@ addons:
     - cmake
     - cmake-data
     - libglm-dev
+    dist: string
 
 before_install:
   - ./install-catch2.sh
