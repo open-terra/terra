@@ -44,6 +44,7 @@ endif()
 add_library(Terra STATIC
     src/noise/open_simplex.cpp
     src/noise/summed_noise.cpp
+    src/types/flow_graph.cpp
     src/types/hash_grid.cpp
     src/types/undirectional_edge.cpp
     src/types/undirectional_graph.cpp

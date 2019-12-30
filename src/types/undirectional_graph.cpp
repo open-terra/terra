@@ -26,6 +26,11 @@ void undirectional_graph::add_edge(size_t v0, size_t v1)
     this->add_edge({ v0, v1 });
 }
 
+std::list<size_t> undirectional_graph::get_connected(size_t i) const
+{
+    return this->data[i];
+}
+
 bool undirectional_graph::is_edge_duplicate(const undirectional_graph::edge& edge)
 {
     //TODO theoretically this only needs to check one of the vertices as a
