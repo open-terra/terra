@@ -5,10 +5,8 @@ add_executable(terra_tests
     test/main.cpp
 )
 
-target_include_directories(terra_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 target_link_libraries(terra_tests 
-    terra 
+    Terra 
     Catch2::Catch2
 )
 
