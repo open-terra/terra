@@ -1,7 +1,5 @@
 #include "terra/types/undirected_graph.hpp"
 
-#include <array>
-
 using namespace terra;
 
 undirected_graph::undirected_graph() : nodes(), edges()
