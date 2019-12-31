@@ -53,8 +53,9 @@ constexpr double summed_noise<T>::noise(double x, double y, double z)
     double result = noise_source.noise(x, y, z) * amplitude;
     for (int i = 1; i < octaves; i++)
     {
-        result += noise_source.noise(x * frequency, y * frequency, z * frequency) *
-                  amplitude;
+        result +=
+            noise_source.noise(x * frequency, y * frequency, z * frequency) *
+            amplitude;
 
         maxValue += amplitude;
 

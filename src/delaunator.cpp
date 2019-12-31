@@ -47,7 +47,8 @@ circumradius(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
     const double x = (ey * bl - dy * cl) * 0.5 / d;
     const double y = (dx * cl - ex * bl) * 0.5 / d;
 
-    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) && (d > 0.0 || d < 0.0))
+    if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) &&
+        (d > 0.0 || d < 0.0))
     {
         return x * x + y * y;
     }
@@ -148,8 +149,8 @@ inline double pseudo_angle(const double dx, const double dy)
 }
 
 delaunator::delaunator() :
-    coords(), triangles(), halfedges(), hull_prev(), hull_next(),
-    hull_tri(), hull_start(), hash(), hash_size(), edge_stack()
+    coords(), triangles(), halfedges(), hull_prev(), hull_next(), hull_tri(),
+    hull_start(), hash(), hash_size(), edge_stack()
 {
 }
 
@@ -319,7 +320,8 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         size_t q;
 
         // TODO: does it works in a same way as in JS
-        while (q = hull_next[e], !orient(current_point, coords->at(e), coords->at(q)))
+        while (q = hull_next[e],
+               !orient(current_point, coords->at(e), coords->at(q)))
         {
             e = q;
             if (e == start)
@@ -451,8 +453,8 @@ size_t delaunator::legalize(size_t a)
         const size_t pl = triangles[al];
         const size_t p1 = triangles[bl];
 
-        const bool illegal =
-            in_circle(coords->at(p0), coords->at(pr), coords->at(pl), coords->at(p1));
+        const bool illegal = in_circle(
+            coords->at(p0), coords->at(pr), coords->at(pl), coords->at(p1));
 
         if (illegal)
         {
@@ -513,8 +515,8 @@ inline size_t delaunator::hash_key(const terra::vec2& vec) const
     const double dx = vec.x - centre.x;
     const double dy = vec.y - centre.y;
     return math::mod<size_t>(
-        static_cast<size_t>(std::llround(std::floor(
-            pseudo_angle(dx, dy) * static_cast<double>(hash_size)))),
+        static_cast<size_t>(std::llround(
+            std::floor(pseudo_angle(dx, dy) * static_cast<double>(hash_size)))),
         hash_size);
 }
 

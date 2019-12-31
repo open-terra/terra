@@ -19,4 +19,4 @@ namespace terra::math
                    ? _sqrt_newton_raphson(x, x, 0)
                    : std::numeric_limits<double>::quiet_NaN();
     }
-} // namespace utils
+} // namespace terra::math

@@ -1747,7 +1747,7 @@ Determine which two of (1,1,1,0), (1,1,0,1), (1,0,1,1), (0,1,1,1) are closest.
                 }
             }
             else
-            {   /* Both closest points on the smaller side */
+            { /* Both closest points on the smaller side */
                 /* One of the two extra points is (0,0,0,0) */
                 xsv_ext2 = xsb;
                 ysv_ext2 = ysb;
@@ -2299,7 +2299,7 @@ Determine which two of (1,1,1,0), (1,1,0,1), (1,0,1,1), (0,1,1,1) are closest.
                 }
             }
             else
-            {   /* Both closest points on the smaller side */
+            { /* Both closest points on the smaller side */
                 /* One of the two extra points is (1,1,1,1) */
                 xsv_ext2 = xsb + 1;
                 ysv_ext2 = ysb + 1;

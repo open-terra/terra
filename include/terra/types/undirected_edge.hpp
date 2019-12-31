@@ -24,7 +24,7 @@ namespace terra
 
         constexpr std::array<size_t, 2ul> get_vertex() const
         {
-            return { this->v0, this->v1 };
+            return {this->v0, this->v1};
         }
 
         constexpr void sort_vertex()
@@ -35,11 +35,10 @@ namespace terra
             }
         }
     };
-}
+} // namespace terra
 
 constexpr bool operator==(const terra::undirected_edge& l,
                           const terra::undirected_edge& r)
 {
-    return (l.v0 == r.v0 && l.v1 == r.v1) ||
-           (l.v0 == r.v1 && l.v1 == r.v0);
+    return (l.v0 == r.v0 && l.v1 == r.v1) || (l.v0 == r.v1 && l.v1 == r.v0);
 }

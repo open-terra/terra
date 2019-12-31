@@ -8,4 +8,4 @@ namespace terra::math
         T xi = static_cast<T>(x);
         return x > xi ? xi + 1 : xi;
     }
-} // namespace utils
+} // namespace terra::math

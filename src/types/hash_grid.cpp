@@ -28,11 +28,9 @@ constexpr size_t HashPos(const terra::vec2& point,
                          const int64_t grid_size_x)
 {
     int64_t x = std::max<int64_t>(
-        static_cast<int64_t>(math::floor<double>(point.x) / bucket_size),
-        0);
+        static_cast<int64_t>(math::floor<double>(point.x) / bucket_size), 0);
     int64_t y = std::max<int64_t>(
-        static_cast<int64_t>(math::floor<double>(point.y) / bucket_size),
-        0);
+        static_cast<int64_t>(math::floor<double>(point.y) / bucket_size), 0);
 
     return (y * grid_size_x) + x;
 }
@@ -58,11 +56,10 @@ std::vector<int64_t> hash_grid::neighbours(const terra::vec2& point)
 {
     std::vector<int64_t> indexs;
 
-    int64_t x = static_cast<int64_t>(math::floor<double>(point.x) /
-                                     this->bucket_size);
+    int64_t x =
+        static_cast<int64_t>(math::floor<double>(point.x) / this->bucket_size);
     int64_t y =
-        static_cast<int64_t>(math::floor<double>(point.y) /
-                                     this->bucket_size);
+        static_cast<int64_t>(math::floor<double>(point.y) / this->bucket_size);
 
     const int64_t x0 = std::max<int64_t>(x - this->n, 0);
     const int64_t y0 = std::max<int64_t>(y - this->n, 0);

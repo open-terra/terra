@@ -8,7 +8,7 @@ namespace terra::noise
 {
     class open_simplex
     {
-       private:
+    private:
         const double STRETCH_CONSTANT_2D =
             -0.211324865405187; // (1 / sqrt(2 + 1) - 1 ) / 2;
         const double SQUISH_CONSTANT_2D =
@@ -91,14 +91,14 @@ namespace terra::noise
         std::array<int16_t, 256> perm;
         std::array<int16_t, 256> permGradIndex3D;
 
-       public:
+    public:
         constexpr open_simplex(int64_t seed);
 
         constexpr double noise(double x, double y);
         constexpr double noise(double x, double y, double z);
         constexpr double noise(double x, double y, double z, double w);
 
-       private:
+    private:
         constexpr double extrapolate2(int xsb, int ysb, double dx, double dy);
         constexpr double extrapolate3(int xsb,
                                       int ysb,

@@ -30,7 +30,7 @@ namespace terra
 
         std::vector<int64_t> hashtable;
 
-       public:
+    public:
         hash_grid();
         hash_grid(int64_t size_x, int64_t size_y, double radius);
 

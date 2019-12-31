@@ -15,8 +15,7 @@ using namespace terra;
 
 poisson_disc_sampler::poisson_disc_sampler() :
     engine(std::chrono::system_clock::now().time_since_epoch().count()),
-    distribution(0.0, 1.0), width(1.0), height(1.0),
-    min_distance(0.0),
+    distribution(0.0, 1.0), width(1.0), height(1.0), min_distance(0.0),
     cell_size(0.0)
 {
     this->grid_width = 0;

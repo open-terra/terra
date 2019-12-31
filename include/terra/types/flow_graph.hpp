@@ -36,4 +36,4 @@ namespace terra
         void update_flow();
         void update_drainage_areas();
     };
-}
+} // namespace terra

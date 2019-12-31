@@ -7,7 +7,7 @@ namespace terra
     template<typename T>
     struct rect
     {
-       public:
+    public:
         T x0, x1, y0, y1;
 
         constexpr rect() :

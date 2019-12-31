@@ -10,10 +10,10 @@ namespace terra::noise
     template<class T>
     class ridged_noise
     {
-       private:
+    private:
         T& noise_source;
 
-       public:
+    public:
         constexpr ridged_noise(int64_t seed) : noise_source(T(seed))
         {
         }

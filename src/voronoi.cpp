@@ -110,8 +110,8 @@ bool voronoi_diagram_generator::generate_voronoi(
     {
         nsites -= offset;
         //_warning_degeneracy.warn("voronoi_diagram_generator: two (or more)
-        //particles are degenerate in rapidity and azimuth, Voronoi cell
-        //assigned to the first of each set of degenerate particles.");
+        // particles are degenerate in rapidity and azimuth, Voronoi cell
+        // assigned to the first of each set of degenerate particles.");
     }
 
     siteidx = 0;
@@ -1056,7 +1056,7 @@ void voronoi_diagram_generator::clip_line(edge* e)
     // printf("\nPushing line (%f,%f,%f,%f)",x1,y1,x2,y2);
     // fprintf(stdout, "Line with vertices (%f,%f) and (%f,%f)\n",
     //	e->reg[0]->coord.x, e->reg[1]->coord.x, e->reg[0]->coord.y,
-    //e->reg[1]->coord.y);
+    // e->reg[1]->coord.y);
     pushgraph_edge(x1, y1, x2, y2, e->reg[0], e->reg[1]);
 }
 
@@ -1097,14 +1097,14 @@ bool voronoi_diagram_generator::voronoi()
              (newsite->coord.y == newintstar.y &&
               newsite->coord.x < newintstar.x)))
         { /* new site is smallest - this is a site event*/
-            // GS unused plot: out_site(newsite);						//output the
-            // site
+            // GS unused plot: out_site(newsite);						//output
+            // the site
             lbnd = ELleftbnd(&(newsite->coord)); // get the first half_edge to
                                                  // the LEFT of the new site
             rbnd = ELright(
                 lbnd); // get the first half_edge to the RIGHT of the new site
-            bot = rightreg(lbnd); // if this halfedge has no edge, , bot =
-                                  // bottom site (whatever that is)
+            bot = rightreg(lbnd);     // if this halfedge has no edge, , bot =
+                                      // bottom site (whatever that is)
             e = bisect(bot, newsite); // create a new edge that bisects
             bisector = HEcreate(
                 e, le); // create a new half_edge, setting its ELpm field to 0
@@ -1123,8 +1123,9 @@ bool voronoi_diagram_generator::voronoi()
             lbnd = bisector;
             bisector = HEcreate(
                 e, re); // create a new half_edge, setting its ELpm field to 1
-            ELinsert(lbnd, bisector); // insert the new HE to the right of the
-                                      // original bisector earlier in the IF stmt
+            ELinsert(lbnd,
+                     bisector); // insert the new HE to the right of the
+                                // original bisector earlier in the IF stmt
 
             if ((p = intersect(bisector, rbnd)) !=
                 (site*)NULL) // if this new bisector intersects with the
@@ -1147,13 +1148,14 @@ bool voronoi_diagram_generator::voronoi()
                 ELright(lbnd); // get the half_edge to the right of the above HE
             rrbnd = ELright(rbnd); // get the half_edge to the right of the HE
                                    // to the right of the lowest HE
-            bot = leftreg(lbnd); // get the site to the left of the left HE
-                                 // which it bisects
-            top = rightreg(rbnd); // get the site to the right of the right HE
-                                  // which it bisects
+            bot = leftreg(lbnd);   // get the site to the left of the left HE
+                                   // which it bisects
+            top = rightreg(rbnd);  // get the site to the right of the right HE
+                                   // which it bisects
 
-            // GS unused plot: out_triple(bot, top, rightreg(lbnd));		//output
-            // the triple of sites, stating that a circle goes through them
+            // GS unused plot: out_triple(bot, top, rightreg(lbnd));
+            // //output the triple of sites, stating that a circle goes through
+            // them
 
             v = lbnd->vertex; // get the vertex that caused this event
             makevertex(v); // set the vertex number - couldn't do this earlier
@@ -1172,7 +1174,7 @@ bool voronoi_diagram_generator::voronoi()
             PQdelete(rbnd); // remove all vertex events to do with the  right HE
             ELdelete(rbnd); // mark the right HE for deletion - can't delete yet
                             // because there might be pointers to it in Hash Map
-            pm = le; // set the pm variable to zero
+            pm = le;        // set the pm variable to zero
 
             if (bot->coord.y > top->coord.y) // if the site to the left of the
                                              // event is higher than the site
@@ -1191,8 +1193,8 @@ bool voronoi_diagram_generator::voronoi()
                                  // point to that edge with its ELedge field
             ELinsert(llbnd, bisector); // insert the new bisector to the right
                                        // of the left HE
-            endpoint(e, re - pm, v); // set one endpoint to the new edge to be
-                                     // the vector point 'v'.
+            endpoint(e, re - pm, v);   // set one endpoint to the new edge to be
+                                       // the vector point 'v'.
             // If the site to the left of this bisector is higher than the right
             // site, then this endpoint is put in position 0; otherwise in pos 1
             deref(v); // delete the vector 'v'

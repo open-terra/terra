@@ -4,14 +4,9 @@
 
 using namespace terra;
 
-flow_graph::flow_graph() : 
-    drainage_areas(),
-    flow(),
-    lakes(),
-    sorted_nodes(),
-    graph(nullptr),
-    areas(nullptr),
-    heights(nullptr)
+flow_graph::flow_graph() :
+    drainage_areas(), flow(), lakes(), sorted_nodes(), graph(nullptr),
+    areas(nullptr), heights(nullptr)
 {
 }
 
@@ -20,12 +15,8 @@ flow_graph::flow_graph(size_t node_count,
                        const std::vector<double>& areas,
                        const std::vector<double>& heights) :
     drainage_areas(node_count),
-    flow(node_count),
-    lakes(),
-    sorted_nodes(node_count),
-    graph(&graph),
-    areas(&areas),
-    heights(&heights)
+    flow(node_count), lakes(), sorted_nodes(node_count), graph(&graph),
+    areas(&areas), heights(&heights)
 {
     for (size_t i = 0; i < node_count; ++i)
     {
@@ -56,7 +47,7 @@ struct compare
 void flow_graph::update_sort_nodes()
 {
     std::sort(this->sorted_nodes.begin(),
-              this->sorted_nodes.end(), 
+              this->sorted_nodes.end(),
               compare{this->heights});
 }
 
@@ -67,9 +58,8 @@ void flow_graph::update_flow()
         const double nh = this->heights->at(node);
 
         std::pair<size_t, double> min_node = std::make_pair(
-            flow_graph::node_lake, 
-            std::numeric_limits<double>::max());
-        
+            flow_graph::node_lake, std::numeric_limits<double>::max());
+
         for (auto con_node : this->graph->get_connected(node))
         {
             // TODO also need to include rock hardness

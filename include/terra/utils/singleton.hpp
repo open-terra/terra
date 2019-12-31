@@ -5,7 +5,7 @@ namespace utils
     template<typename T>
     class singleton
     {
-       public:
+    public:
         static T& instance()
         {
             static T inst;
@@ -15,7 +15,7 @@ namespace utils
         singleton(singleton const&) = delete;
         singleton& operator=(singleton const&) = delete;
 
-       protected:
+    protected:
         singleton(){};
     };
 } // namespace utils

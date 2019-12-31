@@ -19,7 +19,7 @@ namespace terra
      */
     class graph_edge
     {
-       public:
+    public:
         /// coordinates of the extreme points
         double x1, y1, x2, y2;
 
@@ -36,7 +36,7 @@ namespace terra
      */
     class site
     {
-       public:
+    public:
         terra::vec2 coord;
         int sitenbr;
         int refcnt;
@@ -44,27 +44,27 @@ namespace terra
 
     class free_node
     {
-       public:
+    public:
         free_node* nextfree;
     };
 
     class free_node_array_list
     {
-       public:
+    public:
         free_node* memory;
         free_node_array_list* next;
     };
 
     class free_list
     {
-       public:
+    public:
         free_node* head;
         int nodesize;
     };
 
     class edge
     {
-       public:
+    public:
         double a, b, c;
         site* ep[2];
         site* reg[2];
@@ -73,7 +73,7 @@ namespace terra
 
     class half_edge
     {
-       public:
+    public:
         half_edge *ELleft, *ELright;
         edge* ELedge;
         int ELrefcnt;
@@ -90,7 +90,7 @@ namespace terra
      */
     class voronoi_diagram_generator
     {
-       public:
+    public:
         voronoi_diagram_generator();
         ~voronoi_diagram_generator();
 
@@ -119,7 +119,7 @@ namespace terra
         std::vector<terra::vec2>* parent_sites;
         int n_parent_sites;
 
-       private:
+    private:
         void cleanup();
         void cleanupedges();
         char* getfree(free_list* fl);

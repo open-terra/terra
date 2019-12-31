@@ -43,7 +43,7 @@ namespace terra
     //   a segmentation fault.
     class poisson_disc_sampler
     {
-       public:
+    public:
         //   width, height - Defines the range of x as (0, width] and the range
         //                   of y as (0, height].
         double width = 1.0;
@@ -57,22 +57,21 @@ namespace terra
 
         // max_attempts - The algorithm stochastically attempts to place a new
         //                terra:vec2 around a current terra:vec2.
-        //                This number limits the number of attempts per 
+        //                This number limits the number of attempts per
         //                terra:vec2.
         //                A lower number will speed up the algorithm but at some
         //                cost, possibly significant, to the result's
         //                aesthetics.
-        //size_t max_attempts = 30;
+        // size_t max_attempts = 30;
 
         // start - An optional parameter. If set to anything other than
         //         terra:vec2's default values (infinity, infinity) the
         //         algorithm will start from this terra:vec2.
         //         Otherwise a terra:vec2 is chosen randomly.
         //         Expected to be within the region defined by width and height.
-        //terra::vec2 start = {infinity, infinity};
+        // terra::vec2 start = {infinity, infinity};
 
-        constexpr static size_t grid_empty =
-            std::numeric_limits<size_t>::max();
+        constexpr static size_t grid_empty = std::numeric_limits<size_t>::max();
 
         constexpr static double infinity =
             std::numeric_limits<double>::infinity();
@@ -84,7 +83,8 @@ namespace terra
                                         double height,
                                         double min_distance,
                                         size_t max_attempts = 30,
-                                        terra::vec2 start = {infinity, infinity});
+                                        terra::vec2 start = {infinity,
+                                                             infinity});
 
     private:
         std::default_random_engine engine;

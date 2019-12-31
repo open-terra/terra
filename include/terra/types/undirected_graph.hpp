@@ -29,4 +29,4 @@ namespace terra
 
         bool is_edge_duplicate(const edge& edge) const;
     };
-}
+} // namespace terra

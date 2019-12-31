@@ -8,13 +8,13 @@ namespace terra::noise
     template<class T>
     class summed_noise
     {
-       private:
+    private:
         T& noise_source;
         size_t octaves;
         double lunacracity;
         double persistence;
 
-       public:
+    public:
         constexpr summed_noise(int64_t seed,
                                size_t octaves,
                                double lunacracity,

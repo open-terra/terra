@@ -7,4 +7,4 @@ namespace terra::math
     {
         return x >= 0 ? x : -x;
     }
-} // namespace utils
+} // namespace terra::math
