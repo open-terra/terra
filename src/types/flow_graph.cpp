@@ -16,7 +16,7 @@ flow_graph::flow_graph() :
 }
 
 flow_graph::flow_graph(size_t node_count,
-                       const terra::undirectional_graph& graph,
+                       const terra::undirected_graph& graph,
                        const std::vector<double>& areas,
                        const std::vector<double>& heights) :
     drainage_areas(node_count),

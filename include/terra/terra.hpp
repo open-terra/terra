@@ -5,8 +5,8 @@
 #include "types/flow_graph.hpp"
 #include "types/hash_grid.hpp"
 #include "types/rect.hpp"
-#include "types/undirectional_edge.hpp"
-#include "types/undirectional_graph.hpp"
+#include "types/undirected_edge.hpp"
+#include "types/undirected_graph.hpp"
 #include "types/vec2.hpp"
 #include "types/vec3.hpp"
 

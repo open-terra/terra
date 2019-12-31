@@ -5,20 +5,20 @@
 
 namespace terra
 {
-    struct undirectional_edge
+    struct undirected_edge
     {
     public:
         size_t v0, v1;
 
-        constexpr undirectional_edge() : v0(0), v1(0)
+        constexpr undirected_edge() : v0(0), v1(0)
         {
         }
 
-        constexpr undirectional_edge(size_t v0, size_t v1) : v0(v0), v1(v1)
+        constexpr undirected_edge(size_t v0, size_t v1) : v0(v0), v1(v1)
         {
         }
 
-        ~undirectional_edge()
+        ~undirected_edge()
         {
         }
 
@@ -37,8 +37,8 @@ namespace terra
     };
 }
 
-constexpr bool operator==(const terra::undirectional_edge& l,
-                          const terra::undirectional_edge& r)
+constexpr bool operator==(const terra::undirected_edge& l,
+                          const terra::undirected_edge& r)
 {
     return (l.v0 == r.v0 && l.v1 == r.v1) ||
            (l.v0 == r.v1 && l.v1 == r.v0);

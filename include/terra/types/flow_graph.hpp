@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "undirectional_graph.hpp"
+#include "undirected_graph.hpp"
 
 namespace terra
 {
@@ -20,7 +20,7 @@ namespace terra
 
         flow_graph();
         flow_graph(size_t node_count,
-                   const terra::undirectional_graph& graph,
+                   const terra::undirected_graph& graph,
                    const std::vector<double>& areas,
                    const std::vector<double>& heights);
 
@@ -28,7 +28,7 @@ namespace terra
 
     private:
         std::vector<size_t> sorted_nodes;
-        const terra::undirectional_graph* graph;
+        const terra::undirected_graph* graph;
         const std::vector<double>* areas;
         const std::vector<double>* heights;
 

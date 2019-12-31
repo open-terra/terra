@@ -1,20 +1,25 @@
-#include "terra/types/undirectional_graph.hpp"
+#include "terra/types/undirected_graph.hpp"
 
 #include <array>
 
 using namespace terra;
 
-undirectional_graph::undirectional_graph() : nodes(), edges()
+undirected_graph::undirected_graph() : nodes(), edges()
 {
 }
 
-undirectional_graph::undirectional_graph(size_t vertex_count, size_t max_edges) :
+undirected_graph::undirected_graph(size_t vertex_count, size_t max_edges) :
     nodes(vertex_count),
     edges(max_edges)
 {
+    // TODO probably reserve edges here instead of setting the initial size
+
+    // TODO also need to shrink edges at some point or find a better solution
+    // for storing edges, maybe use a list again, or have a seperate constructor
+    // class
 }
 
-void undirectional_graph::add_edge(const undirectional_graph::edge& edge)
+void undirected_graph::add_edge(const undirected_graph::edge& edge)
 {
     if (edge.v0 != edge.v1 && !(this->is_edge_duplicate(edge)))
     {
@@ -25,12 +30,12 @@ void undirectional_graph::add_edge(const undirectional_graph::edge& edge)
     }
 }
 
-void undirectional_graph::add_edge(size_t v0, size_t v1)
+void undirected_graph::add_edge(size_t v0, size_t v1)
 {
     this->add_edge({ v0, v1 });
 }
 
-std::vector<size_t> undirectional_graph::get_connected(size_t i) const
+std::vector<size_t> undirected_graph::get_connected(size_t i) const
 {
     std::vector<size_t> connected;
     connected.reserve(this->nodes[i].size());
@@ -45,12 +50,12 @@ std::vector<size_t> undirectional_graph::get_connected(size_t i) const
     return connected;
 }
 
-size_t undirectional_graph::num_edges() const
+size_t undirected_graph::num_edges() const
 {
     return this->edge_count;
 }
 
-bool undirectional_graph::is_edge_duplicate(const undirectional_graph::edge& edge) const
+bool undirected_graph::is_edge_duplicate(const undirected_graph::edge& edge) const
 {
     for (const auto iedge : this->nodes[edge.v0])
     {

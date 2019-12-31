@@ -3,17 +3,17 @@
 #include <list>
 #include <vector>
 
-#include "undirectional_edge.hpp"
+#include "undirected_edge.hpp"
 
 namespace terra
 {
-    class undirectional_graph
+    class undirected_graph
     {
     public:
-        typedef undirectional_edge edge;
+        typedef undirected_edge edge;
 
-        undirectional_graph();
-        undirectional_graph(size_t node_count, size_t max_edges);
+        undirected_graph();
+        undirected_graph(size_t node_count, size_t max_edges);
 
         void add_edge(const edge& edge);
         void add_edge(size_t v0, size_t v1);
