@@ -12,25 +12,9 @@
 
 #include "terra/math/abs.hpp"
 #include "terra/math/mod.hpp"
+#include "terra/math/sum.hpp"
 
 using namespace terra;
-
-// Kahan and Babuska summation, Neumaier variant; accumulates less FP error
-inline double sum(const std::vector<double>& x)
-{
-    double sum = x[0];
-    double err = 0.0;
-
-    for (size_t i = 1; i < x.size(); i++)
-    {
-        const double k = x[i];
-        const double m = sum + k;
-        err += math::abs(sum) >= math::abs(k) ? sum - m + k : k - m + sum;
-        sum = m;
-    }
-
-    return sum + err;
-}
 
 inline double
 circumradius(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
@@ -397,7 +381,7 @@ double delaunator::get_hull_area()
         e = hull_next[e];
     } while (e != hull_start);
 
-    return sum(hull_area);
+    return terra::math::sum<double>(hull_area);
 }
 
 size_t delaunator::legalize(size_t a)

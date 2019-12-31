@@ -1,6 +1,6 @@
 #pragma once
 
-namespace utils
+namespace terra::utils
 {
     template<typename T>
     class singleton
