@@ -2,11 +2,12 @@
 
 using namespace terra;
 
-undirected_graph::undirected_graph() : nodes(), edges()
+undirected_graph::undirected_graph() : edge_count(0), nodes(), edges()
 {
 }
 
 undirected_graph::undirected_graph(size_t vertex_count, size_t max_edges) :
+    edge_count(0),
     nodes(vertex_count),
     edges(max_edges)
 {
