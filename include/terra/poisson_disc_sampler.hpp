@@ -43,6 +43,7 @@ namespace terra
     //   a segmentation fault.
     class poisson_disc_sampler
     {
+        // TODO make use of the hash_grid type and update match or remove it.
     public:
         //   width, height - Defines the range of x as (0, width] and the range
         //                   of y as (0, height].

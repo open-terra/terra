@@ -27,6 +27,12 @@ namespace terra
         void update();
 
     private:
+        // TODO avoid reorder
+        // TODO make flow graph decisions template? needs to be more dynamic,
+        // because will allow for multiple methods for flow calculation, for
+        // example height & surface hardness, height, shrubs, trees & surface
+        // etc. Also shall clean up this class from having as many pointers,
+        // out of the object.
         std::vector<size_t> sorted_nodes;
         const terra::undirected_graph* graph;
         const std::vector<double>* areas;
