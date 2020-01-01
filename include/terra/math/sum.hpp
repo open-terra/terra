@@ -13,7 +13,7 @@ namespace terra::math
     // TODO this file will need cleaning a little and to work for more than just
     // a vector.
 
-    template <typename T, terra::utils::enable_if_integer_t<T> = 0>
+    template<typename T, terra::utils::enable_if_integer_t<T> = 0>
     inline T sum(const std::vector<T>& x)
     {
         T sum = x[0];
@@ -27,7 +27,7 @@ namespace terra::math
     }
 
     // Kahan and Babuska summation, Neumaier variant; accumulates less FP error
-    template <typename T, terra::utils::enable_if_floating_t<T> = 0>
+    template<typename T, terra::utils::enable_if_floating_t<T> = 0>
     inline T sum(const std::vector<T>& x)
     {
         T sum = x[0];
@@ -43,4 +43,4 @@ namespace terra::math
 
         return sum + err;
     }
-}
+} // namespace terra::math

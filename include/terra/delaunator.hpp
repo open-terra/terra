@@ -10,29 +10,12 @@ namespace terra
     constexpr double EPSILON = std::numeric_limits<double>::epsilon();
     constexpr size_t INVALID_INDEX = std::numeric_limits<size_t>::max();
 
-    struct delaunator_point
-    {
-        size_t i;
-        double x;
-        double y;
-        size_t t;
-        size_t prev;
-        size_t next;
-        bool removed;
-    };
-
     class delaunator
     {
     public:
         std::vector<size_t> triangles;
         std::vector<size_t> halfedges;
         size_t hull_start;
-
-        delaunator();
-
-        void triangulate(const std::vector<terra::vec2>& in_coords);
-        double get_hull_area();
-
     private:
         const std::vector<terra::vec2>* coords;
         std::vector<size_t> hull_prev;
@@ -43,6 +26,13 @@ namespace terra
         size_t hash_size;
         std::vector<size_t> edge_stack;
 
+    public:
+        delaunator();
+
+        void triangulate(const std::vector<terra::vec2>& in_coords);
+        double get_hull_area();
+
+    private:
         size_t legalize(size_t a);
         size_t hash_key(const terra::vec2& vec) const;
         size_t add_triangle(size_t i0,

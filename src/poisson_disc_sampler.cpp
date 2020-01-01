@@ -14,12 +14,11 @@
 using namespace terra;
 
 poisson_disc_sampler::poisson_disc_sampler() :
+    width(1.0), height(1.0), min_distance(0.0),
     engine(std::chrono::system_clock::now().time_since_epoch().count()),
-    distribution(0.0, 1.0), width(1.0), height(1.0), min_distance(0.0),
-    cell_size(0.0)
+    distribution(0.0, 1.0), cell_size(0.0), grid_width(0), grid_height(0),
+    points(), grid(), active()
 {
-    this->grid_width = 0;
-    this->grid_height = 0;
 }
 
 poisson_disc_sampler::~poisson_disc_sampler()
@@ -61,7 +60,7 @@ std::vector<terra::vec2> poisson_disc_sampler::sample(double width,
         auto point = this->points[this->active.top()];
         this->active.pop();
 
-        for (int64_t i = 0; i != max_attempts; ++i)
+        for (size_t i = 0; i != max_attempts; ++i)
         {
             auto p = this->point_around(point);
 
@@ -117,7 +116,7 @@ void poisson_disc_sampler::add(const terra::vec2& p)
     this->set(p, index);
 
     this->points.push_back(p);
-};
+}
 
 bool poisson_disc_sampler::point_too_close(const terra::vec2& p)
 {
@@ -150,4 +149,4 @@ bool poisson_disc_sampler::point_too_close(const terra::vec2& p)
     }
 
     return false;
-};
+}

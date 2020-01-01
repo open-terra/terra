@@ -18,4 +18,4 @@ namespace terra::utils
     protected:
         singleton(){};
     };
-} // namespace utils
+} // namespace terra::utils

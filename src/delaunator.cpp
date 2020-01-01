@@ -133,8 +133,9 @@ inline double pseudo_angle(const double dx, const double dy)
 }
 
 delaunator::delaunator() :
-    coords(), triangles(), halfedges(), hull_prev(), hull_next(), hull_tri(),
-    hull_start(), hash(), hash_size(), edge_stack()
+    triangles(), halfedges(), hull_start(0), coords(nullptr), hull_prev(),
+    hull_next(), hull_tri(), hash(), centre{INFINITY, INFINITY}, hash_size(0),
+    edge_stack()
 {
 }
 

@@ -47,14 +47,14 @@ namespace terra
     public:
         //   width, height - Defines the range of x as (0, width] and the range
         //                   of y as (0, height].
-        double width = 1.0;
-        double height = 1.0;
+        double width;
+        double height;
 
         // min_distance - The smallest distance allowed between two
         //                terra:vec2s.
         //                Also, terra:vec2s will never be further apart than
         //                twice this distance.
-        double min_distance = 0.05;
+        double min_distance;
 
         // max_attempts - The algorithm stochastically attempts to place a new
         //                terra:vec2 around a current terra:vec2.
@@ -71,7 +71,16 @@ namespace terra
         //         Otherwise a terra:vec2 is chosen randomly.
         //         Expected to be within the region defined by width and height.
         // terra::vec2 start = {infinity, infinity};
+    private:
+        std::default_random_engine engine;
+        std::uniform_real_distribution<double> distribution;
+        double cell_size;
+        size_t grid_width, grid_height;
+        std::vector<terra::vec2> points;
+        std::vector<size_t> grid;
+        std::stack<size_t> active;
 
+    public:
         constexpr static size_t grid_empty = std::numeric_limits<size_t>::max();
 
         constexpr static double infinity =
@@ -88,18 +97,9 @@ namespace terra
                                                              infinity});
 
     private:
-        std::default_random_engine engine;
-        std::uniform_real_distribution<double> distribution;
         double random(float range);
-
         terra::vec2 point_around(terra::vec2 p);
         bool in_area(const terra::vec2& p);
-
-        double cell_size;
-        size_t grid_width, grid_height;
-        std::vector<terra::vec2> points;
-        std::vector<size_t> grid;
-        std::stack<size_t> active;
         void set(const terra::vec2& p, size_t index);
         void add(const terra::vec2& p);
         bool point_too_close(const terra::vec2& p);

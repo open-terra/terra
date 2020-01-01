@@ -14,7 +14,8 @@ namespace terra
 
         undirected_graph();
         undirected_graph(size_t node_count, size_t max_edges);
-        undirected_graph(size_t node_count, const std::vector<size_t>& triangles);
+        undirected_graph(size_t node_count,
+                         const std::vector<size_t>& triangles);
 
         void add_edge(const edge& edge);
         void add_edge(size_t v0, size_t v1);

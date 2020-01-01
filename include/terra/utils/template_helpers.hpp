@@ -5,8 +5,10 @@
 namespace terra::utils
 {
     template<typename T>
-    using enable_if_integer_t = typename std::enable_if<std::is_integral<T>::value, int>::type;
+    using enable_if_integer_t =
+        typename std::enable_if<std::is_integral<T>::value, int>::type;
 
     template<typename T>
-    using enable_if_floating_t = typename std::enable_if<std::is_floating_point<T>::value, int>::type;
-}
+    using enable_if_floating_t =
+        typename std::enable_if<std::is_floating_point<T>::value, int>::type;
+} // namespace terra::utils

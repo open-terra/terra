@@ -13,9 +13,10 @@ undirected_graph::undirected_graph(size_t vertex_count, size_t max_edges) :
     this->edges.reserve(max_edges);
 }
 
-undirected_graph::undirected_graph(
-    size_t node_count,
-    const std::vector<size_t>& triangles) : nodes(node_count), edges()
+undirected_graph::undirected_graph(size_t node_count,
+                                   const std::vector<size_t>& triangles) :
+    nodes(node_count),
+    edges()
 {
     this->edges.reserve(triangles.size());
 
