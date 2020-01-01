@@ -1,5 +1,5 @@
 add_executable(terra_tests
-    test/utils.cpp
+    test/math.cpp
     test/poisson_disc_sampling.cpp
     test/triangulation.cpp
     test/main.cpp
