@@ -2,34 +2,60 @@
 
 using namespace terra;
 
-undirected_graph::undirected_graph() : edge_count(0), nodes(), edges()
+undirected_graph::undirected_graph() : nodes(), edges()
 {
 }
 
 undirected_graph::undirected_graph(size_t vertex_count, size_t max_edges) :
-    edge_count(0), nodes(vertex_count), edges(max_edges)
+    nodes(vertex_count), edges()
 {
-    // TODO probably reserve edges here instead of setting the initial size
+    // TODO still need to free this memory later on somewhere
+    this->edges.reserve(max_edges);
+}
 
-    // TODO also need to shrink edges at some point or find a better solution
-    // for storing edges, maybe use a list again, or have a seperate constructor
-    // class
+undirected_graph::undirected_graph(
+    size_t node_count,
+    const std::vector<size_t>& triangles) : nodes(node_count), edges()
+{
+    this->edges.reserve(triangles.size());
+
+    for (size_t i = 0; i < triangles.size(); i += 3)
+    {
+        const size_t p0 = i;
+        const size_t p1 = i + 1;
+        const size_t p2 = i + 2;
+
+        const size_t v0 = triangles[p0];
+        const size_t v1 = triangles[p1];
+        const size_t v2 = triangles[p2];
+
+        this->add_triangle(v0, v1, v2);
+    }
+
+    this->edges.shrink_to_fit();
 }
 
 void undirected_graph::add_edge(const undirected_graph::edge& edge)
 {
     if (edge.v0 != edge.v1 && !(this->is_edge_duplicate(edge)))
     {
-        this->nodes[edge.v0].push_back(this->edge_count);
-        this->nodes[edge.v1].push_back(this->edge_count);
-        this->edges[this->edge_count] = edge;
-        ++(this->edge_count);
+        const size_t edge_count = this->edges.size();
+        this->nodes[edge.v0].push_back(edge_count);
+        this->nodes[edge.v1].push_back(edge_count);
+        this->edges.push_back(edge);
     }
 }
 
 void undirected_graph::add_edge(size_t v0, size_t v1)
 {
     this->add_edge({v0, v1});
+}
+
+void undirected_graph::add_triangle(size_t v0, size_t v1, size_t v2)
+{
+    this->add_edge({v0, v1});
+    this->add_edge({v1, v2});
+    this->add_edge({v2, v0});
 }
 
 std::vector<size_t> undirected_graph::get_connected(size_t i) const
@@ -49,7 +75,7 @@ std::vector<size_t> undirected_graph::get_connected(size_t i) const
 
 size_t undirected_graph::num_edges() const
 {
-    return this->edge_count;
+    return this->edges.size();
 }
 
 bool undirected_graph::is_edge_duplicate(
