@@ -3,22 +3,31 @@
 #include <array>
 #include <cstddef>
 
+#include "../enums/graph_type.hpp"
+
 namespace terra
 {
-    struct undirected_edge
+    template<graph_type T>
+    struct graph_edge;
+
+    typedef graph_edge<graph_type::directed> directed_edge;
+    typedef graph_edge<graph_type::undirected> undirected_edge;
+
+    template<graph_type T>
+    struct graph_edge
     {
     public:
         size_t v0, v1;
 
-        constexpr undirected_edge() : v0(0), v1(0)
+        constexpr graph_edge() : v0(0), v1(0)
         {
         }
 
-        constexpr undirected_edge(size_t v0, size_t v1) : v0(v0), v1(v1)
+        constexpr graph_edge(size_t v0, size_t v1) : v0(v0), v1(v1)
         {
         }
 
-        ~undirected_edge()
+        ~graph_edge()
         {
         }
 

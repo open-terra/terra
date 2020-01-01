@@ -3,7 +3,7 @@
 #include <list>
 #include <vector>
 
-#include "undirected_edge.hpp"
+#include "graph_edge.hpp"
 
 namespace terra
 {
