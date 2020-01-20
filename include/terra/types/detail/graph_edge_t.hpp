@@ -25,7 +25,7 @@ namespace terra::detail
         {
         }
 
-        constexpr std::array<size_t, 2ul> get_vertex() const
+        constexpr std::array<size_t, 2ul> get_vert_idx() const
         {
             return {this->v0, this->v1};
         }
@@ -40,9 +40,8 @@ namespace terra::detail
     };
 } // namespace terra::detail
 
-template<terra::graph_type T>
-constexpr bool operator==(const terra::detail::graph_edge_t<T>& l,
-                          const terra::detail::graph_edge_t<T>& r)
+constexpr bool operator==(const terra::detail::graph_edge_t<terra::graph_type::undirected>& l,
+                          const terra::detail::graph_edge_t<terra::graph_type::undirected>& r)
 {
     return (l.v0 == r.v0 && l.v1 == r.v1) || (l.v0 == r.v1 && l.v1 == r.v0);
 }

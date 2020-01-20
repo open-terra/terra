@@ -42,6 +42,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 add_library(Terra STATIC
+    src/io/wavefront_obj.cpp
     src/noise/open_simplex.cpp
     src/noise/summed_noise.cpp
     src/types/flow_graph.cpp
