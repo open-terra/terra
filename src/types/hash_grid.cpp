@@ -27,10 +27,10 @@ constexpr size_t HashPos(const terra::vec2& point,
                          const double bucket_size,
                          const int64_t grid_size_x)
 {
-    int64_t x = std::max<int64_t>(
-        static_cast<int64_t>(math::floor<double>(point.x) / bucket_size), 0);
-    int64_t y = std::max<int64_t>(
-        static_cast<int64_t>(math::floor<double>(point.y) / bucket_size), 0);
+    int64_t x = std::max<int64_t>(math::floor<int64_t>(point.x) / bucket_size,
+                                  0);
+    int64_t y = std::max<int64_t>(math::floor<int64_t>(point.y) / bucket_size,
+                                  0);
 
     return (y * grid_size_x) + x;
 }
