@@ -2,21 +2,23 @@
 
 using namespace terra;
 
-undirected_graph::undirected_graph() : nodes(), edges()
+template<>
+undirected_graph::graph_t() : nodes(), edges()
 {
 }
 
-undirected_graph::undirected_graph(size_t vertex_count, size_t max_edges) :
+template<>
+undirected_graph::graph_t(size_t vertex_count, size_t max_edges) :
     nodes(vertex_count), edges()
 {
     // TODO still need to free this memory later on somewhere
     this->edges.reserve(max_edges);
 }
 
-undirected_graph::undirected_graph(size_t node_count,
-                                   const std::vector<size_t>& triangles) :
-    nodes(node_count),
-    edges()
+template<>
+undirected_graph::graph_t(size_t node_count,
+                          const std::vector<size_t>& triangles) :
+    nodes(node_count), edges()
 {
     this->edges.reserve(triangles.size());
 
@@ -36,6 +38,7 @@ undirected_graph::undirected_graph(size_t node_count,
     this->edges.shrink_to_fit();
 }
 
+template<>
 void undirected_graph::add_edge(const undirected_graph::edge& edge)
 {
     if (edge.v0 != edge.v1 && !(this->is_edge_duplicate(edge)))
@@ -47,11 +50,13 @@ void undirected_graph::add_edge(const undirected_graph::edge& edge)
     }
 }
 
+template<>
 void undirected_graph::add_edge(size_t v0, size_t v1)
 {
     this->add_edge({v0, v1});
 }
 
+template<>
 void undirected_graph::add_triangle(size_t v0, size_t v1, size_t v2)
 {
     this->add_edge({v0, v1});
@@ -59,6 +64,7 @@ void undirected_graph::add_triangle(size_t v0, size_t v1, size_t v2)
     this->add_edge({v2, v0});
 }
 
+template<>
 std::vector<size_t> undirected_graph::get_connected(size_t i) const
 {
     std::vector<size_t> connected;
@@ -74,11 +80,13 @@ std::vector<size_t> undirected_graph::get_connected(size_t i) const
     return connected;
 }
 
+template<>
 size_t undirected_graph::num_edges() const
 {
     return this->edges.size();
 }
 
+template<>
 bool undirected_graph::is_edge_duplicate(
     const undirected_graph::edge& edge) const
 {

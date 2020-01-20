@@ -3,31 +3,25 @@
 #include <array>
 #include <cstddef>
 
-#include "../enums/graph_type.hpp"
+#include "../../enums/graph_type.hpp"
 
-namespace terra
+namespace terra::detail
 {
     template<graph_type T>
-    struct graph_edge;
-
-    typedef graph_edge<graph_type::directed> directed_edge;
-    typedef graph_edge<graph_type::undirected> undirected_edge;
-
-    template<graph_type T>
-    struct graph_edge
+    struct graph_edge_t
     {
     public:
         size_t v0, v1;
 
-        constexpr graph_edge() : v0(0), v1(0)
+        constexpr graph_edge_t() : v0(0), v1(0)
         {
         }
 
-        constexpr graph_edge(size_t v0, size_t v1) : v0(v0), v1(v1)
+        constexpr graph_edge_t(size_t v0, size_t v1) : v0(v0), v1(v1)
         {
         }
 
-        ~graph_edge()
+        ~graph_edge_t()
         {
         }
 
@@ -44,10 +38,11 @@ namespace terra
             }
         }
     };
-} // namespace terra
+} // namespace terra::detail
 
-constexpr bool operator==(const terra::undirected_edge& l,
-                          const terra::undirected_edge& r)
+template<terra::graph_type T>
+constexpr bool operator==(const terra::detail::graph_edge_t<T>& l,
+                          const terra::detail::graph_edge_t<T>& r)
 {
     return (l.v0 == r.v0 && l.v1 == r.v1) || (l.v0 == r.v1 && l.v1 == r.v0);
 }
