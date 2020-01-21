@@ -30,18 +30,24 @@ endif()
 # GLM used for vecN types
 find_package(glm CONFIG REQUIRED)
 
+# Libtiff
+find_path(LIBTIFF_INCLUDE_DIR tiff.h)
+find_library(LIBTIFF_LIB tiff)
+find_library(LIBTIFF_XX_LIB tiffxx)
+
 # Do stuff depending on the compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Wpedantic -Wunused-value -Wold-style-cast -std=c++17")
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "/W4 /std:c++17")
+    set(CMAKE_CXX_FLAGS "/W4 /EHsc /std:c++17")
     set(CMAKE_CXX_FLAGS_DEBUG "/O0 /ZI")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2")
 endif()
 
 add_library(Terra STATIC
+    src/io/tiff.cpp
     src/io/wavefront_obj.cpp
     src/noise/open_simplex.cpp
     src/noise/summed_noise.cpp
@@ -58,9 +64,14 @@ set_target_properties(Terra PROPERTIES OUTPUT_NAME "terra")
 target_include_directories(Terra PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    PRIVATE ${LIBTIFF_INCLUDE_DIR}
 )
 
-target_link_libraries(Terra PUBLIC glm)
+target_link_libraries(Terra PUBLIC
+    glm
+    ${LIBTIFF_LIB}
+    ${LIBTIFF_XX_LIB}
+)
 
 if(BUILD_TESTING)
     include(test/tests.cmake)
