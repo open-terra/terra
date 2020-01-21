@@ -17,6 +17,7 @@ addons:
     update: true
     packages:
     - libglm-dev
+    - libtiff-dev
 
 install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
