@@ -41,7 +41,7 @@ namespace terra
         // out of the object.
 
         void update_sort_nodes();
-        void update_flow();
         void update_drainage_areas();
+        void update_flow();
     };
 } // namespace terra
