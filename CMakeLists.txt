@@ -53,7 +53,6 @@ add_library(Terra STATIC
     src/noise/summed_noise.cpp
     src/types/flow_graph.cpp
     src/types/hash_grid.cpp
-    src/types/undirected_graph.cpp
     src/delaunator.cpp
     src/poisson_disc_sampler.cpp
     src/voronoi.cpp
