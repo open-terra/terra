@@ -10,7 +10,8 @@ cache:
 install:
   - vcpkg install Catch2:x64-windows
   - vcpkg install glm:x64-windows
-  - vcpkg install glm:x64-windows
+  - vcpkg install tiff:x64-windows
+  - vcpkg integrate install
 
 before_build:
   - mkdir build
