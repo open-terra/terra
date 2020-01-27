@@ -26,8 +26,8 @@ terra::bitmap load_tiff(const std::string filepath)
         TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h);
         num_pixels = w * h;
 
-        std::unique_ptr<terra::argb_t[]> raster = std::make_unique<terra::argb_t[]>(num_pixels);
-        if (TIFFReadRGBAImageOriented(tiff, w, h, reinterpret_cast<std::uint32_t*>(raster.get()), ORIENTATION_TOPLEFT))
+        std::vector<terra::argb_t> raster(num_pixels);
+        if (TIFFReadRGBAImageOriented(tiff, w, h, reinterpret_cast<std::uint32_t*>(&raster[0]), ORIENTATION_TOPLEFT))
         {
             throw std::runtime_error("failed to read tiff rgba image");
         }
