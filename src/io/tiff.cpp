@@ -4,14 +4,14 @@
 #include <iostream>
 #include <fstream>
 
+#include "tiff.h"
 #include "tiffio.hxx"
 
-#include "terra/utils/template_helpers.hpp"
+#include "terra/types/bitmap.hpp"
 
 using namespace terra::io::tiff;
 
-template<typename T, terra::utils::enable_if_type_equal_t<T, terra::rgba>>
-terra::bitmap<T> load_tiff(const std::string filepath)
+terra::bitmap load_tiff(const std::string filepath)
 {
     std::ifstream tiff_file;
     tiff_file.open(filepath);
@@ -19,21 +19,23 @@ terra::bitmap<T> load_tiff(const std::string filepath)
     TIFF* tiff = TIFFStreamOpen("", &tiff_file);
     if (tiff)
     {
-        uint32 w, h;
-        uint8_t bpc;
-        size_t npixels;
-        std::vector<uint32_t> raster;
+        uint32_t w, h;
+        size_t num_pixels;
         
         TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w);
         TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h);
-        TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bpc);
-        npixels = w * h;
-        raster.reserve(npixels);
-        if (TIFFReadRGBAImage(tiff, w, h, &raster[0], 0))
+        num_pixels = w * h;
+
+        std::unique_ptr<terra::argb_t[]> raster = std::make_unique<terra::argb_t[]>(num_pixels);
+        if (TIFFReadRGBAImageOriented(tiff, w, h, reinterpret_cast<std::uint32_t*>(raster.get()), ORIENTATION_TOPLEFT))
         {
             throw std::runtime_error("failed to read tiff rgba image");
         }
 
         TIFFClose(tiff);
+
+        return terra::bitmap(w, h, num_pixels, raster);
     }
+
+    return terra::bitmap();
 }

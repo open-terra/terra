@@ -1,28 +1,25 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
+#include <memory>
+
+#include "../utils/template_helpers.hpp"
 
 namespace terra
 {
-    typedef uint8_t gray8;
-    typedef uint16_t gray16;
-    typedef uint32_t rgba;
+    struct argb_t
+    {
+    public:
+        uint8_t alpha, red, green, blue;
+    };
 
-    template<typename T>
     struct bitmap
     {
+    public:
         uint32_t width, height, num_pixels;
-        std::vector<T> raster;
+        std::unique_ptr<argb_t[]> raster;
 
-        bitmap() : width(0), height(0), num_pixels(0), raster()
-        {
-        }
-
-        bitmap(int width, int height, std::vector<T> raster) :
-            width(width), height(height), num_pixels(width * height),
-            raster(std::move(raster))
-        {
-        }
+        bitmap();
+        bitmap(uint32_t width, uint32_t height, uint32_t num_pixels, std::unique_ptr<argb_t[]>& raster);
     };
 }
