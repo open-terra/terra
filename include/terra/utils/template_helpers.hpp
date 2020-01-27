@@ -12,7 +12,7 @@ namespace terra::utils
     using enable_if_floating_t =
         typename std::enable_if<std::is_floating_point<T>::value, int>::type;
 
-    template<auto l, auto r>
+    template<typename T, T l, T r>
     using enable_if_value_equal_t = typename std::enable_if<l == r, int>::type;
 
     template<typename L, typename R>
