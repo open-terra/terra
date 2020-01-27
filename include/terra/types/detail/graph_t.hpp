@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../../enums/graph_type.hpp"
+#include "../triangle.hpp"
 #include "graph_edge_t.hpp"
 
 namespace terra::detail
@@ -16,11 +17,19 @@ namespace terra::detail
 
         graph_t();
         graph_t(size_t node_count, size_t max_edges);
-        graph_t(size_t node_count, const std::vector<size_t>& triangles);
+        graph_t(size_t node_count, const std::vector<terra::triangle>& triangles);
 
         void add_edge(const edge& edge);
-        void add_edge(size_t v0, size_t v1);
-        void add_triangle(size_t v0, size_t v1, size_t v2);
+        inline void add_edge(size_t v0, size_t v1)
+        {
+            this->add_edge({v0, v1});
+        }
+
+        void add_triangle(const terra::triangle& tri);
+        inline void add_triangle(size_t v0, size_t v1, size_t v2)
+        {
+            this->add_triangle({v0, v1, v2});
+        }
 
         std::vector<size_t> get_connected(size_t i) const;
 

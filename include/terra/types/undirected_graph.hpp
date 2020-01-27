@@ -22,22 +22,14 @@ namespace terra
 
     template<>
     undirected_graph::graph_t(size_t node_count,
-                            const std::vector<size_t>& triangles) :
+                              const std::vector<terra::triangle>& triangles) :
         nodes(node_count), edges()
     {
         this->edges.reserve(triangles.size());
 
-        for (size_t i = 0; i < triangles.size(); i += 3)
+        for (const auto& tri : triangles)
         {
-            const size_t p0 = i;
-            const size_t p1 = i + 1;
-            const size_t p2 = i + 2;
-
-            const size_t v0 = triangles[p0];
-            const size_t v1 = triangles[p1];
-            const size_t v2 = triangles[p2];
-
-            this->add_triangle(v0, v1, v2);
+            this->add_triangle(tri);
         }
 
         this->edges.shrink_to_fit();
@@ -56,17 +48,11 @@ namespace terra
     }
 
     template<>
-    void undirected_graph::add_edge(size_t v0, size_t v1)
+    void undirected_graph::add_triangle(const terra::triangle& tri)
     {
-        this->add_edge({v0, v1});
-    }
-
-    template<>
-    void undirected_graph::add_triangle(size_t v0, size_t v1, size_t v2)
-    {
-        this->add_edge({v0, v1});
-        this->add_edge({v1, v2});
-        this->add_edge({v2, v0});
+        this->add_edge({tri.v0, tri.v1});
+        this->add_edge({tri.v1, tri.v2});
+        this->add_edge({tri.v2, tri.v0});
     }
 
     template<>
