@@ -19,7 +19,7 @@ namespace terra
 
         constexpr std::array<size_t, 3> get_vert_idx() const
         {
-            return {v0, v1, v2};
+            return {this->v0, this->v1, this->v2};
         }
     };
 }
