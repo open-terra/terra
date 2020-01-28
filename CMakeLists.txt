@@ -56,6 +56,7 @@ add_library(Terra STATIC
     src/types/hash_grid.cpp
     src/delaunator.cpp
     src/poisson_disc_sampler.cpp
+    src/uplift.cpp
     src/voronoi.cpp
 )
 
