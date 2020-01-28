@@ -22,17 +22,6 @@ namespace terra
         std::size_t length;
         T* buffer;
 
-        explicit dynarray(std::size_t N) : length(N), buffer(new T[length]) {}
-        dynarray():length(0), buffer() {}
-        dynarray(dynarray const& o):length(o.N), buffer(new T[length])
-        {
-            std::copy(o.begin(), o.end(), begin());
-        }
-        ~dynarray()
-        {
-            delete[] buffer;
-        }
-
         std::size_t size() const { return length; }
 
         iterator begin() { return data(); }
@@ -53,11 +42,27 @@ namespace terra
         T const& front() const { return *begin(); }
         T& back() { return *(begin()+size()-1); }
         T const& back() const { return *(begin()+size()-1); }
-        T* data() { return buffer.get(); }
-        T const* data() const { return buffer.get(); }
+        T* data() { return buffer; }
+        T const* data() const { return buffer; }
         T& operator[]( std::size_t i ) { return data()[i]; }
         T const& operator[]( std::size_t i ) const { return data()[i]; }
         dynarray& operator=(dynarray &&) = default;
         dynarray(dynarray &&) = default;
+
+        explicit dynarray(std::size_t N) : length(N), buffer(new T[length]) {}
+        dynarray():length(0), buffer() {}
+        dynarray(dynarray const& o) : length(o.N), buffer(new T[length])
+        {
+            std::copy(o.begin(), o.end(), this->begin());
+        }
+        dynarray(std::initializer_list<T> l) :
+            length(l.size()), buffer(new T[length])
+        {
+            std::copy(l.begin(), l.end(), this->begin());
+        }
+        ~dynarray()
+        {
+            delete[] buffer;
+        }
     };
 } // namespace terra
