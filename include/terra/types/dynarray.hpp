@@ -1,6 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
 
 namespace terra
 {
@@ -18,7 +20,18 @@ namespace terra
         typedef ptrdiff_t                             difference_type;
 
         std::size_t length;
-        std::unique_ptr<T[]> buffer;
+        T* buffer;
+
+        explicit dynarray(std::size_t N) : length(N), buffer(new T[length]) {}
+        dynarray():length(0), buffer() {}
+        dynarray(dynarray const& o):length(o.N), buffer(new T[length])
+        {
+            std::copy(o.begin(), o.end(), begin());
+        }
+        ~dynarray()
+        {
+            delete[] buffer;
+        }
 
         std::size_t size() const { return length; }
 
@@ -46,13 +59,5 @@ namespace terra
         T const& operator[]( std::size_t i ) const { return data()[i]; }
         dynarray& operator=(dynarray &&) = default;
         dynarray(dynarray &&) = default;
-
-        explicit dynarray(std::size_t N) : length(N), buffer(new T[length]) {}
-        dynarray():length(0), buffer() {}
-
-        dynarray(dynarray const& o):length(o.N), buffer(new T[length])
-        {
-            std::copy(o.begin(), o.end(), begin());
-        }
     };
 } // namespace terra
