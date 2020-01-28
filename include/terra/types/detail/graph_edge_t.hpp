@@ -40,6 +40,12 @@ namespace terra::detail
     };
 } // namespace terra::detail
 
+constexpr bool operator==(const terra::detail::graph_edge_t<terra::graph_type::directed>& l,
+                          const terra::detail::graph_edge_t<terra::graph_type::directed>& r)
+{
+    return (l.v0 == r.v0 && l.v1 == r.v1);
+}
+
 constexpr bool operator==(const terra::detail::graph_edge_t<terra::graph_type::undirected>& l,
                           const terra::detail::graph_edge_t<terra::graph_type::undirected>& r)
 {
