@@ -2,6 +2,9 @@
 
 #include "math.hpp"
 
+#include "io/tiff.hpp"
+#include "io/wavefront_obj.hpp"
+
 #include "noise/noise.hpp"
 
 #include "types/bitmap.hpp"
@@ -18,4 +21,5 @@
 
 #include "delaunator.hpp"
 #include "poisson_disc_sampler.hpp"
+#include "uplift.hpp"
 #include "voronoi.hpp"
