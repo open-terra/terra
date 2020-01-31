@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <iterator>
 
+#include "../utils/template_helpers.hpp"
+
 namespace terra
 {
     template<typename T>
@@ -49,8 +51,8 @@ namespace terra
         dynarray& operator=(dynarray &&) = default;
         dynarray(dynarray &&) = default;
 
-        explicit dynarray(std::size_t N) : length(N), buffer(new T[length]) {}
-        dynarray():length(0), buffer() {}
+        explicit dynarray(size_t N) : length(N), buffer(new T[length]) {}
+        dynarray() : length(0), buffer() {}
         dynarray(dynarray const& o) : length(o.N), buffer(new T[length])
         {
             std::copy(o.begin(), o.end(), this->begin());
@@ -62,7 +64,18 @@ namespace terra
         }
         ~dynarray()
         {
-            delete[] buffer;
+            delete[] this->buffer;
+        }
+
+        dynarray& operator=(const dynarray& o)
+        {
+            delete[] this->buffer;
+
+            this->length = o.length;
+            this->buffer = new T[this->length];
+            std::copy(o.begin(), o.end(), this->begin());
+
+            return *this;
         }
     };
 } // namespace terra

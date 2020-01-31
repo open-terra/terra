@@ -9,6 +9,7 @@
 
 #include "types/bitmap.hpp"
 #include "types/directed_edge.hpp"
+#include "types/dynarray.hpp"
 #include "types/undirected_graph.hpp"
 #include "types/flow_graph.hpp"
 #include "types/hash_grid.hpp"
