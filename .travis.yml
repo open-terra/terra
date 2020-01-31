@@ -17,6 +17,7 @@ addons:
     update: true
     packages:
     - libglm-dev
+    - libboost-dev
     - libtiff-dev
 
 install:

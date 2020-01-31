@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "vec2.hpp"
 
 namespace terra
@@ -20,7 +22,16 @@ namespace terra
         {
         }
 
-        constexpr bool within_extent(const vec2& p)
+        constexpr terra::vec2 clamp_vert(const vec2& p) const
+        {
+            return
+            {
+                std::clamp(p.x, this->x0, this->x1),
+                std::clamp(p.y, this->y0, this->y1)
+            };
+        }
+
+        constexpr bool within_extent(const vec2& p) const
         {
             return p.x >= this->x0 && p.x <= this->x1 && p.y >= this->y0 &&
                    p.y <= this->y1;

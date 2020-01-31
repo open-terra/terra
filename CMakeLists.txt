@@ -30,6 +30,8 @@ endif()
 # GLM used for vecN types
 find_package(glm CONFIG REQUIRED)
 
+# Boost Polygon for Voronoi
+
 # Libtiff
 find_path(LIBTIFF_INCLUDE_DIR tiff.h)
 find_library(LIBTIFF_LIB tiff)
