@@ -3,6 +3,7 @@ add_executable(terra_tests
     test/math.cpp
     test/poisson_disc_sampling.cpp
     test/triangulation.cpp
+    test/voronoi.cpp
     test/main.cpp
 )
 
