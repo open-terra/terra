@@ -15,8 +15,15 @@ namespace terra
     public:
         voronoi();
 
+        size_t num_cells() const;
+        size_t num_edges() const;
+        size_t num_vertices() const;
+
         void generate(const std::vector<terra::vec2>& points,
                       const terra::rect<double>& bounds,
                       terra::dynarray<terra::polygon>& cells);
+
+    private:
+        size_t ncells, nedges, nverts;
     };
 }

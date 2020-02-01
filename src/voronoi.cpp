@@ -81,8 +81,23 @@ typedef boost::polygon::voronoi_diagram<double> voronoi_diagram_t;
 
 using namespace terra;
 
-voronoi::voronoi()
+voronoi::voronoi() : ncells(0), nedges(0), nverts(0)
 {
+}
+
+size_t voronoi::num_cells() const
+{
+    return this->ncells;
+}
+
+size_t voronoi::num_edges() const
+{
+    return this->nedges;
+}
+
+size_t voronoi::num_vertices() const
+{
+    return this->nverts;
 }
 
 void voronoi::generate(const std::vector<terra::vec2>& points,
@@ -91,6 +106,10 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
 {
     voronoi_diagram_t vd;
     construct_voronoi(points.begin(), points.end(), &vd);
+
+    this->ncells = vd.num_cells();
+    this->nedges = vd.num_edges();
+    this->nverts = vd.num_vertices();
 
     size_t i = 0;
     for (const auto& cell : vd.cells())
