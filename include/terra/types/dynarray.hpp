@@ -5,8 +5,6 @@
 #include <iterator>
 #include <memory>
 
-#include "../utils/template_helpers.hpp"
-
 namespace terra
 {
     template<class T, class Allocator = std::allocator<T>>
