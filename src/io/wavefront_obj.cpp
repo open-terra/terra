@@ -3,9 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace terra::io::obj;
-
-void write_obj(const std::string filepath,
+void terra::io::obj::write_obj(const std::string filepath,
                const std::vector<terra::vec2>& points,
                const std::vector<terra::triangle>& triangles)
 {
