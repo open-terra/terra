@@ -3,12 +3,13 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <memory>
 
 #include "../utils/template_helpers.hpp"
 
 namespace terra
 {
-    template<typename T>
+    template<class T, class Allocator = std::allocator<T>>
     struct dynarray
     {
         typedef       T                               value_type;
@@ -21,6 +22,7 @@ namespace terra
         typedef size_t                                size_type;
         typedef ptrdiff_t                             difference_type;
 
+        Allocator alloc;
         std::size_t length;
         T* buffer;
 
@@ -51,28 +53,32 @@ namespace terra
         dynarray& operator=(dynarray &&) = default;
         dynarray(dynarray &&) = default;
 
-        explicit dynarray(size_t N) : length(N), buffer(new T[length]) {}
-        dynarray() : length(0), buffer() {}
-        dynarray(dynarray const& o) : length(o.N), buffer(new T[length])
+        explicit dynarray(size_t N) : alloc(), length(N)
         {
+            this->buffer = this->alloc.allocate(this->length);
+        }
+        dynarray() : length(0), buffer() {}
+        dynarray(dynarray const& o) : alloc(), length(o.N)
+        {
+            this->buffer = this->alloc.allocate(this->length);
             std::copy(o.begin(), o.end(), this->begin());
         }
-        dynarray(std::initializer_list<T> l) :
-            length(l.size()), buffer(new T[length])
+        dynarray(std::initializer_list<T> l) : alloc(), length(l.size())
         {
+            this->buffer = this->alloc.allocate(this->length);
             std::copy(l.begin(), l.end(), this->begin());
         }
         ~dynarray()
         {
-            delete[] this->buffer;
+            this->alloc.deallocate(this->buffer, this->length);
         }
 
         dynarray& operator=(const dynarray& o)
         {
-            delete[] this->buffer;
+            this->alloc.deallocate(this->buffer, this->length);
 
             this->length = o.length;
-            this->buffer = new T[this->length];
+            this->buffer = this->alloc.allocate(this->length);
             std::copy(o.begin(), o.end(), this->begin());
 
             return *this;
