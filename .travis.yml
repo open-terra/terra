@@ -18,7 +18,6 @@ addons:
     packages:
     - libglm-dev
     - libboost-dev
-    - libtiff-dev
 
 install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
@@ -28,6 +27,7 @@ install:
     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
   - ../install-catch2.sh
+  - ../install-libtiff.sh
 
 # Build steps
 script:
