@@ -3,11 +3,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
-#include <memory>
 
 namespace terra
 {
-    template<class T, class Allocator = std::allocator<T>>
+    template<typename T>
     struct dynarray
     {
         typedef       T                               value_type;
@@ -20,7 +19,6 @@ namespace terra
         typedef size_t                                size_type;
         typedef ptrdiff_t                             difference_type;
 
-        Allocator alloc;
         std::size_t length;
         T* buffer;
 
@@ -51,32 +49,28 @@ namespace terra
         dynarray& operator=(dynarray &&) = default;
         dynarray(dynarray &&) = default;
 
-        explicit dynarray(size_t N) : alloc(), length(N)
-        {
-            this->buffer = this->alloc.allocate(this->length);
-        }
+        explicit dynarray(size_t N) : length(N), buffer(new T[length]) {}
         dynarray() : length(0), buffer() {}
-        dynarray(dynarray const& o) : alloc(), length(o.N)
+        dynarray(dynarray const& o) : length(o.N), buffer(new T[length])
         {
-            this->buffer = this->alloc.allocate(this->length);
             std::copy(o.begin(), o.end(), this->begin());
         }
-        dynarray(std::initializer_list<T> l) : alloc(), length(l.size())
+        dynarray(std::initializer_list<T> l) :
+            length(l.size()), buffer(new T[length])
         {
-            this->buffer = this->alloc.allocate(this->length);
             std::copy(l.begin(), l.end(), this->begin());
         }
         ~dynarray()
         {
-            this->alloc.deallocate(this->buffer, this->length);
+            delete[] this->buffer;
         }
 
         dynarray& operator=(const dynarray& o)
         {
-            this->alloc.deallocate(this->buffer, this->length);
+            delete[] this->buffer;
 
             this->length = o.length;
-            this->buffer = this->alloc.allocate(this->length);
+            this->buffer = new T[this->length];
             std::copy(o.begin(), o.end(), this->begin());
 
             return *this;
