@@ -55,3 +55,6 @@ Makefile
 .vscode/*
 
 build/*
+
+# Terra Config
+terra_config.hpp

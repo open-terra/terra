@@ -34,5 +34,5 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
-  - cmake -DBUILD_TESTING=ON .. && make
+  - cmake -DUSE_OPENCL=OFF -DBUILD_TESTING=ON .. && make
   - ctest

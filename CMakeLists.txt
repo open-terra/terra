@@ -30,12 +30,23 @@ endif()
 # GLM used for vecN types
 find_package(glm CONFIG REQUIRED)
 
+option(USE_OPENCL "" ON)
+if(USE_OPENCL)
+    find_package(OpenCL REQUIRED)
+endif()
+
 # Boost Polygon for Voronoi
 
 # Libtiff
 find_path(LIBTIFF_INCLUDE_DIR tiff.h)
 find_library(LIBTIFF_LIB tiff)
 find_library(LIBTIFF_XX_LIB tiffxx)
+
+configure_file(
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/terra_config.hpp.in
+    ${CMAKE_CURRENT_LIST_DIR}/include/terra/terra_config.hpp
+    @ONLY
+)
 
 # Do stuff depending on the compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -48,7 +59,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2")
 endif()
 
-add_library(Terra STATIC
+set(TERRA_SOURCES
     src/io/tiff.cpp
     src/io/wavefront_obj.cpp
     src/noise/open_simplex.cpp
@@ -60,6 +71,10 @@ add_library(Terra STATIC
     src/poisson_disc_sampler.cpp
     src/uplift.cpp
     src/voronoi.cpp
+)
+
+add_library(Terra STATIC
+    ${TERRA_SOURCES}
 )
 
 set_target_properties(Terra PROPERTIES OUTPUT_NAME "terra")

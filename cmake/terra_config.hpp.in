@@ -1,0 +1,3 @@
+// terra_config.hpp
+
+#cmakedefine USE_OPENCL
