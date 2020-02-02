@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 #include "cl/cl2.hpp"
@@ -31,24 +32,50 @@ namespace terra::utils
         }
     }
 
-    cl::Context get_context(int platform_id, int device_id)
+    std::vector<std::pair<cl::Platform, cl::Device>> get_device_list()
     {
-        std::vector<cl::Platform> platforms;
-
-        cl::Platform::get(&platforms);
-
-        for (size_t i = 0; i < platforms.size(); ++i)
+        // Find all devices
+        std::vector<std::pair<cl::Platform, cl::Device>> all_device_list;
+        std::vector<cl::Platform> platform_list;
+        cl::Platform::get(&platform_list);
+        for (const auto& platform : platform_list)
         {
-            std::vector<cl::Device> devices;
-            platforms[i].getDevices(static_cast<cl_device_type>(CL_DEVICE_TYPE_ALL), &devices);
-
-            for (size_t j = 0; j < devices.size(); ++j)
+            std::vector<cl::Device> device_list;
+            platform.getDevices(CL_DEVICE_TYPE_ALL, &device_list);
+            for (const auto& device : device_list)
             {
-                if ((i == platform_id) && (j == device_id))
+                all_device_list.emplace_back(std::make_pair(platform, device));
+            }
+        }
+
+        // Sort devices by type
+        std::vector<std::pair<cl::Platform, cl::Device>> ret;
+        constexpr cl_device_type type_list[] = {CL_DEVICE_TYPE_GPU, CL_DEVICE_TYPE_ACCELERATOR, CL_DEVICE_TYPE_ALL};
+        for (auto type : type_list)
+        {
+            // Find all devices of type 'type' and move them into `ret`
+            for (auto it = all_device_list.begin(); it != all_device_list.end();)
+            {
+                if (it->second.getInfo<CL_DEVICE_TYPE>() & type)
                 {
-                    return cl::Context({ devices[j] });
+                    ret.emplace_back(*it);
+                    it = all_device_list.erase(it); // `.erase()` returns the next valid iterator
+                }
+                else
+                {
+                    ++it;
                 }
             }
+        }
+        return ret;
+    }
+
+    cl::Context get_context()
+    {
+        auto device_list = get_device_list();
+        if (device_list.size() > 0)
+        {
+            return cl::Context(device_list[0].second);
         }
 
         return cl::Context();
