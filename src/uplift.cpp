@@ -34,3 +34,41 @@ void uplift::update()
         (*this->heights)[i] += this->uplifts[i];
     }
 }
+
+#ifdef USE_OPENCL
+// REQUIRES that "uplift.cl" is loaded and built.
+void uplift::update(terra::utils::cl_data& cl_data)
+{
+    const size_t heights_length = heights->size();
+
+    // init buffers
+    cl::Buffer buffer_uplifts(cl_data.context, CL_MEM_READ_ONLY, heights_length);
+    cl::Buffer buffer_heights(cl_data.context, CL_MEM_READ_WRITE, heights_length);
+
+    // write buffers
+    cl_data.queue.enqueueWriteBuffer(buffer_uplifts,
+                                     CL_TRUE,
+                                     0,
+                                     heights_length,
+                                     uplifts.data());
+    cl_data.queue.enqueueWriteBuffer(buffer_heights,
+                                     CL_TRUE,
+                                     0,
+                                     heights_length,
+                                     heights->data());
+
+    // create kernel and set args
+    cl::Kernel kernel_update = cl::Kernel(cl_data.program, "uplift_update");
+    kernel_update.setArg(0, buffer_uplifts);
+    kernel_update.setArg(1, buffer_heights);
+
+    // run kernel
+    cl_data.queue.enqueueNDRangeKernel(kernel_update,
+                                       cl::NullRange,
+                                       cl::NDRange(heights_length),
+                                       cl::NullRange);
+
+    // read result
+    cl_data.queue.enqueueReadBuffer(buffer_heights, CL_TRUE, 0, heights_length, this->heights->data());
+}
+#endif

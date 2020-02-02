@@ -1,6 +1,13 @@
 #pragma once
 
+#include "terra_config.hpp"
+
 #include <vector>
+
+#ifdef USE_OPENCL
+    #include "cl/cl2.hpp"
+    #include "utils/cl_utils.hpp"
+#endif
 
 #include "types/bitmap.hpp"
 #include "types/vec2.hpp"
@@ -23,5 +30,8 @@ namespace terra
                std::vector<double>& heights);
 
         void update();
+#ifdef USE_OPENCL
+        void update(terra::utils::cl_data& cl_data);
+#endif
     };
 }
