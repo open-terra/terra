@@ -130,3 +130,10 @@ if(NOT_SUBPROJECT)
         DESTINATION ${Terra_CMAKE_CONFIG_DESTINATION}
     )
 endif()
+
+add_custom_command(
+    TARGET Terra POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/kernels
+            ${CMAKE_CURRENT_BINARY_DIR}/kernels
+)
