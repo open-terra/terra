@@ -131,9 +131,11 @@ if(NOT_SUBPROJECT)
     )
 endif()
 
-add_custom_command(
-    TARGET Terra POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/kernels
-            ${CMAKE_CURRENT_BINARY_DIR}/kernels
-)
+if (USE_OPENCL)
+    add_custom_command(
+        TARGET Terra POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_SOURCE_DIR}/kernels
+                ${CMAKE_CURRENT_BINARY_DIR}/kernels
+    )
+endif()
