@@ -11,19 +11,19 @@ uplift::uplift() :
 
 uplift::uplift(const terra::bitmap& uplift_map,
                const std::vector<terra::vec2>& points,
-               std::vector<double>& heights) :
-    uplifts(), uplift_map(&uplift_map), points(&points), heights(&heights)
+               terra::dynarray<double>& heights) :
+    uplifts(points.size()), uplift_map(&uplift_map), points(&points), heights(&heights)
 {
     const size_t bitmap_width = uplift_map.width;
     std::vector<uint8_t> uplift = uplift_map.get_channel(terra::bitmap::channel::alpha);
 
-    uplifts.reserve(points.size());
-    for (const auto& p : points)
+    for (size_t i = 0; i < points.size(); ++i)
     {
         // TODO probably use something other than a simple point sample here.
+        const auto& p = points[i];
         const size_t px = math::floor<size_t>(p.x);
         const size_t py = math::floor<size_t>(p.y);
-        uplifts.push_back(uplift[(py * bitmap_width) + px]);
+        uplifts[i] = uplift[(py * bitmap_width) + px];
     }
 }
 
