@@ -1,10 +1,11 @@
 #pragma once
 
+#include <cstddef>
 #include <limits>
 #include <list>
 #include <utility>
-#include <vector>
 
+#include "dynarray.hpp"
 #include "undirected_graph.hpp"
 
 namespace terra
@@ -14,22 +15,22 @@ namespace terra
     public:
         static constexpr size_t node_lake = std::numeric_limits<size_t>::max();
 
-        std::vector<size_t> flow;
+        terra::dynarray<size_t> flow;
         std::list<size_t> lakes;
-        std::vector<double> drainage_areas;
+        terra::dynarray<double> drainage_areas;
 
     private:
         std::vector<size_t> sorted_nodes;
         const terra::undirected_graph* graph;
-        const std::vector<double>* areas;
-        const std::vector<double>* heights;
+        const terra::dynarray<double>* areas;
+        const terra::dynarray<double>* heights;
 
     public:
         flow_graph();
         flow_graph(size_t node_count,
                    const terra::undirected_graph& graph,
-                   const std::vector<double>& areas,
-                   const std::vector<double>& heights);
+                   const terra::dynarray<double>& areas,
+                   const terra::dynarray<double>& heights);
 
         void update();
 
