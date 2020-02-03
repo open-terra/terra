@@ -1,5 +1,7 @@
 #pragma once
 
+#include "terra_config.hpp"
+
 #include "math.hpp"
 
 #include "io/tiff.hpp"
