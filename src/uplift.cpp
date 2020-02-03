@@ -49,15 +49,15 @@ void uplift::update(terra::compute::engine_cl& engine)
 
     // write buffers
     queue.enqueueWriteBuffer(buffer_uplifts,
-                                     CL_TRUE,
-                                     0,
-                                     heights_length,
-                                     uplifts.data());
+                             CL_TRUE,
+                             0,
+                             heights_length,
+                             uplifts.data());
     queue.enqueueWriteBuffer(buffer_heights,
-                                     CL_TRUE,
-                                     0,
-                                     heights_length,
-                                     heights->data());
+                             CL_TRUE,
+                             0,
+                             heights_length,
+                             heights->data());
 
     // create kernel and set args
     cl::Kernel kernel_update = cl::Kernel(engine.get_program(), "uplift_update");
@@ -66,9 +66,9 @@ void uplift::update(terra::compute::engine_cl& engine)
 
     // run kernel
     queue.enqueueNDRangeKernel(kernel_update,
-                                       cl::NullRange,
-                                       cl::NDRange(heights_length),
-                                       cl::NullRange);
+                               cl::NullRange,
+                               cl::NDRange(heights_length),
+                               cl::NullRange);
 
     // read result
     queue.enqueueReadBuffer(buffer_heights, CL_TRUE, 0, heights_length, this->heights->data());
