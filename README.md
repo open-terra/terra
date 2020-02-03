@@ -3,10 +3,10 @@
 </p>
 <p align="center">
     <a href="https://travis-ci.org/open-terra/terra">
-        <img src="https://img.shields.io/travis/open-terra/terra/master.svg?label=Travis&style=flat-square" alt="Travis Build Status">
+        <img src="https://img.shields.io/travis/open-terra/terra/master.svg?label=Travis&style=flat-square&logo=travis" alt="Travis Build Status">
     </a>
     <a href="https://ci.appveyor.com/project/C0RP3N/terra">
-        <img src="https://img.shields.io/appveyor/ci/C0RP3N/terra/master.svg?label=AppVeyor&style=flat-square" alt="Appveyor Build Status">
+        <img src="https://img.shields.io/appveyor/ci/C0RP3N/terra/master.svg?label=AppVeyor&style=flat-square&logo=appveyor" alt="Appveyor Build Status">
     </a>
     <br>
     <strong>A opensource terrain generation / simulation library.</strong>
