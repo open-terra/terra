@@ -73,6 +73,10 @@ set(TERRA_SOURCES
     src/voronoi.cpp
 )
 
+if (USE_OPENCL)
+    list(APPEND TERRA_SOURCES src/compute/engine_cl.cpp)
+endif()
+
 add_library(Terra STATIC
     ${TERRA_SOURCES}
 )

@@ -6,7 +6,7 @@
 
 #ifdef USE_OPENCL
     #include "cl/cl2.hpp"
-    #include "utils/cl_utils.hpp"
+    #include "compute/engine_cl.hpp"
 #endif
 
 #include "types/bitmap.hpp"
@@ -31,7 +31,7 @@ namespace terra
 
         void update();
 #ifdef USE_OPENCL
-        void update(terra::utils::cl_data& cl_data);
+        void update(terra::compute::engine_cl& engine);
 #endif
     };
 }
