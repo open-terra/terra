@@ -4,15 +4,15 @@
 #include <fstream>
 
 void terra::io::obj::write_obj(const std::string filepath,
-               const std::vector<terra::vec2>& points,
-               const std::vector<terra::triangle>& triangles)
+                               const std::vector<terra::vec3>& points,
+                               const std::vector<terra::triangle>& triangles)
 {
     std::ofstream obj_file;
     obj_file.open(filepath);
 
     for (const auto& p : points)
     {
-        obj_file << "v " << p.x << " " << p.y << " " << 0.0 << std::endl;
+        obj_file << "v " << p.x << " " << p.y << " " << p.z << std::endl;
     }
 
     for (const auto& tri : triangles)
