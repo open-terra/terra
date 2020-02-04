@@ -91,10 +91,18 @@ target_include_directories(Terra PUBLIC
     PRIVATE ${LIBTIFF_INCLUDE_DIR}
 )
 
-target_link_libraries(Terra PUBLIC
+set(TERRA_LINK_LIBS
     glm
     ${LIBTIFF_LIB}
     ${LIBTIFF_XX_LIB}
+)
+
+if (TERRA_USE_OPENCL)
+    list(APPEND TERRA_LINK_LIBS OpenCL::OpenCL)
+endif()
+
+target_link_libraries(Terra PUBLIC
+    ${TERRA_LINK_LIBS}
 )
 
 if(BUILD_TESTING)
