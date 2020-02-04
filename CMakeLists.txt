@@ -146,10 +146,20 @@ if(NOT_SUBPROJECT)
 endif()
 
 if (TERRA_USE_OPENCL)
+    # copy kernel files to target directory
     add_custom_command(
-        TARGET Terra POST_BUILD
+        TARGET Terra PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-                ${CMAKE_SOURCE_DIR}/kernels
-                ${CMAKE_CURRENT_BINARY_DIR}/kernels
-    )
+                "${CMAKE_CURRENT_SOURCE_DIR}/kernels/"
+                $<TARGET_FILE_DIR:Terra>/kernels/)
+
+    # additional command to copy kernels into a working directory allowing
+    # debugging directly from VS	
+    if(MSVC)
+        add_custom_command(
+            TARGET Terra PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_CURRENT_SOURCE_DIR}/kernels/"
+                    kernels)
+    endif()
 endif()
