@@ -1,11 +1,9 @@
 #pragma once
 
 #include <cstddef>
-#include <type_traits>
-#include <vector>
 
 #include "abs.hpp"
-
+#include "../types/dynarray.hpp"
 #include "../utils/template_helpers.hpp"
 
 namespace terra::math
@@ -13,8 +11,8 @@ namespace terra::math
     // TODO this file will need cleaning a little and to work for more than just
     // a vector.
 
-    template<typename T, terra::utils::enable_if_integer_t<T> = 0>
-    inline T sum(const std::vector<T>& x)
+    template<typename T, class Array = terra::dynarray<T>, terra::utils::enable_if_integer_t<T> = 0>
+    inline T sum(const Array& x)
     {
         T sum = x[0];
 
@@ -27,8 +25,8 @@ namespace terra::math
     }
 
     // Kahan and Babuska summation, Neumaier variant; accumulates less FP error
-    template<typename T, terra::utils::enable_if_floating_t<T> = 0>
-    inline T sum(const std::vector<T>& x)
+    template<typename T, class Array = terra::dynarray<T>, terra::utils::enable_if_floating_t<T> = 0>
+    inline T sum(const Array& x)
     {
         T sum = x[0];
         T err = 0.0;
