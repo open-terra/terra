@@ -109,6 +109,26 @@ if(BUILD_TESTING)
     include(test/tests.cmake)
 endif()
 
+set(TERRA_KERNEL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/kernels PARENT_SCOPE)
+function(terra_copy_kernels IN_TARGET)
+    # copy kernel files to target directory
+    add_custom_command(
+        TARGET ${IN_TARGET} PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${TERRA_KERNEL_DIR}"
+                $<TARGET_FILE_DIR:${IN_TARGET}>/kernels/)
+
+    # additional command to copy kernels into a working directory allowing
+    # debugging directly from VS	
+    if(MSVC)
+        add_custom_command(
+            TARGET ${IN_TARGET} PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${TERRA_KERNEL_DIR}"
+                    kernels)
+    endif()
+endfunction()
+
 # Only perform the installation steps when not being used as
 # a subproject via `add_subdirectory`, or the destinations will break
 if(NOT_SUBPROJECT)
@@ -143,23 +163,8 @@ if(NOT_SUBPROJECT)
             "${CMAKE_CURRENT_BINARY_DIR}/TerraConfigVersion.cmake"
         DESTINATION ${Terra_CMAKE_CONFIG_DESTINATION}
     )
-endif()
 
-if (TERRA_USE_OPENCL)
-    # copy kernel files to target directory
-    add_custom_command(
-        TARGET Terra PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                "${CMAKE_CURRENT_SOURCE_DIR}/kernels/"
-                $<TARGET_FILE_DIR:Terra>/kernels/)
-
-    # additional command to copy kernels into a working directory allowing
-    # debugging directly from VS	
-    if(MSVC)
-        add_custom_command(
-            TARGET Terra PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-                    "${CMAKE_CURRENT_SOURCE_DIR}/kernels/"
-                    kernels)
+    if(TERRA_USE_OPENCL)
+        terra_copy_kernels(Terra)
     endif()
 endif()
