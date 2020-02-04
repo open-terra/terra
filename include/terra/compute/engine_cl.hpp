@@ -20,7 +20,7 @@ namespace terra::compute
 
     public:
         engine_cl();
-        engine_cl(size_t device_idx = 0);
+        engine_cl(size_t device_idx);
 
         static std::vector<std::pair<cl::Platform, cl::Device>> get_device_list();
 
