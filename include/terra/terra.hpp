@@ -2,6 +2,8 @@
 
 #include "terra_config.hpp"
 
+#include "base_types.hpp"
+
 #include "math.hpp"
 
 #include "io/tiff.hpp"

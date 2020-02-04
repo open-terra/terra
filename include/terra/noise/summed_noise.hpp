@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <memory>
 
+#include "../base_types.hpp"
+
 namespace terra::noise
 {
     template<class T>
@@ -11,21 +13,21 @@ namespace terra::noise
     private:
         T& noise_source;
         size_t octaves;
-        double lunacracity;
-        double persistence;
+        tfloat lunacracity;
+        tfloat persistence;
 
     public:
         constexpr summed_noise(int64_t seed,
                                size_t octaves,
-                               double lunacracity,
-                               double persistence);
+                               tfloat lunacracity,
+                               tfloat persistence);
         constexpr summed_noise(T& noise,
                                size_t octaves,
-                               double lunacracity,
-                               double persistence);
+                               tfloat lunacracity,
+                               tfloat persistence);
 
-        constexpr double noise(double x, double y);
-        constexpr double noise(double x, double y, double z);
-        constexpr double noise(double x, double y, double z, double w);
+        constexpr tfloat noise(tfloat x, tfloat y);
+        constexpr tfloat noise(tfloat x, tfloat y, tfloat z);
+        constexpr tfloat noise(tfloat x, tfloat y, tfloat z, tfloat w);
     };
 } // namespace terra::noise

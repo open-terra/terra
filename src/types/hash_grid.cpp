@@ -10,13 +10,13 @@ hash_grid::hash_grid() :
 {
 }
 
-hash_grid::hash_grid(int64_t size_x, int64_t size_y, double radius)
+hash_grid::hash_grid(int64_t size_x, int64_t size_y, tfloat radius)
 {
     this->bucket_size = radius * hash_grid::sqrt1_2;
     this->grid_size_x =
-        math::ceil<int64_t>(static_cast<double>(size_x) / bucket_size);
+        math::ceil<int64_t>(static_cast<tfloat>(size_x) / bucket_size);
     this->grid_size_y =
-        math::ceil<int64_t>(static_cast<double>(size_y) / bucket_size);
+        math::ceil<int64_t>(static_cast<tfloat>(size_y) / bucket_size);
     this->n = math::ceil<int64_t>(radius / this->bucket_size);
 
     this->hashtable.reserve(this->grid_size_x * this->grid_size_y);
@@ -24,7 +24,7 @@ hash_grid::hash_grid(int64_t size_x, int64_t size_y, double radius)
 }
 
 constexpr size_t HashPos(const terra::vec2& point,
-                         const double bucket_size,
+                         const tfloat bucket_size,
                          const int64_t grid_size_x)
 {
     int64_t x = std::max<int64_t>(math::floor<int64_t>(point.x) / bucket_size,
@@ -57,9 +57,9 @@ std::vector<int64_t> hash_grid::neighbours(const terra::vec2& point)
     std::vector<int64_t> indexs;
 
     int64_t x =
-        static_cast<int64_t>(math::floor<double>(point.x) / this->bucket_size);
+        static_cast<int64_t>(math::floor<tfloat>(point.x) / this->bucket_size);
     int64_t y =
-        static_cast<int64_t>(math::floor<double>(point.y) / this->bucket_size);
+        static_cast<int64_t>(math::floor<tfloat>(point.y) / this->bucket_size);
 
     const int64_t x0 = std::max<int64_t>(x - this->n, 0);
     const int64_t y0 = std::max<int64_t>(y - this->n, 0);

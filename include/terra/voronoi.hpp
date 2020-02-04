@@ -3,6 +3,7 @@
 #include <list>
 #include <vector>
 
+#include "base_types.hpp"
 #include "types/dynarray.hpp"
 #include "types/polygon.hpp"
 #include "types/rect.hpp"
@@ -20,7 +21,7 @@ namespace terra
         size_t num_vertices() const;
 
         void generate(const std::vector<terra::vec2>& points,
-                      const terra::rect<double>& bounds,
+                      const terra::rect<tfloat>& bounds,
                       terra::dynarray<terra::polygon>& cells);
 
     private:

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "../base_types.hpp"
 #include "../math/abs.hpp"
 
 namespace terra::noise
@@ -21,15 +22,15 @@ namespace terra::noise
         {
         }
 
-        constexpr double noise(double x, double y)
+        constexpr tfloat noise(tfloat x, tfloat y)
         {
             return 1.0 - terra::math::abs(noise_source.noise(x, y));
         }
-        constexpr double noise(double x, double y, double z)
+        constexpr tfloat noise(tfloat x, tfloat y, tfloat z)
         {
             return 1.0 - terra::math::abs(noise_source.noise(x, y, z));
         }
-        constexpr double noise(double x, double y, double z, double w)
+        constexpr tfloat noise(tfloat x, tfloat y, tfloat z, tfloat w)
         {
             return 1.0 - terra::math::abs(noise_source.noise(x, y, z, w));
         }

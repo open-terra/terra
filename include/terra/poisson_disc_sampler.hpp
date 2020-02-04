@@ -5,6 +5,7 @@
 #include <stack>
 #include <vector>
 
+#include "base_types.hpp"
 #include "types/vec2.hpp"
 
 namespace terra
@@ -18,7 +19,7 @@ namespace terra
     //
     //   conf    - The configuration, as detailed above.
     //
-    //   random  - A callback of the form double(double limit) that returns a
+    //   random  - A callback of the form tfloat(tfloat limit) that returns a
     //   random
     //             value ranging from 0 (inclusive) to limit (exclusive).
     //
@@ -47,14 +48,14 @@ namespace terra
     public:
         //   width, height - Defines the range of x as (0, width] and the range
         //                   of y as (0, height].
-        double width;
-        double height;
+        tfloat width;
+        tfloat height;
 
         // min_distance - The smallest distance allowed between two
         //                terra:vec2s.
         //                Also, terra:vec2s will never be further apart than
         //                twice this distance.
-        double min_distance;
+        tfloat min_distance;
 
         // max_attempts - The algorithm stochastically attempts to place a new
         //                terra:vec2 around a current terra:vec2.
@@ -73,8 +74,8 @@ namespace terra
         // terra::vec2 start = {infinity, infinity};
     private:
         std::default_random_engine engine;
-        std::uniform_real_distribution<double> distribution;
-        double cell_size;
+        std::uniform_real_distribution<tfloat> distribution;
+        tfloat cell_size;
         size_t grid_width, grid_height;
         std::vector<terra::vec2> points;
         std::vector<size_t> grid;
@@ -83,21 +84,21 @@ namespace terra
     public:
         constexpr static size_t grid_empty = std::numeric_limits<size_t>::max();
 
-        constexpr static double infinity =
-            std::numeric_limits<double>::infinity();
+        constexpr static tfloat infinity =
+            std::numeric_limits<tfloat>::infinity();
 
         poisson_disc_sampler();
         ~poisson_disc_sampler();
 
-        std::vector<terra::vec2> sample(double width,
-                                        double height,
-                                        double min_distance,
+        std::vector<terra::vec2> sample(tfloat width,
+                                        tfloat height,
+                                        tfloat min_distance,
                                         size_t max_attempts = 30,
                                         terra::vec2 start = {infinity,
                                                              infinity});
 
     private:
-        double random(float range);
+        tfloat random(float range);
         terra::vec2 point_around(terra::vec2 p);
         bool in_area(const terra::vec2& p);
         void set(const terra::vec2& p, size_t index);

@@ -31,12 +31,12 @@ constexpr open_simplex::open_simplex(int64_t seed) : perm(), permGradIndex3D()
     }
 }
 
-constexpr double open_simplex::noise(double x, double y)
+constexpr tfloat open_simplex::noise(tfloat x, tfloat y)
 {
     /* Place input coordinates onto grid. */
-    double stretchOffset = (x + y) * STRETCH_CONSTANT_2D;
-    double xs = x + stretchOffset;
-    double ys = y + stretchOffset;
+    tfloat stretchOffset = (x + y) * STRETCH_CONSTANT_2D;
+    tfloat xs = x + stretchOffset;
+    tfloat ys = y + stretchOffset;
 
     /* Floor to get grid coordinates of rhombus (stretched square) super-cell
      * origin. */
@@ -45,38 +45,38 @@ constexpr double open_simplex::noise(double x, double y)
 
     /* Skew out to get actual coordinates of rhombus origin. We'll need these
      * later. */
-    double squishOffset = static_cast<double>(xsb + ysb) * SQUISH_CONSTANT_2D;
-    double xb = xsb + squishOffset;
-    double yb = ysb + squishOffset;
+    tfloat squishOffset = static_cast<tfloat>(xsb + ysb) * SQUISH_CONSTANT_2D;
+    tfloat xb = xsb + squishOffset;
+    tfloat yb = ysb + squishOffset;
 
     /* Compute grid coordinates relative to rhombus origin. */
-    double xins = xs - xsb;
-    double yins = ys - ysb;
+    tfloat xins = xs - xsb;
+    tfloat yins = ys - ysb;
 
     /* Sum those together to get a value that determines which region we're in.
      */
-    double inSum = xins + yins;
+    tfloat inSum = xins + yins;
 
     /* Positions relative to origin point. */
-    double dx0 = x - xb;
-    double dy0 = y - yb;
+    tfloat dx0 = x - xb;
+    tfloat dy0 = y - yb;
 
     /* We'll be defining these inside the next block and using them afterwards.
      */
-    double dx_ext = 0.0, dy_ext = 0.0;
+    tfloat dx_ext = 0.0, dy_ext = 0.0;
     int xsv_ext = 0, ysv_ext = 0;
 
-    double dx1 = 0.0;
-    double dy1 = 0.0;
-    double attn1 = 0.0;
-    double dx2 = 0.0;
-    double dy2 = 0.0;
-    double attn2 = 0.0;
-    double zins = 0.0;
-    double attn0 = 0.0;
-    double attn_ext = 0.0;
+    tfloat dx1 = 0.0;
+    tfloat dy1 = 0.0;
+    tfloat attn1 = 0.0;
+    tfloat dx2 = 0.0;
+    tfloat dy2 = 0.0;
+    tfloat attn2 = 0.0;
+    tfloat zins = 0.0;
+    tfloat attn0 = 0.0;
+    tfloat attn_ext = 0.0;
 
-    double value = 0;
+    tfloat value = 0;
 
     /* Contribution (1,0) */
     dx1 = dx0 - 1 - SQUISH_CONSTANT_2D;
@@ -179,13 +179,13 @@ constexpr double open_simplex::noise(double x, double y)
     return value / NORM_CONSTANT_2D;
 }
 
-constexpr double open_simplex::noise(double x, double y, double z)
+constexpr tfloat open_simplex::noise(tfloat x, tfloat y, tfloat z)
 {
     /* Place input coordinates on simplectic honeycomb. */
-    double stretchOffset = (x + y + z) * STRETCH_CONSTANT_3D;
-    double xs = x + stretchOffset;
-    double ys = y + stretchOffset;
-    double zs = z + stretchOffset;
+    tfloat stretchOffset = (x + y + z) * STRETCH_CONSTANT_3D;
+    tfloat xs = x + stretchOffset;
+    tfloat ys = y + stretchOffset;
+    tfloat zs = z + stretchOffset;
 
     /* Floor to get simplectic honeycomb coordinates of rhombohedron (stretched
      * cube) super-cell origin. */
@@ -195,52 +195,52 @@ constexpr double open_simplex::noise(double x, double y, double z)
 
     /* Skew out to get actual coordinates of rhombohedron origin. We'll need
      * these later. */
-    double squishOffset = (xsb + ysb + zsb) * SQUISH_CONSTANT_3D;
-    double xb = xsb + squishOffset;
-    double yb = ysb + squishOffset;
-    double zb = zsb + squishOffset;
+    tfloat squishOffset = (xsb + ysb + zsb) * SQUISH_CONSTANT_3D;
+    tfloat xb = xsb + squishOffset;
+    tfloat yb = ysb + squishOffset;
+    tfloat zb = zsb + squishOffset;
 
     /* Compute simplectic honeycomb coordinates relative to rhombohedral origin.
      */
-    double xins = xs - xsb;
-    double yins = ys - ysb;
-    double zins = zs - zsb;
+    tfloat xins = xs - xsb;
+    tfloat yins = ys - ysb;
+    tfloat zins = zs - zsb;
 
     /* Sum those together to get a value that determines which region we're in.
      */
-    double inSum = xins + yins + zins;
+    tfloat inSum = xins + yins + zins;
 
     /* Positions relative to origin point. */
-    double dx0 = x - xb;
-    double dy0 = y - yb;
-    double dz0 = z - zb;
+    tfloat dx0 = x - xb;
+    tfloat dy0 = y - yb;
+    tfloat dz0 = z - zb;
 
     /* We'll be defining these inside the next block and using them afterwards.
      */
-    double dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0;
-    double dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0;
+    tfloat dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0;
+    tfloat dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0;
     int xsv_ext0 = 0, ysv_ext0 = 0, zsv_ext0 = 0;
     int xsv_ext1 = 0, ysv_ext1 = 0, zsv_ext1 = 0;
 
-    double wins = 0.0;
+    tfloat wins = 0.0;
     int8_t c = 0, c1 = 0, c2 = 0;
     int8_t aPoint = 0, bPoint = 0;
-    double aScore = 0.0, bScore = 0.0;
+    tfloat aScore = 0.0, bScore = 0.0;
     int aIsFurtherSide = 0;
     int bIsFurtherSide = 0;
-    double p1 = 0.0, p2 = 0.0, p3 = 0.0;
-    double score = 0.0;
-    double attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0,
+    tfloat p1 = 0.0, p2 = 0.0, p3 = 0.0;
+    tfloat score = 0.0;
+    tfloat attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0,
            attn5 = 0.0, attn6 = 0.0;
-    double dx1 = 0.0, dy1 = 0.0, dz1 = 0.0;
-    double dx2 = 0.0, dy2 = 0.0, dz2 = 0.0;
-    double dx3 = 0.0, dy3 = 0.0, dz3 = 0.0;
-    double dx4 = 0.0, dy4 = 0.0, dz4 = 0.0;
-    double dx5 = 0.0, dy5 = 0.0, dz5 = 0.0;
-    double dx6 = 0.0, dy6 = 0.0, dz6 = 0.0;
-    double attn_ext0 = 0.0, attn_ext1 = 0.0;
+    tfloat dx1 = 0.0, dy1 = 0.0, dz1 = 0.0;
+    tfloat dx2 = 0.0, dy2 = 0.0, dz2 = 0.0;
+    tfloat dx3 = 0.0, dy3 = 0.0, dz3 = 0.0;
+    tfloat dx4 = 0.0, dy4 = 0.0, dz4 = 0.0;
+    tfloat dx5 = 0.0, dy5 = 0.0, dz5 = 0.0;
+    tfloat dx6 = 0.0, dy6 = 0.0, dz6 = 0.0;
+    tfloat attn_ext0 = 0.0, attn_ext1 = 0.0;
 
-    double value = 0;
+    tfloat value = 0;
     if (inSum <= 1)
     { /* We're inside the tetrahedron (3-Simplex) at (0,0,0) */
 
@@ -916,37 +916,37 @@ constexpr double open_simplex::noise(double x, double y, double z)
     return value / NORM_CONSTANT_3D;
 }
 
-constexpr double open_simplex::noise(double x, double y, double z, double w)
+constexpr tfloat open_simplex::noise(tfloat x, tfloat y, tfloat z, tfloat w)
 {
-    double uins = 0.0;
-    double dx1 = 0.0, dy1 = 0.0, dz1 = 0.0, dw1 = 0.0;
-    double dx2 = 0.0, dy2 = 0.0, dz2 = 0.0, dw2 = 0.0;
-    double dx3 = 0.0, dy3 = 0.0, dz3 = 0.0, dw3 = 0.0;
-    double dx4 = 0.0, dy4 = 0.0, dz4 = 0.0, dw4 = 0.0;
-    double dx5 = 0.0, dy5 = 0.0, dz5 = 0.0, dw5 = 0.0;
-    double dx6 = 0.0, dy6 = 0.0, dz6 = 0.0, dw6 = 0.0;
-    double dx7 = 0.0, dy7 = 0.0, dz7 = 0.0, dw7 = 0.0;
-    double dx8 = 0.0, dy8 = 0.0, dz8 = 0.0, dw8 = 0.0;
-    double dx9 = 0.0, dy9 = 0.0, dz9 = 0.0, dw9 = 0.0;
-    double dx10 = 0.0, dy10 = 0.0, dz10 = 0.0, dw10 = 0.0;
-    double attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0;
-    double attn5 = 0.0, attn6 = 0.0, attn7 = 0.0, attn8 = 0.0, attn9 = 0.0,
+    tfloat uins = 0.0;
+    tfloat dx1 = 0.0, dy1 = 0.0, dz1 = 0.0, dw1 = 0.0;
+    tfloat dx2 = 0.0, dy2 = 0.0, dz2 = 0.0, dw2 = 0.0;
+    tfloat dx3 = 0.0, dy3 = 0.0, dz3 = 0.0, dw3 = 0.0;
+    tfloat dx4 = 0.0, dy4 = 0.0, dz4 = 0.0, dw4 = 0.0;
+    tfloat dx5 = 0.0, dy5 = 0.0, dz5 = 0.0, dw5 = 0.0;
+    tfloat dx6 = 0.0, dy6 = 0.0, dz6 = 0.0, dw6 = 0.0;
+    tfloat dx7 = 0.0, dy7 = 0.0, dz7 = 0.0, dw7 = 0.0;
+    tfloat dx8 = 0.0, dy8 = 0.0, dz8 = 0.0, dw8 = 0.0;
+    tfloat dx9 = 0.0, dy9 = 0.0, dz9 = 0.0, dw9 = 0.0;
+    tfloat dx10 = 0.0, dy10 = 0.0, dz10 = 0.0, dw10 = 0.0;
+    tfloat attn0 = 0.0, attn1 = 0.0, attn2 = 0.0, attn3 = 0.0, attn4 = 0.0;
+    tfloat attn5 = 0.0, attn6 = 0.0, attn7 = 0.0, attn8 = 0.0, attn9 = 0.0,
            attn10 = 0.0;
-    double attn_ext0 = 0.0, attn_ext1 = 0.0, attn_ext2 = 0.0;
+    tfloat attn_ext0 = 0.0, attn_ext1 = 0.0, attn_ext2 = 0.0;
     int8_t c = 0, c1 = 0, c2 = 0;
     int8_t aPoint = 0, bPoint = 0;
-    double aScore = 0.0, bScore = 0.0;
+    tfloat aScore = 0.0, bScore = 0.0;
     int aIsBiggerSide = 0;
     int bIsBiggerSide = 0;
-    double p1 = 0.0, p2 = 0.0, p3 = 0.0, p4 = 0.0;
-    double score = 0.0;
+    tfloat p1 = 0.0, p2 = 0.0, p3 = 0.0, p4 = 0.0;
+    tfloat score = 0.0;
 
     /* Place input coordinates on simplectic honeycomb. */
-    double stretchOffset = (x + y + z + w) * STRETCH_CONSTANT_4D;
-    double xs = x + stretchOffset;
-    double ys = y + stretchOffset;
-    double zs = z + stretchOffset;
-    double ws = w + stretchOffset;
+    tfloat stretchOffset = (x + y + z + w) * STRETCH_CONSTANT_4D;
+    tfloat xs = x + stretchOffset;
+    tfloat ys = y + stretchOffset;
+    tfloat zs = z + stretchOffset;
+    tfloat ws = w + stretchOffset;
 
     /* Floor to get simplectic honeycomb coordinates of rhombo-hypercube
      * super-cell origin. */
@@ -957,39 +957,39 @@ constexpr double open_simplex::noise(double x, double y, double z, double w)
 
     /* Skew out to get actual coordinates of stretched rhombo-hypercube origin.
      * We'll need these later. */
-    double squishOffset = (xsb + ysb + zsb + wsb) * SQUISH_CONSTANT_4D;
-    double xb = xsb + squishOffset;
-    double yb = ysb + squishOffset;
-    double zb = zsb + squishOffset;
-    double wb = wsb + squishOffset;
+    tfloat squishOffset = (xsb + ysb + zsb + wsb) * SQUISH_CONSTANT_4D;
+    tfloat xb = xsb + squishOffset;
+    tfloat yb = ysb + squishOffset;
+    tfloat zb = zsb + squishOffset;
+    tfloat wb = wsb + squishOffset;
 
     /* Compute simplectic honeycomb coordinates relative to rhombo-hypercube
      * origin. */
-    double xins = xs - xsb;
-    double yins = ys - ysb;
-    double zins = zs - zsb;
-    double wins = ws - wsb;
+    tfloat xins = xs - xsb;
+    tfloat yins = ys - ysb;
+    tfloat zins = zs - zsb;
+    tfloat wins = ws - wsb;
 
     /* Sum those together to get a value that determines which region we're in.
      */
-    double inSum = xins + yins + zins + wins;
+    tfloat inSum = xins + yins + zins + wins;
 
     /* Positions relative to origin point. */
-    double dx0 = x - xb;
-    double dy0 = y - yb;
-    double dz0 = z - zb;
-    double dw0 = w - wb;
+    tfloat dx0 = x - xb;
+    tfloat dy0 = y - yb;
+    tfloat dz0 = z - zb;
+    tfloat dw0 = w - wb;
 
     /* We'll be defining these inside the next block and using them afterwards.
      */
-    double dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0, dw_ext0 = 0.0;
-    double dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0, dw_ext1 = 0.0;
-    double dx_ext2 = 0.0, dy_ext2 = 0.0, dz_ext2 = 0.0, dw_ext2 = 0.0;
+    tfloat dx_ext0 = 0.0, dy_ext0 = 0.0, dz_ext0 = 0.0, dw_ext0 = 0.0;
+    tfloat dx_ext1 = 0.0, dy_ext1 = 0.0, dz_ext1 = 0.0, dw_ext1 = 0.0;
+    tfloat dx_ext2 = 0.0, dy_ext2 = 0.0, dz_ext2 = 0.0, dw_ext2 = 0.0;
     int xsv_ext0 = 0, ysv_ext0 = 0, zsv_ext0 = 0, wsv_ext0 = 0;
     int xsv_ext1 = 0, ysv_ext1 = 0, zsv_ext1 = 0, wsv_ext1 = 0;
     int xsv_ext2 = 0, ysv_ext2 = 0, zsv_ext2 = 0, wsv_ext2 = 0;
 
-    double value = 0;
+    tfloat value = 0;
     if (inSum <= 1)
     { /* We're inside the pentachoron (4-Simplex) at (0,0,0,0) */
 
@@ -2702,19 +2702,19 @@ Determine which two of (1,1,1,0), (1,1,0,1), (1,0,1,1), (0,1,1,1) are closest.
     return value / NORM_CONSTANT_4D;
 }
 
-constexpr double
-open_simplex::extrapolate2(int xsb, int ysb, double dx, double dy)
+constexpr tfloat
+open_simplex::extrapolate2(int xsb, int ysb, tfloat dx, tfloat dy)
 {
     int index = this->perm[(this->perm[xsb & 0xFF] + ysb) & 0xFF] & 0x0E;
     return gradients2D[index] * dx + gradients2D[index + 1] * dy;
 }
 
-constexpr double open_simplex::extrapolate3(int xsb,
+constexpr tfloat open_simplex::extrapolate3(int xsb,
                                             int ysb,
                                             int zsb,
-                                            double dx,
-                                            double dy,
-                                            double dz)
+                                            tfloat dx,
+                                            tfloat dy,
+                                            tfloat dz)
 {
     int index =
         this->permGradIndex3D
@@ -2723,14 +2723,14 @@ constexpr double open_simplex::extrapolate3(int xsb,
            this->gradients3D[index + 2] * dz;
 }
 
-constexpr double open_simplex::extrapolate4(int xsb,
+constexpr tfloat open_simplex::extrapolate4(int xsb,
                                             int ysb,
                                             int zsb,
                                             int wsb,
-                                            double dx,
-                                            double dy,
-                                            double dz,
-                                            double dw)
+                                            tfloat dx,
+                                            tfloat dy,
+                                            tfloat dz,
+                                            tfloat dw)
 {
     int index =
         this->perm

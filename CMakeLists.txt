@@ -30,8 +30,8 @@ endif()
 # GLM used for vecN types
 find_package(glm CONFIG REQUIRED)
 
-option(USE_OPENCL "" ON)
-if(USE_OPENCL)
+option(TERRA_USE_OPENCL "" ON)
+if(TERRA_USE_OPENCL)
     find_package(OpenCL REQUIRED)
 endif()
 
@@ -41,6 +41,8 @@ endif()
 find_path(LIBTIFF_INCLUDE_DIR tiff.h)
 find_library(LIBTIFF_LIB tiff)
 find_library(LIBTIFF_XX_LIB tiffxx)
+
+option(TERRA_USE_DOUBLE "Whether to use double precision floating point values." OFF)
 
 configure_file(
     ${CMAKE_CURRENT_LIST_DIR}/cmake/terra_config.hpp.in
@@ -73,7 +75,7 @@ set(TERRA_SOURCES
     src/voronoi.cpp
 )
 
-if (USE_OPENCL)
+if (TERRA_USE_OPENCL)
     list(APPEND TERRA_SOURCES src/compute/engine_cl.cpp)
 endif()
 
@@ -135,7 +137,7 @@ if(NOT_SUBPROJECT)
     )
 endif()
 
-if (USE_OPENCL)
+if (TERRA_USE_OPENCL)
     add_custom_command(
         TARGET Terra POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

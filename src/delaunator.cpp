@@ -16,20 +16,20 @@
 
 using namespace terra;
 
-inline double
+inline tfloat
 circumradius(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
 {
-    const double dx = b.x - a.x;
-    const double dy = b.y - a.y;
-    const double ex = c.x - a.x;
-    const double ey = c.y - a.y;
+    const tfloat dx = b.x - a.x;
+    const tfloat dy = b.y - a.y;
+    const tfloat ex = c.x - a.x;
+    const tfloat ey = c.y - a.y;
 
-    const double bl = dx * dx + dy * dy;
-    const double cl = ex * ex + ey * ey;
-    const double d = dx * ey - dy * ex;
+    const tfloat bl = dx * dx + dy * dy;
+    const tfloat cl = ex * ex + ey * ey;
+    const tfloat d = dx * ey - dy * ex;
 
-    const double x = (ey * bl - dy * cl) * 0.5 / d;
-    const double y = (dx * cl - ex * bl) * 0.5 / d;
+    const tfloat x = (ey * bl - dy * cl) * 0.5 / d;
+    const tfloat y = (dx * cl - ex * bl) * 0.5 / d;
 
     if ((bl > 0.0 || bl < 0.0) && (cl > 0.0 || cl < 0.0) &&
         (d > 0.0 || d < 0.0))
@@ -38,7 +38,7 @@ circumradius(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
     }
     else
     {
-        return std::numeric_limits<double>::max();
+        return std::numeric_limits<tfloat>::max();
     }
 }
 
@@ -51,17 +51,17 @@ orient(const terra::vec2& p, const terra::vec2& q, const terra::vec2& r)
 inline terra::vec2
 circumcentre(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c)
 {
-    const double dx = b.x - a.x;
-    const double dy = b.y - a.y;
-    const double ex = c.x - a.x;
-    const double ey = c.y - a.y;
+    const tfloat dx = b.x - a.x;
+    const tfloat dy = b.y - a.y;
+    const tfloat ex = c.x - a.x;
+    const tfloat ey = c.y - a.y;
 
-    const double bl = dx * dx + dy * dy;
-    const double cl = ex * ex + ey * ey;
-    const double d = dx * ey - dy * ex;
+    const tfloat bl = dx * dx + dy * dy;
+    const tfloat cl = ex * ex + ey * ey;
+    const tfloat d = dx * ey - dy * ex;
 
-    const double x = a.x + (ey * bl - dy * cl) * 0.5 / d;
-    const double y = a.y + (dx * cl - ex * bl) * 0.5 / d;
+    const tfloat x = a.x + (ey * bl - dy * cl) * 0.5 / d;
+    const tfloat y = a.y + (dx * cl - ex * bl) * 0.5 / d;
 
     return terra::vec2(x, y);
 }
@@ -76,12 +76,12 @@ struct compare
         const terra::vec2& iv = coords[i];
         const terra::vec2& jv = coords[j];
 
-        const double d1 = glm::distance2(iv, c);
-        const double d2 = glm::distance2(jv, c);
+        const tfloat d1 = glm::distance2(iv, c);
+        const tfloat d2 = glm::distance2(jv, c);
 
-        const double diff1 = d1 - d2;
-        const double diff2 = iv.x - jv.x;
-        const double diff3 = iv.y - jv.y;
+        const tfloat diff1 = d1 - d2;
+        const tfloat diff2 = iv.x - jv.x;
+        const tfloat diff3 = iv.y - jv.y;
 
         if (diff1 > 0.0 || diff1 < 0.0)
         {
@@ -103,16 +103,16 @@ inline bool in_circle(const terra::vec2& a,
                       const terra::vec2& c,
                       const terra::vec2& p)
 {
-    const double dx = a.x - p.x;
-    const double dy = a.y - p.y;
-    const double ex = b.x - p.x;
-    const double ey = b.y - p.y;
-    const double fx = c.x - p.x;
-    const double fy = c.y - p.y;
+    const tfloat dx = a.x - p.x;
+    const tfloat dy = a.y - p.y;
+    const tfloat ex = b.x - p.x;
+    const tfloat ey = b.y - p.y;
+    const tfloat fx = c.x - p.x;
+    const tfloat fy = c.y - p.y;
 
-    const double ap = dx * dx + dy * dy;
-    const double bp = ex * ex + ey * ey;
-    const double cp = fx * fx + fy * fy;
+    const tfloat ap = dx * dx + dy * dy;
+    const tfloat bp = ex * ex + ey * ey;
+    const tfloat cp = fx * fx + fy * fy;
 
     return (dx * (ey * cp - bp * fy) - dy * (ex * cp - bp * fx) +
             ap * (ex * fy - ey * fx)) < 0.0;
@@ -125,9 +125,9 @@ inline bool check_pts_equal(const terra::vec2& a, const terra::vec2& b)
 
 // monotonically increases with real angle, but doesn't need expensive
 // trigonometry
-inline double pseudo_angle(const double dx, const double dy)
+inline tfloat pseudo_angle(const tfloat dx, const tfloat dy)
 {
-    const double p = dx / (math::abs(dx) + math::abs(dy));
+    const tfloat p = dx / (math::abs(dx) + math::abs(dy));
 
     return (dy > 0.0 ? 3.0 - p : 1.0 + p) / 4.0; // [0..1)
 }
@@ -144,18 +144,18 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     this->coords = &in_coords;
     size_t n = this->coords->size();
 
-    double max_x = std::numeric_limits<double>::min();
-    double max_y = std::numeric_limits<double>::min();
-    double min_x = std::numeric_limits<double>::max();
-    double min_y = std::numeric_limits<double>::max();
+    tfloat max_x = std::numeric_limits<tfloat>::min();
+    tfloat max_y = std::numeric_limits<tfloat>::min();
+    tfloat min_x = std::numeric_limits<tfloat>::max();
+    tfloat min_y = std::numeric_limits<tfloat>::max();
     std::vector<size_t> ids;
     ids.reserve(n);
 
     for (size_t i = 0; i < n; ++i)
     {
         terra::vec2 p = this->coords->at(i);
-        const double x = p.x;
-        const double y = p.y;
+        const tfloat x = p.x;
+        const tfloat y = p.y;
 
         if (x < min_x)
             min_x = x;
@@ -170,7 +170,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     }
 
     const auto c = terra::vec2((min_x + max_x) / 2, (min_y + max_y) / 2);
-    double min_dist = std::numeric_limits<double>::max();
+    tfloat min_dist = std::numeric_limits<tfloat>::max();
 
     size_t i0 = INVALID_INDEX;
     size_t i1 = INVALID_INDEX;
@@ -179,7 +179,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     // pick a seed point close to the centroid
     for (size_t i = 0; i < n; ++i)
     {
-        const double d = glm::distance2(c, coords->at(i));
+        const tfloat d = glm::distance2(c, coords->at(i));
         if (d < min_dist)
         {
             i0 = i;
@@ -189,14 +189,14 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
 
     terra::vec2 i0v = this->coords->at(i0);
 
-    min_dist = std::numeric_limits<double>::max();
+    min_dist = std::numeric_limits<tfloat>::max();
 
     // find the point closest to the seed
     for (size_t i = 0; i < n; ++i)
     {
         if (i == i0)
             continue;
-        const double d = glm::distance2(i0v, coords->at(i));
+        const tfloat d = glm::distance2(i0v, coords->at(i));
         if (d < min_dist && d > 0.0)
         {
             i1 = i;
@@ -206,7 +206,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
 
     terra::vec2 i1v = this->coords->at(i1);
 
-    double min_radius = std::numeric_limits<double>::max();
+    tfloat min_radius = std::numeric_limits<tfloat>::max();
 
     // find the third point which forms the smallest circumcircle with the first
     // two
@@ -215,7 +215,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         if (i == i0 || i == i1)
             continue;
 
-        const double r = circumradius(i0v, i1v, coords->at(i));
+        const tfloat r = circumradius(i0v, i1v, coords->at(i));
         if (r < min_radius)
         {
             i2 = i;
@@ -223,7 +223,7 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
         }
     }
 
-    if (!(min_radius < std::numeric_limits<double>::max()))
+    if (!(min_radius < std::numeric_limits<tfloat>::max()))
     {
         throw std::runtime_error("not triangulation");
     }
@@ -271,8 +271,8 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     triangles.reserve(max_triangles * 3);
     halfedges.reserve(max_triangles * 3);
     add_triangle(i0, i1, i2, INVALID_INDEX, INVALID_INDEX, INVALID_INDEX);
-    auto last_point = terra::vec2(std::numeric_limits<double>::quiet_NaN(),
-                                  std::numeric_limits<double>::quiet_NaN());
+    auto last_point = terra::vec2(std::numeric_limits<tfloat>::quiet_NaN(),
+                                  std::numeric_limits<tfloat>::quiet_NaN());
     for (size_t k = 0; k < n; k++)
     {
         const size_t i = ids[k];
@@ -369,9 +369,9 @@ void delaunator::triangulate(const std::vector<terra::vec2>& in_coords)
     }
 }
 
-double delaunator::get_hull_area()
+tfloat delaunator::get_hull_area()
 {
-    std::vector<double> hull_area;
+    std::vector<tfloat> hull_area;
     size_t e = hull_start;
     do
     {
@@ -382,7 +382,7 @@ double delaunator::get_hull_area()
         e = hull_next[e];
     } while (e != hull_start);
 
-    return terra::math::sum<double>(hull_area);
+    return terra::math::sum<tfloat>(hull_area);
 }
 
 size_t delaunator::legalize(size_t a)
@@ -497,11 +497,11 @@ size_t delaunator::legalize(size_t a)
 
 inline size_t delaunator::hash_key(const terra::vec2& vec) const
 {
-    const double dx = vec.x - centre.x;
-    const double dy = vec.y - centre.y;
+    const tfloat dx = vec.x - centre.x;
+    const tfloat dy = vec.y - centre.y;
     return math::mod<size_t>(
         static_cast<size_t>(std::llround(
-            std::floor(pseudo_angle(dx, dy) * static_cast<double>(hash_size)))),
+            std::floor(pseudo_angle(dx, dy) * static_cast<tfloat>(hash_size)))),
         hash_size);
 }
 

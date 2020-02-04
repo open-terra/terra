@@ -11,7 +11,7 @@ uplift::uplift() :
 
 uplift::uplift(const terra::bitmap& uplift_map,
                const std::vector<terra::vec2>& points,
-               terra::dynarray<double>& heights) :
+               terra::dynarray<tfloat>& heights) :
     uplifts(points.size()), uplift_map(&uplift_map), points(&points), heights(&heights)
 {
     const size_t bitmap_width = uplift_map.width;
@@ -35,7 +35,7 @@ void uplift::update()
     }
 }
 
-#ifdef USE_OPENCL
+#ifdef TERRA_USE_OPENCL
 // REQUIRES that "uplift.cl" is loaded and built.
 void uplift::update(terra::compute::engine_cl& engine)
 {

@@ -1,3 +1,5 @@
 // terra_config.hpp
 
-#cmakedefine USE_OPENCL
+#cmakedefine TERRA_USE_DOUBLE
+
+#cmakedefine TERRA_USE_OPENCL

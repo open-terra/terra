@@ -25,9 +25,9 @@ poisson_disc_sampler::~poisson_disc_sampler()
 {
 }
 
-std::vector<terra::vec2> poisson_disc_sampler::sample(double width,
-                                                      double height,
-                                                      double min_distance,
+std::vector<terra::vec2> poisson_disc_sampler::sample(tfloat width,
+                                                      tfloat height,
+                                                      tfloat min_distance,
                                                       size_t max_attempts,
                                                       terra::vec2 start)
 {
@@ -36,8 +36,8 @@ std::vector<terra::vec2> poisson_disc_sampler::sample(double width,
     this->min_distance = min_distance;
 
     this->cell_size = min_distance / terra::math::sqrt(2);
-    this->grid_width = std::ceil(this->width / cell_size);
-    this->grid_height = std::ceil(this->height / cell_size);
+    this->grid_width = std::ceil<size_t>(this->width / cell_size);
+    this->grid_height = std::ceil<size_t>(this->height / cell_size);
 
     size_t grid_size = this->grid_width * this->grid_height;
     this->points.reserve(grid_size);
@@ -77,14 +77,14 @@ std::vector<terra::vec2> poisson_disc_sampler::sample(double width,
     return std::move(this->points);
 }
 
-double poisson_disc_sampler::random(float range)
+tfloat poisson_disc_sampler::random(float range)
 {
     return this->distribution(engine) * range;
 }
 
 terra::vec2 poisson_disc_sampler::point_around(terra::vec2 p)
 {
-    constexpr double PI = 3.141592653589793238462643383279502884;
+    constexpr tfloat PI = 3.141592653589793238462643383279502884;
 
     auto radius = this->min_distance * std::sqrt(this->random(3) + 1);
     auto angle = this->random(2 * PI);

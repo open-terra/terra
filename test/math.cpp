@@ -52,6 +52,6 @@ TEST_CASE("sum", "[math]")
     std::vector<int> test_ints = {1, 2, -1};
     REQUIRE(sum<int>(test_ints) == 2);
 
-    std::vector<double> test_floats = {1.2, 2.3, 7.0};
-    REQUIRE(sum<double>(test_floats) == 10.5);
+    std::vector<float> test_floats = {1.2, 2.3, 7.0};
+    REQUIRE(sum<float>(test_floats) == 10.5);
 }

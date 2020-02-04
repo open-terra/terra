@@ -27,17 +27,17 @@ std::mt19937 gen(rd());
 
 Now we have our random engine wew can create a random distribution within the bounds of the grid and thus sample to random points to get our first position.
 ```CPP
-std::uniform_real_distribution<> dis(0.0, (double)std::min(size_x, size_y));
+std::uniform_real_distribution<> dis(0.0, (tfloat)std::min(size_x, size_y));
 points.push_back(cp::Vector3(dis(gen), dis(gen)));
 active.push_back(0);
 ```
 
 We can also set the valid bounds for the next point as the "_radius_" to the "_size - radius_".
 ```CPP
-double bx0 = radius;
-double by0 = radius;
-double bx1 = size_x - radius;
-double by1 = size_y - radius;
+tfloat bx0 = radius;
+tfloat by0 = radius;
+tfloat bx1 = size_x - radius;
+tfloat by1 = size_y - radius;
 ```
 
 ### Creating the rest of the points
@@ -59,11 +59,11 @@ First we generate a random radian on the circle centered around the current poin
 Then a random radius for the circle between the inner and outer bounds.
 Now we can compute the position of the point on the circle.
 ```CPP
-double inner = this->radius * this->radius;
-double outer = (4 * inner) - inner;
+tfloat inner = this->radius * this->radius;
+tfloat outer = (4 * inner) - inner;
 
-double theta = normal(gen) * 2 * pi; // Random radian on the circumference of the circle
-double r = terra::math::sqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
+tfloat theta = normal(gen) * 2 * pi; // Random radian on the circumference of the circle
+tfloat r = terra::math::sqrt((normal(gen) * outer) + inner); // Random radius of the circle between r^2 and 4r
 cp::Vector3 point(  points[i].x + (r * std::cos(theta)),
                     points[i].y + (r * std::sin(theta)));
 ```

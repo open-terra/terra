@@ -3,11 +3,12 @@
 #include <limits>
 #include <vector>
 
+#include "base_types.hpp"
 #include "types/vec2.hpp"
 
 namespace terra
 {
-    constexpr double EPSILON = std::numeric_limits<double>::epsilon();
+    constexpr tfloat EPSILON = std::numeric_limits<tfloat>::epsilon();
     constexpr size_t INVALID_INDEX = std::numeric_limits<size_t>::max();
 
     class delaunator
@@ -30,7 +31,7 @@ namespace terra
         delaunator();
 
         void triangulate(const std::vector<terra::vec2>& in_coords);
-        double get_hull_area();
+        tfloat get_hull_area();
 
     private:
         size_t legalize(size_t a);

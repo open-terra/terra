@@ -12,8 +12,8 @@ flow_graph::flow_graph() :
 
 flow_graph::flow_graph(size_t node_count,
                        const terra::undirected_graph& graph,
-                       const terra::dynarray<double>& areas,
-                       const terra::dynarray<double>& heights) :
+                       const terra::dynarray<tfloat>& areas,
+                       const terra::dynarray<tfloat>& heights) :
     drainage_areas(node_count), flow(node_count), lakes(), 
     sorted_nodes(node_count), graph(&graph), areas(&areas), heights(&heights)
 {
@@ -32,12 +32,12 @@ void flow_graph::update()
 
 struct compare
 {
-    const terra::dynarray<double>* heights;
+    const terra::dynarray<tfloat>* heights;
 
     bool operator()(const size_t i, const size_t j)
     {
-        const double ih = (*this->heights)[i];
-        const double jh = (*this->heights)[j];
+        const tfloat ih = (*this->heights)[i];
+        const tfloat jh = (*this->heights)[j];
 
         return ih < jh;
     }
@@ -56,12 +56,12 @@ void flow_graph::update_drainage_areas()
 
     for (auto node : this->sorted_nodes)
     {
-        double drainage_area = (*this->areas)[node];
-        const double nh = (*this->heights)[node];
+        tfloat drainage_area = (*this->areas)[node];
+        const tfloat nh = (*this->heights)[node];
 
         for (auto con_node : this->graph->get_connected(node))
         {
-            const double ch = (*this->heights)[con_node];
+            const tfloat ch = (*this->heights)[con_node];
 
             if (ch > nh)
             {
@@ -77,15 +77,15 @@ void flow_graph::update_flow()
 {
     for (auto node : this->sorted_nodes)
     {
-        const double nh = (*this->heights)[node];
+        const tfloat nh = (*this->heights)[node];
 
-        std::pair<size_t, double> min_node = std::make_pair(
-            flow_graph::node_lake, std::numeric_limits<double>::max());
+        std::pair<size_t, tfloat> min_node = std::make_pair(
+            flow_graph::node_lake, std::numeric_limits<tfloat>::max());
 
         for (auto con_node : this->graph->get_connected(node))
         {
             // TODO also need to include rock hardness
-            const double ch = (*this->heights)[con_node];
+            const tfloat ch = (*this->heights)[con_node];
             if (ch > nh && ch < min_node.second)
             {
                 min_node = std::make_pair(con_node, ch);

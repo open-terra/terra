@@ -14,9 +14,45 @@ struct boost::polygon::geometry_concept<terra::vec2>
 };
 
 template<>
+struct boost::polygon::detail::ulp_comparison<float>
+{
+    enum Result
+    {
+        LESS = -1,
+        EQUAL = 0,
+        MORE = 1
+    };
+
+    Result operator()(float a, float b, unsigned int maxUlps) const
+    {
+        uint32_t ll_a, ll_b;
+
+        // Reinterpret double bits as 32-bit signed integer.
+        std::memcpy(&ll_a, &a, sizeof(float));
+        std::memcpy(&ll_b, &b, sizeof(float));
+
+        // Positive 0.0 is integer zero. Negative 0.0 is 0x80000000.
+        // Map negative zero to an integer zero representation - making it
+        // identical to positive zero - the smallest negative number is
+        // represented by negative one, and downwards from there.
+        if (ll_a < 0x80000000U)
+            ll_a = 0x80000000U - ll_a;
+        if (ll_b < 0x80000000U)
+            ll_b = 0x80000000U - ll_b;
+
+        // Compare 32-bit signed integer representations of input values.
+        // Difference in 1 Ulp is equivalent to a relative error of between
+        // 1/4,000,000,000,000,000 and 1/8,000,000,000,000,000.
+        if (ll_a > ll_b)
+            return (ll_a - ll_b <= maxUlps) ? EQUAL : LESS;
+        return (ll_b - ll_a <= maxUlps) ? EQUAL : MORE;
+    }
+};
+
+template<>
 struct boost::polygon::point_traits<terra::vec2>
 {
-    typedef double coordinate_type;
+    typedef tfloat coordinate_type;
 
     static inline coordinate_type get(const terra::vec2& point,
                                       orientation_2d orient)
@@ -26,8 +62,8 @@ struct boost::polygon::point_traits<terra::vec2>
 };
 
 void clip_infinite_edge(const std::vector<terra::vec2>& points,
-                        const terra::rect<double>& bounds,
-                        const boost::polygon::voronoi_edge<double>* edge,
+                        const terra::rect<tfloat>& bounds,
+                        const boost::polygon::voronoi_edge<tfloat>* edge,
                         std::vector<terra::vec2>& clipped_edge)
 {
     const auto* cell1 = edge->cell();
@@ -48,8 +84,8 @@ void clip_infinite_edge(const std::vector<terra::vec2>& points,
         return;
     }
 
-    double side = bounds.x1 - bounds.x0;
-    double koef = side / std::max(terra::math::abs(direction.x), terra::math::abs(direction.y));
+    tfloat side = bounds.x1 - bounds.x0;
+    tfloat koef = side / std::max(terra::math::abs(direction.x), terra::math::abs(direction.y));
     if (edge->vertex0() == nullptr)
     {
         clipped_edge.push_back(
@@ -77,7 +113,7 @@ void clip_infinite_edge(const std::vector<terra::vec2>& points,
     }
 }
 
-typedef boost::polygon::voronoi_diagram<double> voronoi_diagram_t;
+typedef boost::polygon::voronoi_diagram<tfloat> voronoi_diagram_t;
 
 using namespace terra;
 
@@ -101,7 +137,7 @@ size_t voronoi::num_vertices() const
 }
 
 void voronoi::generate(const std::vector<terra::vec2>& points,
-                       const terra::rect<double>& bounds,
+                       const terra::rect<tfloat>& bounds,
                        terra::dynarray<terra::polygon>& cells)
 {
     voronoi_diagram_t vd;
