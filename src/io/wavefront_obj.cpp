@@ -4,8 +4,8 @@
 #include <fstream>
 
 void terra::io::obj::write_obj(const std::string filepath,
-                               const std::vector<terra::vec3>& points,
-                               const std::vector<terra::triangle>& triangles)
+                               const terra::dynarray<terra::vec3>& points,
+                               const terra::dynarray<terra::triangle>& triangles)
 {
     std::ofstream obj_file;
     obj_file.open(filepath);
