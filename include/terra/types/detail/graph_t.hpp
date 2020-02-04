@@ -1,9 +1,9 @@
 #pragma once
 
 #include <list>
-#include <vector>
 
 #include "../../enums/graph_type.hpp"
+#include "../dynarray.hpp"
 #include "../triangle.hpp"
 #include "graph_edge_t.hpp"
 
@@ -17,8 +17,9 @@ namespace terra::detail
 
         graph_t();
         graph_t(size_t vertex_count, size_t max_edges);
+        template<class Array = terra::dynarray<T>>
         graph_t(size_t node_count,
-                const std::vector<terra::triangle>& triangles);
+                const Array& triangles);
 
         void add_edge(const edge& edge);
         inline void add_edge(size_t v0, size_t v1)
@@ -57,8 +58,9 @@ namespace terra::detail
     }
 
     template<graph_type T>
+    template<class Array>
     graph_t<T>::graph_t(size_t node_count,
-                        const std::vector<terra::triangle>& triangles) :
+                        const Array& triangles) :
         nodes(node_count), edges()
     {
         this->edges.reserve(triangles.size());
