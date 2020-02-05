@@ -1,5 +1,6 @@
 #pragma once
 
+#define GLM_FORCE_XYZW_ONLY
 #include <glm/vec2.hpp>
 
 #include "../terra_config.hpp"
