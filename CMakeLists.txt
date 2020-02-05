@@ -16,12 +16,6 @@ project(Terra
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-# Use C++17
-set(CMAKE_CXX_STANDARD 17)
-
-# Use C11
-set(CMAKE_C_STANDARD 11)
-
 if(BUILD_TESTING)
     # Catch2 needed for testing
     find_package(Catch2 CONFIG REQUIRED)
@@ -83,7 +77,12 @@ add_library(Terra STATIC
     ${TERRA_SOURCES}
 )
 
-set_target_properties(Terra PROPERTIES OUTPUT_NAME "terra")
+set_target_properties(Terra
+    PROPERTIES 
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+        OUTPUT_NAME "terra"
+)
 
 target_include_directories(Terra PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
