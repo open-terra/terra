@@ -111,12 +111,18 @@ namespace terra
             return data()[i];
         }
         dynarray& operator=(dynarray&&) = default;
-        dynarray(dynarray&&) = default;
-
-        void allocate(size_t N)
+        dynarray(dynarray&& o)
         {
-            this->length = N;
-            buffer = this->alloc.allocate(N);
+            if (this == &o) return *this;
+
+            delete[] buffer;
+
+            this->length = o.length;
+            this->buffer = o.buffer;
+            o.length = 0;
+            o.buffer = nullptr;
+
+            return *this;
         }
 
         explicit dynarray(size_t N) : length(N), buffer(alloc.allocate(N))
@@ -125,13 +131,15 @@ namespace terra
         dynarray() : length(0), buffer(nullptr)
         {
         }
-        dynarray(dynarray const& o) :
-            alloc(), length(o.length), buffer(alloc.allocate(o.length))
+        dynarray(dynarray&& o)
         {
-            std::copy(o.begin(), o.end(), this->begin());
+            this->length = o.length;
+            this->buffer = o.buffer;
+            o.length = 0;
+            o.buffer = nullptr;
         }
         dynarray(std::initializer_list<T> l) :
-            length(l.size()), buffer(new T[length])
+            length(l.size()), buffer(alloc.allocate(this->length))
         {
             std::copy(l.begin(), l.end(), this->begin());
         }
