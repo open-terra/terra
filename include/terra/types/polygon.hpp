@@ -37,7 +37,7 @@ namespace terra
         }
 
     private:
-        tfloat area_of_tri(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c) const
+        inline tfloat area_of_tri(const terra::vec2& a, const terra::vec2& b, const terra::vec2& c) const
         {
             tfloat area2 = (a.x * (b.y - c.y)) +
                            (b.x * (c.y - a.y)) +
