@@ -110,8 +110,7 @@ namespace terra
         {
             return data()[i];
         }
-        dynarray& operator=(dynarray&&) = default;
-        dynarray(dynarray&& o)
+        dynarray& operator=(dynarray&& o)
         {
             if (this == &o) return *this;
 
