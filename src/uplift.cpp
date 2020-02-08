@@ -5,7 +5,7 @@
 using namespace terra;
 
 uplift::uplift() :
-    uplifts(), uplift_map(nullptr), points(nullptr), heights(nullptr)
+    uplifts(0), uplift_map(nullptr), points(nullptr), heights(nullptr)
 {
 }
 

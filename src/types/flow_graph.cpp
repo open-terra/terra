@@ -5,7 +5,7 @@
 using namespace terra;
 
 flow_graph::flow_graph() :
-    drainage_areas(), flow(), lakes(), sorted_nodes(), graph(nullptr),
+    drainage_areas(0), flow(0), lakes(), sorted_nodes(), graph(nullptr),
     areas(nullptr), heights(nullptr)
 {
 }

@@ -7,64 +7,10 @@
 
 #include "terra/math/abs.hpp"
 
-template<>
-struct boost::polygon::geometry_concept<terra::vec2>
-{
-    typedef point_concept type;
-};
-
-template<>
-struct boost::polygon::detail::ulp_comparison<float>
-{
-    enum Result
-    {
-        LESS = -1,
-        EQUAL = 0,
-        MORE = 1
-    };
-
-    Result operator()(float a, float b, unsigned int maxUlps) const
-    {
-        uint32_t ll_a, ll_b;
-
-        // Reinterpret double bits as 32-bit signed integer.
-        std::memcpy(&ll_a, &a, sizeof(float));
-        std::memcpy(&ll_b, &b, sizeof(float));
-
-        // Positive 0.0 is integer zero. Negative 0.0 is 0x80000000.
-        // Map negative zero to an integer zero representation - making it
-        // identical to positive zero - the smallest negative number is
-        // represented by negative one, and downwards from there.
-        if (ll_a < 0x80000000U)
-            ll_a = 0x80000000U - ll_a;
-        if (ll_b < 0x80000000U)
-            ll_b = 0x80000000U - ll_b;
-
-        // Compare 32-bit signed integer representations of input values.
-        // Difference in 1 Ulp is equivalent to a relative error of between
-        // 1/4,000,000,000,000,000 and 1/8,000,000,000,000,000.
-        if (ll_a > ll_b)
-            return (ll_a - ll_b <= maxUlps) ? EQUAL : LESS;
-        return (ll_b - ll_a <= maxUlps) ? EQUAL : MORE;
-    }
-};
-
-template<>
-struct boost::polygon::point_traits<terra::vec2>
-{
-    typedef tfloat coordinate_type;
-
-    static inline coordinate_type get(const terra::vec2& point,
-                                      orientation_2d orient)
-    {
-        return (orient == HORIZONTAL) ? point.x : point.y;
-    }
-};
-
-void clip_infinite_edge(const std::vector<terra::vec2>& points,
-                        const terra::rect<tfloat>& bounds,
-                        const boost::polygon::voronoi_edge<tfloat>* edge,
-                        std::vector<terra::vec2>& clipped_edge)
+inline void clip_infinite_edge(const std::vector<terra::vec2>& points,
+                               const terra::rect<tfloat>& bounds,
+                               const boost::polygon::voronoi_edge<double>* edge,
+                               std::vector<terra::vec2>& clipped_edge)
 {
     const auto* cell1 = edge->cell();
     const auto* cell2 = edge->twin()->cell();
@@ -113,7 +59,8 @@ void clip_infinite_edge(const std::vector<terra::vec2>& points,
     }
 }
 
-typedef boost::polygon::voronoi_diagram<tfloat> voronoi_diagram_t;
+typedef boost::polygon::voronoi_diagram<double> diagram_t;
+typedef boost::polygon::point_data<double> point_t;
 
 using namespace terra;
 
@@ -140,8 +87,15 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
                        const terra::rect<tfloat>& bounds,
                        terra::dynarray<terra::polygon>& cells)
 {
-    voronoi_diagram_t vd;
-    construct_voronoi(points.begin(), points.end(), &vd);
+    terra::dynarray<point_t> vpoints(points.size());
+    for (size_t i = 0; i < points.size(); ++i)
+    {
+        const auto& p = points[i];
+        vpoints[i] = {static_cast<double>(p.x), static_cast<double> (p.y)};
+    }
+
+    diagram_t vd;
+    construct_voronoi(vpoints.begin(), vpoints.end(), &vd);
 
     this->ncells = vd.num_cells();
     this->nedges = vd.num_edges();
@@ -151,7 +105,6 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
     for (const auto& cell : vd.cells())
     {
         std::vector<terra::vec2> vertices;
-        vertices.reserve(6);
         const auto* edge = cell.incident_edge();
         // This is convenient way to iterate edges around Voronoi cell.
         do
@@ -165,15 +118,13 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
                 else
                 {
                     const auto& v0 = edge->vertex0();
-                    vertices.push_back({v0->x(), v0->y()});
+                    vertices.push_back({ v0->x(), v0->y() });
                 }
             }
             edge = edge->next();
         } while (edge != cell.incident_edge());
 
-        vertices.shrink_to_fit();
-
-        cells[i] = {cell.source_index(), vertices};
+        cells[i] = terra::polygon(vertices);
         ++i;
     }
 }
