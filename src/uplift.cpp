@@ -1,30 +1,28 @@
 #include "terra/uplift.hpp"
 
+#include <limits>
+
 #include "terra/math/floor.hpp"
 
 using namespace terra;
 
-uplift::uplift() :
-    uplifts(0), uplift_map(nullptr), points(nullptr), heights(nullptr)
+bitmap_uplift::bitmap_uplift(const terra::bitmap& bitmap) : 
+    width(bitmap.width()), raster(bitmap.size())
 {
+    const uint8_t* raster_view = bitmap.get();
+    std::copy(raster_view, raster_view + bitmap.size(), raster.begin());
 }
 
-uplift::uplift(const terra::bitmap& uplift_map,
-               const std::vector<terra::vec2>& points,
-               terra::dynarray<tfloat>& heights) :
-    uplifts(points.size()), uplift_map(&uplift_map), points(&points), heights(&heights)
+tfloat bitmap_uplift::at(const terra::vec2& p) const
 {
-    const size_t bitmap_width = uplift_map.width;
-    std::vector<uint8_t> uplift = uplift_map.get_channel(terra::bitmap::channel::alpha);
+    // TODO probably use something other than a floor here.
+    const size_t px = math::floor<size_t>(p.x);
+    const size_t py = math::floor<size_t>(p.y);
+    return raster[(py * width) + px] / std::numeric_limits<uint8_t>::max();
+}
 
-    for (size_t i = 0; i < points.size(); ++i)
-    {
-        // TODO probably use something other than a simple point sample here.
-        const auto& p = points[i];
-        const size_t px = math::floor<size_t>(p.x);
-        const size_t py = math::floor<size_t>(p.y);
-        uplifts[i] = uplift[(py * bitmap_width) + px];
-    }
+uplift::uplift() : uplifts(0), points(nullptr), heights(nullptr)
+{
 }
 
 void uplift::update()
@@ -37,7 +35,7 @@ void uplift::update()
 
 #ifdef TERRA_USE_OPENCL
 // REQUIRES that "uplift.cl" is loaded and built.
-void uplift::update(terra::compute::engine_cl& engine)
+void  uplift::update(terra::compute::engine_cl& engine)
 {
     const size_t heights_length = heights->size();
 

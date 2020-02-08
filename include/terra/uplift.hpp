@@ -16,18 +16,28 @@
 
 namespace terra
 {
+    struct bitmap_uplift
+    {
+        size_t width;
+        terra::dynarray<uint8_t> raster;
+
+        explicit bitmap_uplift(const terra::bitmap& bitmap);
+
+        tfloat at(const terra::vec2& p) const;
+    };
+
     class uplift
     {
         terra::dynarray<tfloat> uplifts;
 
     private:
-        const terra::bitmap* uplift_map;
         const std::vector<terra::vec2>* points;
         terra::dynarray<tfloat>* heights;
 
     public:
         uplift();
-        uplift(const terra::bitmap& uplift_map,
+        template<typename UpliftFunc>
+        uplift(const UpliftFunc& uplift_func,
                const std::vector<terra::vec2>& points,
                terra::dynarray<tfloat>& heights);
 
@@ -36,4 +46,16 @@ namespace terra
         void update(terra::compute::engine_cl& engine);
 #endif
     };
+}
+
+template<typename UpliftFunc>
+terra::uplift::uplift(const UpliftFunc& uplift_func,
+                      const std::vector<terra::vec2>& points,
+                      terra::dynarray<tfloat>& heights) :
+    uplifts(points.size()), points(&points), heights(&heights)
+{
+    for (size_t i = 0; i < points.size(); ++i)
+    {
+        uplifts[i] = uplift_func.at(points[i]);
+    }
 }
