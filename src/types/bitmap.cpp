@@ -1,25 +1,21 @@
 #include "terra/types/bitmap.hpp"
 
-using namespace terra;
-
-bitmap::bitmap() : width(0), height(0), num_pixels(0), raster()
+terra::bitmap::bitmap() :
+    m_width(0), m_height(0), m_bits_per_sample(0), m_samples_per_pixel(0),
+    m_num_pixels(0), m_raster(0)
 {
 }
 
-bitmap::bitmap(uint32_t width, uint32_t height, uint32_t num_pixels, std::vector<argb_t>& raster) : 
-    width(width), height(height), num_pixels(num_pixels), raster(std::move(raster))
+terra::bitmap::bitmap(size_t width,
+                      size_t height,
+                      size_t bits_per_sample,
+                      size_t samples_per_pixel,
+                      size_t num_pixels,
+                      terra::dynarray<uint8_t>& raster) : 
+    m_width(width), m_height(height), m_bits_per_sample(bits_per_sample),
+    m_samples_per_pixel(samples_per_pixel), m_num_pixels(num_pixels),
+    m_raster(std::move(raster))
 {
 }
 
-std::vector<uint8_t> bitmap::get_channel(bitmap::channel c) const
-{
-    std::vector<uint8_t> data;
-    data.reserve(this->num_pixels);
 
-    for(const auto& pixel : this->raster)
-    {
-        data.push_back(reinterpret_cast<const uint8_t*>(&pixel)[static_cast<size_t>(c)]);
-    }
-
-    return data;
-}
