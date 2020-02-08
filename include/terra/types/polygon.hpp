@@ -11,6 +11,9 @@ namespace terra
     {
         std::vector<terra::vec2> vertices;
 
+        polygon& operator=(polygon&& o) noexcept = default;
+        polygon(polygon&& o) noexcept = default;
+
         polygon() : vertices()
         {
         }
