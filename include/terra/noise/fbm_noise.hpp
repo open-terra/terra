@@ -6,5 +6,5 @@
 
 namespace terra::noise
 {
-    typedef fractal_noise_t<FastNoiseSIMD::FractalType::RigidMulti> ridged_noise;
+    typedef fractal_noise_t<FastNoiseSIMD::FractalType::FBM> fbm_noise;
 }

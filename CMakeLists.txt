@@ -24,6 +24,9 @@ endif()
 # GLM used for vecN types
 find_package(glm CONFIG REQUIRED)
 
+# FastNoiseSIMD for 3d noise functions
+find_package(FastNoiseSIMD CONFIG REQUIRED)
+
 option(TERRA_USE_OPENCL "" ON)
 if(TERRA_USE_OPENCL)
     find_package(OpenCL REQUIRED)
@@ -58,8 +61,6 @@ endif()
 set(TERRA_SOURCES
     src/io/tiff.cpp
     src/io/wavefront_obj.cpp
-    src/noise/open_simplex.cpp
-    src/noise/summed_noise.cpp
     src/types/bitmap.cpp
     src/types/flow_graph.cpp
     src/types/hash_grid.cpp
@@ -108,7 +109,7 @@ if(BUILD_TESTING)
     include(test/tests.cmake)
 endif()
 
-set(TERRA_KERNEL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/kernels PARENT_SCOPE)
+set(TERRA_KERNEL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/kernels)
 function(terra_copy_kernels IN_TARGET)
     # copy kernel files to target directory
     add_custom_command(
