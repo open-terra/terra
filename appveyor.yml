@@ -14,6 +14,11 @@ install:
   - vcpkg install boost-polygon:x64-windows
   - vcpkg install tiff:x64-windows
   - vcpkg integrate install
+  - mkdir deps
+  - mkdir temp
+  - cd temp
+  - ../scrips/install-fastnoise-simd.bat
+  - cd ../
 
 before_build:
   - mkdir build
