@@ -83,7 +83,7 @@ inline const T* terra::bitmap::get() const
 template<typename T>
 terra::dynarray<T> terra::bitmap::get_channel(bitmap::channel c) const
 {
-    terra::dynarray<T> data(this->num_pixels);
+    terra::dynarray<T> data(this->m_num_pixels);
 
     T* raster_view = this->get<T>();
 

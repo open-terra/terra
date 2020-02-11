@@ -17,5 +17,3 @@ terra::bitmap::bitmap(size_t width,
     m_raster(std::move(raster))
 {
 }
-
-
