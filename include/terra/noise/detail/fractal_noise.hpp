@@ -17,7 +17,7 @@ namespace terra::noise
         std::shared_ptr<FastNoiseSIMD> noise_source;
 
     public:
-        fractal_noise_t(int32_t seed) :
+        explicit fractal_noise_t(int32_t seed) :
             noise_source(FastNoiseSIMD::NewFastNoiseSIMD(seed))
         {
         }
@@ -33,7 +33,7 @@ namespace terra::noise
                                       size_t x_size,
                                       size_t y_size,
                                       size_t z_size,
-                                      tfloat scale)
+                                      tfloat scale) const
         {
             size_t size = x_size * y_size * z_size;
             terra::dynarray<tfloat> noise_set(size);

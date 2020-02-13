@@ -93,6 +93,7 @@ target_include_directories(Terra PUBLIC
 
 set(TERRA_LINK_LIBS
     glm
+    FastNoiseSIMD
     ${LIBTIFF_LIB}
     ${LIBTIFF_XX_LIB}
 )
