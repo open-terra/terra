@@ -82,6 +82,7 @@ set_target_properties(Terra
     PROPERTIES 
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
+        CMAKE_DEBUG_POSTFIX "d"
         OUTPUT_NAME "terra"
 )
 
@@ -110,7 +111,11 @@ if(BUILD_TESTING)
     include(test/tests.cmake)
 endif()
 
-set(TERRA_KERNEL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/kernels)
+if(NOT_SUBPROJECT)
+    set(TERRA_KERNEL_DIR ${CMAKE_CURRENT_LIST_DIR}/kernels)
+else()
+    set(TERRA_KERNEL_DIR ${Terra_DIR}/kernels PARENT_SCOPE)
+endif()
 function(terra_copy_kernels IN_TARGET)
     # copy kernel files to target directory
     add_custom_command(
