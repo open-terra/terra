@@ -17,7 +17,7 @@ install:
   - mkdir deps
   - mkdir temp
   - cd temp
-  - ../scrips/install-fastnoise-simd.bat
+  - ../scripts/install-fastnoise-simd.bat
   - cd ../
 
 before_build:
