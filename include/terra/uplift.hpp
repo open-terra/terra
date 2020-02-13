@@ -26,6 +26,20 @@ namespace terra
         tfloat at(const terra::vec2& p) const;
     };
 
+    struct noise_uplift
+    {
+        size_t width;
+        terra::dynarray<tfloat> noise_map;
+
+        template<typename T>
+        noise_uplift(const T& noise,
+                              size_t width,
+                              size_t height,
+                              tfloat scale);
+
+        tfloat at(const terra::vec2& p) const;
+    };
+
     class uplift
     {
         terra::dynarray<tfloat> uplifts;
@@ -46,6 +60,15 @@ namespace terra
         void update(terra::compute::engine_cl& engine);
 #endif
     };
+}
+
+template<typename T>
+terra::noise_uplift::noise_uplift(const T& noise,
+                                  size_t width,
+                                  size_t height,
+                                  tfloat scale) : width(width), noise_map(0)
+{
+    this->noise_map = noise.noise(0, 0, 0, width, height, 1, scale);
 }
 
 template<typename UpliftFunc>

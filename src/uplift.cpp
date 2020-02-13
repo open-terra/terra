@@ -18,7 +18,16 @@ tfloat bitmap_uplift::at(const terra::vec2& p) const
     // TODO probably use something other than a floor here.
     const size_t px = math::floor<size_t>(p.x);
     const size_t py = math::floor<size_t>(p.y);
-    return raster[(py * width) + px] / std::numeric_limits<uint8_t>::max();
+    const uint8_t val = this->raster[(py * width) + px];
+    return static_cast<tfloat>(val) / std::numeric_limits<uint8_t>::max();
+}
+
+tfloat terra::noise_uplift::at(const terra::vec2& p) const
+{
+    // TODO probably use something other than a floor here.
+    const size_t px = math::floor<size_t>(p.x);
+    const size_t py = math::floor<size_t>(p.y);
+    return this->noise_map[(py * width) + px];
 }
 
 uplift::uplift() : uplifts(0), points(nullptr), heights(nullptr)
