@@ -25,9 +25,10 @@ tfloat bitmap_uplift::at(const terra::vec2& p) const
 tfloat terra::noise_uplift::at(const terra::vec2& p) const
 {
     // TODO probably use something other than a floor here.
-    const size_t px = math::floor<size_t>(p.x);
-    const size_t py = math::floor<size_t>(p.y);
-    return this->noise_map[(py * width) + px];
+    auto point = p * this->scale;
+    const size_t px = std::min(math::floor<size_t>(point.x), this->width - 1);
+    const size_t py = std::min(math::floor<size_t>(point.y), this->height - 1);
+    return this->noise_map[(py * this->width) + px];
 }
 
 uplift::uplift() : factor(0.0f), uplifts(0), points(nullptr), heights(nullptr)
