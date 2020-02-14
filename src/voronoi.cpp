@@ -7,32 +7,32 @@
 
 #include "terra/math/abs.hpp"
 
-inline void clip_infinite_edge(const std::vector<terra::vec2>& points,
-                               const terra::rect<tfloat>& bounds,
-                               const boost::polygon::voronoi_edge<double>* edge,
-                               std::vector<terra::vec2>& clipped_edge)
-{
-    const auto* cell1 = edge->cell();
-    const auto* cell2 = edge->twin()->cell();
-    terra::vec2 origin, direction;
-    // Infinite edges could not be created by two segment sites.
-    if (cell1->contains_point() && cell2->contains_point())
-    {
-        auto& p1 = points[cell1->source_index()];
-        auto& p2 = points[cell2->source_index()];
-        origin.x = p1.x + p2.x * 0.5;
-        origin.y = p1.y + p2.y * 0.5;
-        direction.x = p1.y - p2.y;
-        direction.y = p2.x - p1.x;
-    }
-    else
-    {
-        return;
-    }
+typedef boost::polygon::voronoi_diagram<double> diagram_t;
+typedef boost::polygon::voronoi_edge<double> edge_t;
+typedef boost::polygon::point_data<double> point_t;
 
-    tfloat side = bounds.x1 - bounds.x0;
-    tfloat koef = side / std::max(terra::math::abs(direction.x), terra::math::abs(direction.y));
-    if (edge->vertex0() == nullptr)
+std::vector<terra::vec2> clip_infinite_edge(
+    const std::vector<terra::vec2>& points,
+    const terra::rect<tfloat>& bounds,
+    const edge_t& edge)
+{
+    std::vector<terra::vec2> clipped_edge;
+    clipped_edge.reserve(2);
+
+    const auto& cell0 = *edge.cell();
+    const auto& cell1 = *edge.twin()->cell();
+    terra::vec2 origin, direction;
+
+    const auto& p0 = points[cell0.source_index()];
+    const auto& p1 = points[cell1.source_index()];
+    origin.x = (p0.x + p1.x) * 0.5;
+    origin.y = (p0.y + p1.y) * 0.5;
+    direction.x = p0.y - p1.y;
+    direction.y = p1.x - p0.x;
+
+    double side = bounds.x1 - bounds.x0;
+    double koef = side / std::max(terra::math::abs(direction.x), terra::math::abs(direction.y));
+    if (edge.vertex0() == NULL)
     {
         clipped_edge.push_back(
             {
@@ -42,10 +42,9 @@ inline void clip_infinite_edge(const std::vector<terra::vec2>& points,
     }
     else
     {
-        clipped_edge.push_back({edge->vertex0()->x(), edge->vertex0()->y()});
+        clipped_edge.push_back({edge.vertex0()->x(), edge.vertex0()->y()});
     }
-
-    if (edge->vertex1() == nullptr)
+    if (edge.vertex1() == NULL)
     {
         clipped_edge.push_back(
             {
@@ -55,12 +54,9 @@ inline void clip_infinite_edge(const std::vector<terra::vec2>& points,
     }
     else
     {
-        clipped_edge.push_back({edge->vertex1()->x(), edge->vertex1()->y()});
+        clipped_edge.push_back({edge.vertex1()->x(), edge.vertex1()->y()});
     }
 }
-
-typedef boost::polygon::voronoi_diagram<double> diagram_t;
-typedef boost::polygon::point_data<double> point_t;
 
 using namespace terra;
 
@@ -111,14 +107,21 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
         {
             if (edge->is_primary())
             {
-                if(edge->is_infinite())
+                if (edge->is_finite())
                 {
-                    clip_infinite_edge(points, bounds, edge, vertices);
+                    // TODO avoid duplicates here
+                    const auto* p0 = edge->vertex0();
+                    vertices.push_back({p0->x(), p0->y()});
+                    const auto* p1 = edge->vertex1();
+                    vertices.push_back({p1->x(), p1->y()});
                 }
                 else
                 {
-                    const auto& v0 = edge->vertex0();
-                    vertices.push_back({ v0->x(), v0->y() });
+                    auto verts = clip_infinite_edge(points, bounds, *edge);
+                    for (auto& v : verts)
+                    {
+                        vertices.push_back(v);
+                    }
                 }
             }
             edge = edge->next();
