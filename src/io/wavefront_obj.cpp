@@ -17,7 +17,10 @@ void terra::io::obj::write_obj(const std::string filepath,
 
     for (const auto& tri : triangles)
     {
-        obj_file << "f " << tri.v0 << " " << tri.v1 << " " << tri.v2 << std::endl;
+        const size_t i_0 = tri.v0 + 1;
+        const size_t i_1 = tri.v1 + 1;
+        const size_t i_2 = tri.v2 + 1;
+        obj_file << "f " << i_0 << " " << i_1 << " " << i_2 << std::endl;
     }
 
     obj_file.close();
