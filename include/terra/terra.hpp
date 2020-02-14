@@ -26,5 +26,6 @@
 
 #include "delaunator.hpp"
 #include "poisson_disc_sampler.hpp"
+#include "slope.hpp"
 #include "uplift.hpp"
 #include "voronoi.hpp"
