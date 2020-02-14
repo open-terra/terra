@@ -36,8 +36,8 @@ std::vector<terra::vec2> poisson_disc_sampler::sample(tfloat width,
     this->min_distance = min_distance;
 
     this->cell_size = min_distance / terra::math::sqrt(2);
-    this->grid_width = std::ceil<size_t>(this->width / cell_size);
-    this->grid_height = std::ceil<size_t>(this->height / cell_size);
+    this->grid_width = std::ceil<size_t>(this->width / cell_size) + 1;
+    this->grid_height = std::ceil<size_t>(this->height / cell_size) + 1;
 
     size_t grid_size = this->grid_width * this->grid_height;
     this->points.reserve(grid_size);
