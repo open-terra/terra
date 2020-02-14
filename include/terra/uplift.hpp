@@ -33,15 +33,16 @@ namespace terra
 
         template<typename T>
         noise_uplift(const T& noise,
-                              size_t width,
-                              size_t height,
-                              tfloat scale);
+                     size_t width,
+                     size_t height,
+                     tfloat scale);
 
         tfloat at(const terra::vec2& p) const;
     };
 
     class uplift
     {
+        tfloat factor;
         terra::dynarray<tfloat> uplifts;
 
     private:
@@ -53,7 +54,8 @@ namespace terra
         template<typename UpliftFunc>
         uplift(const UpliftFunc& uplift_func,
                const std::vector<terra::vec2>& points,
-               terra::dynarray<tfloat>& heights);
+               terra::dynarray<tfloat>& heights,
+               tfloat factor);
 
         void update();
 #ifdef TERRA_USE_OPENCL
@@ -74,8 +76,9 @@ terra::noise_uplift::noise_uplift(const T& noise,
 template<typename UpliftFunc>
 terra::uplift::uplift(const UpliftFunc& uplift_func,
                       const std::vector<terra::vec2>& points,
-                      terra::dynarray<tfloat>& heights) :
-    uplifts(points.size()), points(&points), heights(&heights)
+                      terra::dynarray<tfloat>& heights,
+                      tfloat factor) :
+    factor(factor), uplifts(points.size()), points(&points), heights(&heights)
 {
     for (size_t i = 0; i < points.size(); ++i)
     {

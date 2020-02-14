@@ -30,7 +30,7 @@ tfloat terra::noise_uplift::at(const terra::vec2& p) const
     return this->noise_map[(py * width) + px];
 }
 
-uplift::uplift() : uplifts(0), points(nullptr), heights(nullptr)
+uplift::uplift() : factor(0.0f), uplifts(0), points(nullptr), heights(nullptr)
 {
 }
 
@@ -38,7 +38,7 @@ void uplift::update()
 {
     for (size_t i = 0; i < points->size(); ++i)
     {
-        (*this->heights)[i] += this->uplifts[i];
+        (*this->heights)[i] += factor * this->uplifts[i];
     }
 }
 
