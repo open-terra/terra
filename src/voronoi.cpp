@@ -127,6 +127,7 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
             edge = edge->next();
         } while (edge != cell.incident_edge());
 
+        std::unique(vertices.begin(), vertices.end());
         cells[i] = terra::polygon(vertices);
         ++i;
     }
