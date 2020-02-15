@@ -43,6 +43,29 @@ namespace terra
         tfloat at(const terra::vec2& p) const;
     };
 
+    struct linear_uplift
+    {
+        enum struct orient : int8_t
+        {
+            up = 0,
+            down,
+            left,
+            right
+        };
+
+        orient orientation;
+        size_t width, height;
+        tfloat min, diff;
+
+        linear_uplift(size_t width,
+                      size_t height,
+                      tfloat min,
+                      tfloat max,
+                      orient orientation = orient::left);
+
+        tfloat at(const terra::vec2& p) const;
+    };
+
     class uplift
     {
         tfloat factor;

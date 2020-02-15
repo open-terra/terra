@@ -31,6 +31,38 @@ tfloat terra::noise_uplift::at(const terra::vec2& p) const
     return this->noise_map[(py * this->width) + px];
 }
 
+terra::linear_uplift::linear_uplift(size_t width,
+                                    size_t height,
+                                    tfloat min,
+                                    tfloat max,
+                                    orient orientation) :
+    width(width), height(height), min(min), diff(max - min),
+    orientation(orientation)
+{
+}
+
+tfloat terra::linear_uplift::at(const terra::vec2& p) const
+{
+    tfloat uplift = this->min;
+    switch(this->orientation)
+    {
+        case terra::linear_uplift::orient::up:
+            uplift += this->diff * (p.y / height);
+            break;
+        case terra::linear_uplift::orient::down:
+            uplift += this->diff * (1.0f - (p.y / height));
+            break;
+        case terra::linear_uplift::orient::left:
+            uplift += this->diff * (p.x / width);
+            break;
+        case terra::linear_uplift::orient::right:
+            uplift += this->diff * (1.0f - (p.x / width));
+            break;
+    }
+
+    return uplift;
+}
+
 uplift::uplift() : factor(0.0f), uplifts(0), points(nullptr), heights(nullptr)
 {
 }
