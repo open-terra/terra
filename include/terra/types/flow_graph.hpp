@@ -19,9 +19,9 @@ namespace terra
         terra::dynarray<size_t> flow;
         std::list<size_t> lakes;
         terra::dynarray<tfloat> drainage_areas;
+        terra::dynarray<size_t> sorted_nodes;
 
     private:
-        std::vector<size_t> sorted_nodes;
         const terra::undirected_graph* graph;
         const terra::dynarray<tfloat>* areas;
         const terra::dynarray<tfloat>* heights;

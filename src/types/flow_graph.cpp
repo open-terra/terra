@@ -5,7 +5,7 @@
 using namespace terra;
 
 flow_graph::flow_graph() :
-    drainage_areas(0), flow(0), lakes(), sorted_nodes(), graph(nullptr),
+    drainage_areas(0), flow(0), lakes(), sorted_nodes(0), graph(nullptr),
     areas(nullptr), heights(nullptr)
 {
 }
@@ -79,8 +79,8 @@ void flow_graph::update_flow()
     {
         const tfloat nh = (*this->heights)[node];
 
-        std::pair<size_t, tfloat> min_node = std::make_pair(
-            flow_graph::node_lake, std::numeric_limits<tfloat>::max());
+        auto min_node = std::make_pair(flow_graph::node_lake, 
+                                       std::numeric_limits<tfloat>::max());
 
         for (auto con_node : this->graph->get_connected(node))
         {
