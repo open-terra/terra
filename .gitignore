@@ -58,3 +58,7 @@ build/*
 
 # Terra Config
 terra_config.hpp
+
+*.cppcheck
+
+terra-cppcheck-build-dir/
