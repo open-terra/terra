@@ -17,10 +17,9 @@ std::vector<terra::vec2> clip_infinite_edge(
     const edge_t& edge)
 {
     std::vector<terra::vec2> clipped_edge;
-    clipped_edge.reserve(2);
 
-    const auto& cell0 = *edge.cell();
-    const auto& cell1 = *edge.twin()->cell();
+    const auto& cell0 = *(edge.cell());
+    const auto& cell1 = *(edge.twin()->cell());
     terra::vec2 origin, direction;
 
     const auto& p0 = points[cell0.source_index()];
@@ -35,26 +34,28 @@ std::vector<terra::vec2> clip_infinite_edge(
     if (edge.vertex0() == NULL)
     {
         clipped_edge.push_back(
-            {
+            terra::vec2(
                 origin.x - direction.x * koef,
                 origin.y - direction.y * koef
-            });
+            ));
     }
     else
     {
-        clipped_edge.push_back({edge.vertex0()->x(), edge.vertex0()->y()});
+        clipped_edge.push_back(terra::vec2(edge.vertex0()->x(),
+                                           edge.vertex0()->y()));
     }
     if (edge.vertex1() == NULL)
     {
         clipped_edge.push_back(
-            {
+            terra::vec2(
                 origin.x + direction.x * koef,
                 origin.y + direction.y * koef
-            });
+            ));
     }
     else
     {
-        clipped_edge.push_back({edge.vertex1()->x(), edge.vertex1()->y()});
+        clipped_edge.push_back(terra::vec2(edge.vertex1()->x(),
+                                           edge.vertex1()->y()));
     }
 }
 
@@ -118,16 +119,15 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
                 else
                 {
                     auto verts = clip_infinite_edge(points, bounds, *edge);
-                    for (auto& v : verts)
-                    {
-                        vertices.push_back(v);
-                    }
+                    std::copy(verts.begin(), verts.end(), std::back_inserter(vertices));
                 }
             }
             edge = edge->next();
         } while (edge != cell.incident_edge());
 
-        std::unique(vertices.begin(), vertices.end());
+        auto it = std::unique(vertices.begin(), vertices.end());
+        vertices.resize(std::distance(vertices.begin(), it));
+
         cells[i] = terra::polygon(vertices);
         ++i;
     }
