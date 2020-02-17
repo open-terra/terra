@@ -18,7 +18,7 @@ namespace terra
         {
         }
 
-        polygon(const std::vector<terra::vec2>& vertices) :
+        explicit polygon(const std::vector<terra::vec2>& vertices) :
             vertices(vertices)
         {
         }
