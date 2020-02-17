@@ -68,6 +68,7 @@ namespace terra
 
     class uplift
     {
+    public:
         tfloat factor;
         terra::dynarray<tfloat> uplifts;
 
