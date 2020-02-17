@@ -27,5 +27,6 @@
 #include "delaunator.hpp"
 #include "poisson_disc_sampler.hpp"
 #include "slope.hpp"
+#include "stream_power_equation.hpp"
 #include "uplift.hpp"
 #include "voronoi.hpp"

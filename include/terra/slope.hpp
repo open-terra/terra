@@ -41,7 +41,6 @@ namespace terra
                 const size_t flow_idx = flow->at(i);
                 if (flow_idx != terra::flow_graph::node_lake)
                 {
-                    
                     const auto dh = heights->at(flow_idx) - heights->at(i);
                     const auto dist = glm::distance(points->at(flow_idx), points->at(i));
                     this->slopes[i] = dh / dist;
