@@ -8,7 +8,7 @@
 
 namespace terra::io::obj
 {
-    void write_obj(const std::string filepath,
+    void write_obj(const std::string& filepath,
                    const terra::dynarray<terra::vec3>& points,
                    const terra::dynarray<terra::triangle>& triangles);
 }

@@ -3,10 +3,11 @@
 #include <iostream>
 #include <fstream>
 
-void terra::io::obj::write_obj(const std::string filepath,
+void terra::io::obj::write_obj(const std::string& filepath,
                                const terra::dynarray<terra::vec3>& points,
                                const terra::dynarray<terra::triangle>& triangles)
 {
+    // file format reference: http://paulbourke.net/dataformats/obj/
     std::ofstream obj_file;
     obj_file.open(filepath);
 

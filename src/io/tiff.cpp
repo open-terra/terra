@@ -9,7 +9,7 @@
 
 #include "terra/types/bitmap.hpp"
 
-terra::bitmap terra::io::tiff::load_tiff(const std::string filepath)
+terra::bitmap terra::io::tiff::load_tiff(const std::string& filepath)
 {
     std::ifstream tiff_file;
     tiff_file.open(filepath);
