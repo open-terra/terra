@@ -30,36 +30,41 @@ namespace terra
                               const terra::dynarray<tfloat>& areas,
                               const terra::dynarray<tfloat>& uplifts,
                               terra::dynarray<tfloat>& heights) :
-            k(k), dt(dt), points(&points), flow_graph(&flow_graph),
-            areas(&areas), uplifts(&uplifts), heights(&heights)
+            k(k),
+            dt(dt), points(&points), flow_graph(&flow_graph), areas(&areas),
+            uplifts(&uplifts), heights(&heights)
         {
         }
 
         void update()
         {
-            for (size_t i = heights->size() - 1; i >= 0; --i)
+            const auto& sorted_nodes = this->flow_graph->sorted_nodes;
+            for (auto it = sorted_nodes.crbegin(); it != sorted_nodes.crend(); ++it)
             {
-                const size_t node = this->flow_graph->sorted_nodes[i];
+                const size_t node = this->flow_graph->sorted_nodes[*it];
                 const size_t flow_node = this->flow_graph->flow[node];
-                this->heights->at(node) = this->solve(node, flow_node);
+                if (flow_node != terra::flow_graph::node_lake)
+                {
+                    this->heights->at(node) = this->solve(node, flow_node);
+                }
             }
         }
 
     private:
-        inline tfloat solve(const size_t i,
-                            const size_t j)
+        inline tfloat solve(const size_t i, const size_t j)
         {
             const tfloat hi = this->heights->at(i);
             const tfloat ai = this->areas->at(i);
             const tfloat ui = this->uplifts->at(i);
 
-            const tfloat hj = j == terra::flow_graph::node_lake ? 0.0 : this->heights->at(j);
+            const tfloat hj = this->heights->at(j);
 
-            const tfloat dist = glm::distance(this->points->at(i), this->points->at(j));
-            const tfloat drainage_dist = (this->k * std::pow(ai, this->m)) / dist;
-            return
-                (hi + (this->dt * (ui + (drainage_dist * hj)))) /
-                (1 + (drainage_dist * this->dt));
+            const tfloat dist =
+                glm::distance(this->points->at(i), this->points->at(j));
+            const tfloat drainage_dist =
+                (this->k * std::pow(ai, this->m)) / dist;
+            return (hi + (this->dt * (ui + (drainage_dist * hj)))) /
+                   (1 + (drainage_dist * this->dt));
         }
     };
-}
+} // namespace terra
