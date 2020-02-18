@@ -259,23 +259,23 @@ namespace terra
 //============================================================
 template<typename T>
 terra::dynarray<T>::dynarray(size_type count):
-    m_data{new T[count]},
-    m_size{count}
+    m_data(new T[count]),
+    m_size(count)
 {}
 
 template<typename T>
 template<class Alloc>
 terra::dynarray<T>::dynarray(size_type count, Alloc const& alloc):
-    m_data{alloc.allocate(count)},
-    m_size{count}
+    m_data(alloc.allocate(count)),
+    m_size(count)
 {}
 
 // (2) construct by count and copied value
 //============================================================
 template<typename T>
 terra::dynarray<T>::dynarray(size_type count, T const& value):
-    m_data{new T[count]},
-    m_size{count}
+    m_data(new T[count]),
+    m_size(count)
 {
     std::fill(begin(), end(), value);
 }
@@ -283,8 +283,8 @@ terra::dynarray<T>::dynarray(size_type count, T const& value):
 template<typename T>
 template<class Alloc>
 terra::dynarray<T>::dynarray(size_type count, T const& value, Alloc const& alloc):
-    m_data{alloc.allocate(count)},
-    m_size{count}
+    m_data(alloc.allocate(count)),
+    m_size(count)
 {
     std::fill(begin(), end(), value);
 }
@@ -293,8 +293,8 @@ terra::dynarray<T>::dynarray(size_type count, T const& value, Alloc const& alloc
 //============================================================
 template<typename T>
 terra::dynarray<T>::dynarray(dynarray const& other):
-    m_data{new T[other.size()]},
-    m_size{other.size()}
+    m_data(new T[other.size()]),
+    m_size(other.size())
 {
     std::copy(other.begin(), other.end(), begin());
 }
@@ -302,8 +302,8 @@ terra::dynarray<T>::dynarray(dynarray const& other):
 template<typename T>
 template<class Alloc>
 terra::dynarray<T>::dynarray(dynarray const& other, Alloc const& alloc):
-    m_data{alloc.allocate(other.size())},
-    m_size{other.size()}
+    m_data(alloc.allocate(other.size())),
+    m_size(other.size())
 {
     std::copy(other.begin(), other.end(), begin());
 }
@@ -312,16 +312,16 @@ terra::dynarray<T>::dynarray(dynarray const& other, Alloc const& alloc):
 //============================================================
 template<typename T>
 terra::dynarray<T>::dynarray(dynarray && other):
-    m_data{std::move(other.m_data)},
-    m_size{other.size()}
+    m_data(std::move(other.m_data)),
+    m_size(other.size())
 {}
 
 // (5) construct by initializer list
 //============================================================
 template<typename T>
 terra::dynarray<T>::dynarray(std::initializer_list<T> list):
-    m_data{new T[list.size()]},
-    m_size{list.size()}
+    m_data(new T[list.size()]),
+    m_size(list.size())
 {
     std::copy(list.begin(), list.end(), begin());
 }
@@ -329,8 +329,8 @@ terra::dynarray<T>::dynarray(std::initializer_list<T> list):
 template<typename T>
 template<class Alloc>
 terra::dynarray<T>::dynarray(std::initializer_list<T> list, Alloc const& alloc):
-    m_data{alloc.allocate(list.size())},
-    m_size{list.size()}
+    m_data(alloc.allocate(list.size())),
+    m_size(list.size())
 {
     std::copy(list.begin(), list.end(), begin());
 }
@@ -509,33 +509,33 @@ auto terra::dynarray<T>::cend() const -> const_iterator {
 
 template<typename T>
 auto terra::dynarray<T>::rbegin() -> reverse_iterator {
-    return reverse_iterator{end()};
+    return std::make_reverse_iterator(end());
 }
 
 template<typename T>
 auto terra::dynarray<T>::rbegin() const -> const_reverse_iterator {
-    return reverse_iterator{end()};
+    return std::make_reverse_iterator(end());
 }
 
 template<typename T>
 auto terra::dynarray<T>::crbegin() const -> const_reverse_iterator {
-    return reverse_iterator{cend()};
+    return std::make_reverse_iterator(cend());
 }
 
 
 template<typename T>
 auto terra::dynarray<T>::rend() -> reverse_iterator {
-    return reverse_iterator{begin()};
+    return std::make_reverse_iterator(begin());
 }
 
 template<typename T>
 auto terra::dynarray<T>::rend() const -> const_reverse_iterator {
-    return reverse_iterator{begin()};
+    return std::make_reverse_iterator(begin());
 }
 
 template<typename T>
 auto terra::dynarray<T>::crend() const -> const_reverse_iterator {
-    return reverse_iterator{cbegin()};
+    return std::make_reverse_iterator(cbegin());
 }
 
 #endif // TERRA_DYNARRAY_HPP
