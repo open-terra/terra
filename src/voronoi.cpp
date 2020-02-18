@@ -57,6 +57,8 @@ std::vector<terra::vec2> clip_infinite_edge(
         clipped_edge.push_back(terra::vec2(edge.vertex1()->x(),
                                            edge.vertex1()->y()));
     }
+
+    return clipped_edge;
 }
 
 using namespace terra;
@@ -88,7 +90,7 @@ void voronoi::generate(const std::vector<terra::vec2>& points,
     for (size_t i = 0; i < points.size(); ++i)
     {
         const auto& p = points[i];
-        vpoints[i] = {static_cast<double>(p.x), static_cast<double> (p.y)};
+        vpoints[i] = {static_cast<double>(p.x), static_cast<double>(p.y)};
     }
 
     diagram_t vd;
