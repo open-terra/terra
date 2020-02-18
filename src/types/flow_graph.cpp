@@ -54,7 +54,7 @@ void flow_graph::update_drainage_areas()
 {
     std::fill(this->drainage_areas.begin(), this->drainage_areas.end(), 0.0);
 
-    for (auto node : this->sorted_nodes)
+    for (const auto node : this->sorted_nodes)
     {
         tfloat drainage_area = (*this->areas)[node];
         const tfloat nh = (*this->heights)[node];
@@ -75,7 +75,7 @@ void flow_graph::update_drainage_areas()
 
 void flow_graph::update_flow()
 {
-    for (auto node : this->sorted_nodes)
+    for (const auto node : this->sorted_nodes)
     {
         const tfloat nh = (*this->heights)[node];
 
