@@ -43,10 +43,7 @@ namespace terra
             {
                 const size_t node = this->flow_graph->sorted_nodes[*it];
                 const size_t flow_node = this->flow_graph->flow[node];
-                if (flow_node != terra::flow_graph::node_lake)
-                {
-                    this->heights->at(node) = this->solve(node, flow_node);
-                }
+                this->heights->at(node) = this->solve(node, flow_node);
             }
         }
 
@@ -56,6 +53,11 @@ namespace terra
             const tfloat hi = this->heights->at(i);
             const tfloat ai = this->areas->at(i);
             const tfloat ui = this->uplifts->at(i);
+
+            if (j == terra::flow_graph::node_lake)
+            {
+                return hi + (this->dt * ui);
+            }
 
             const tfloat hj = this->heights->at(j);
 
