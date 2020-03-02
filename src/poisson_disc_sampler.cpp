@@ -14,10 +14,10 @@
 using namespace terra;
 
 poisson_disc_sampler::poisson_disc_sampler() :
-    width(1.0), height(1.0), min_distance(0.0),
+    width(0), height(0), min_distance(0.0),
     engine(std::chrono::system_clock::now().time_since_epoch().count()),
-    distribution(0.0, 1.0), cell_size(0.0), grid_width(0), grid_height(0),
-    points(), grid(), active()
+    distribution(0.0, 1.0),
+    points(), active(), hash_grid(nullptr)
 {
 }
 
@@ -25,23 +25,31 @@ poisson_disc_sampler::~poisson_disc_sampler()
 {
 }
 
-std::vector<terra::vec2> poisson_disc_sampler::sample(tfloat width,
-                                                      tfloat height,
-                                                      tfloat min_distance,
-                                                      size_t max_attempts,
-                                                      terra::vec2 start)
+std::vector<terra::vec2> poisson_disc_sampler::sample
+(
+    size_t width,
+    size_t height,
+    tfloat min_distance,
+    size_t max_attempts,
+    terra::hash_grid* hash_grid,
+    terra::vec2 start
+)
 {
     this->width = width;
     this->height = height;
     this->min_distance = min_distance;
+    if (hash_grid == nullptr)
+    {
+        hash_grid = new terra::hash_grid(width, height, min_distance);
+    }
+    this->hash_grid = hash_grid;
 
-    this->cell_size = min_distance / terra::math::sqrt(2);
-    this->grid_width = std::ceil<size_t>(this->width / cell_size) + 1;
-    this->grid_height = std::ceil<size_t>(this->height / cell_size) + 1;
-
-    size_t grid_size = this->grid_width * this->grid_height;
-    this->points.reserve(grid_size);
-    this->grid.resize(grid_size, grid_empty);
+    // with a area of 50,000 x 50,000 and r = 100.0
+    // there should be ~160,000 points
+    const size_t point_estimate = 0.8 *
+                                  ((width * height) /
+                                  (min_distance * min_distance));
+    this->points.reserve(point_estimate);
 
     // initialise random starting point if one is not passed to the function
     if (start.x == infinity)
@@ -71,13 +79,12 @@ std::vector<terra::vec2> poisson_disc_sampler::sample(tfloat width,
         }
     }
 
-    // shrink then move the vector to clear the data in the class and free
-    // unused memory
+    // shrink the vector so that the excess memory is freed
     this->points.shrink_to_fit();
-    return std::move(this->points);
+    return this->points;
 }
 
-tfloat poisson_disc_sampler::random(float range)
+tfloat poisson_disc_sampler::random(tfloat range)
 {
     return this->distribution(engine) * range;
 }
@@ -100,51 +107,29 @@ bool poisson_disc_sampler::in_area(const terra::vec2& p)
     return p.x > 0 && p.x < this->width && p.y > 0 && p.y < this->height;
 }
 
-void poisson_disc_sampler::set(const terra::vec2& p, const size_t index)
-{
-    size_t x = math::floor<size_t>(p.x / this->cell_size);
-    size_t y = math::floor<size_t>(p.y / this->cell_size);
-
-    this->grid[y * this->grid_width + x] = index;
-}
-
 void poisson_disc_sampler::add(const terra::vec2& p)
 {
     size_t index = this->points.size();
 
     this->active.push(index);
-    this->set(p, index);
+    this->hash_grid->set(p, index);
 
     this->points.push_back(p);
 }
 
 bool poisson_disc_sampler::point_too_close(const terra::vec2& p)
 {
-    size_t x_index = math::floor<size_t>(p.x / this->cell_size);
-    size_t y_index = math::floor<size_t>(p.y / this->cell_size);
-
-    if (this->grid[y_index * this->grid_width + x_index] != grid_empty)
+    if (!this->hash_grid->is_cell_empty(p))
     {
         return true;
     }
 
-    auto min_dist_squared = this->min_distance * this->min_distance;
-    auto min_x = std::max<size_t>(x_index - 2, 0ull);
-    auto min_y = std::max<size_t>(y_index - 2, 0ull);
-    auto max_x = std::min<size_t>(x_index + 2, this->grid_width - 1);
-    auto max_y = std::min<size_t>(y_index + 2, this->grid_height - 1);
-
-    for (auto y = min_y; y <= max_y; ++y)
+    const tfloat min_dist_squared = this->min_distance * this->min_distance;
+    for (const size_t n : this->hash_grid->get_neighbours(p))
     {
-        for (auto x = min_x; x <= max_x; ++x)
+        if (glm::distance2(p, this->points[n]) < min_dist_squared)
         {
-            size_t i = this->grid[y * grid_width + x];
-
-            auto exists = i != grid_empty;
-            if (exists && glm::distance2(p, this->points[i]) < min_dist_squared)
-            {
-                return true;
-            }
+            return true;
         }
     }
 

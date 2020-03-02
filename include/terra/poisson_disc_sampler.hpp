@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base_types.hpp"
+#include "types/hash_grid.hpp"
 #include "types/vec2.hpp"
 
 namespace terra
@@ -75,33 +76,29 @@ namespace terra
     private:
         std::default_random_engine engine;
         std::uniform_real_distribution<tfloat> distribution;
-        tfloat cell_size;
-        size_t grid_width, grid_height;
         std::vector<terra::vec2> points;
-        std::vector<size_t> grid;
         std::stack<size_t> active;
+        terra::hash_grid* hash_grid;
 
     public:
-        constexpr static size_t grid_empty = std::numeric_limits<size_t>::max();
-
         constexpr static tfloat infinity =
             std::numeric_limits<tfloat>::infinity();
 
         poisson_disc_sampler();
         ~poisson_disc_sampler();
 
-        std::vector<terra::vec2> sample(tfloat width,
-                                        tfloat height,
+        std::vector<terra::vec2> sample(size_t width,
+                                        size_t height,
                                         tfloat min_distance,
                                         size_t max_attempts = 30,
+                                        terra::hash_grid* hash_grid = nullptr,
                                         terra::vec2 start = {infinity,
                                                              infinity});
 
     private:
-        tfloat random(float range);
+        tfloat random(tfloat range);
         terra::vec2 point_around(terra::vec2 p);
         bool in_area(const terra::vec2& p);
-        void set(const terra::vec2& p, size_t index);
         void add(const terra::vec2& p);
         bool point_too_close(const terra::vec2& p);
     };

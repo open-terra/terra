@@ -1,82 +1,65 @@
 #include "terra/types/hash_grid.hpp"
 
-#include "terra/math/ceil.hpp"
-#include "terra/math/floor.hpp"
+#include "terra/math.hpp"
 
-using namespace terra;
-
-hash_grid::hash_grid() :
-    grid_size_x(-1), grid_size_y(-1), n(0), bucket_size(0.0), hashtable()
+terra::hash_grid::hash_grid() : cell_size(0.0), grid_width(0), grid_height(0), 
+                                grid(0)
 {
 }
 
-hash_grid::hash_grid(int64_t size_x, int64_t size_y, tfloat radius)
+terra::hash_grid::hash_grid(size_t width, size_t height, tfloat radius) : 
+    cell_size(radius / terra::math::sqrt(2.0)),
+    grid_width(terra::math::ceil<size_t>(width / this->cell_size) + 1),
+    grid_height(terra::math::ceil<size_t>(height / this->cell_size) + 1),
+    grid(this->grid_width * this->grid_height)
 {
-    this->bucket_size = radius * hash_grid::sqrt1_2;
-    this->grid_size_x =
-        math::ceil<int64_t>(static_cast<tfloat>(size_x) / bucket_size);
-    this->grid_size_y =
-        math::ceil<int64_t>(static_cast<tfloat>(size_y) / bucket_size);
-    this->n = math::ceil<int64_t>(radius / this->bucket_size);
-
-    this->hashtable.reserve(this->grid_size_x * this->grid_size_y);
-    std::fill(this->hashtable.begin(), this->hashtable.end(), -1);
 }
 
-constexpr size_t HashPos(const terra::vec2& point,
-                         const tfloat bucket_size,
-                         const int64_t grid_size_x)
+void terra::hash_grid::set(const terra::vec2& p, size_t index)
 {
-    int64_t x = std::max<int64_t>(math::floor<int64_t>(point.x) / bucket_size,
-                                  0);
-    int64_t y = std::max<int64_t>(math::floor<int64_t>(point.y) / bucket_size,
-                                  0);
+    const size_t x = terra::math::floor<size_t>(p.x / this->cell_size);
+    const size_t y = terra::math::floor<size_t>(p.y / this->cell_size);
 
-    return (y * grid_size_x) + x;
+    this->grid[y * this->grid_width + x] = index;
 }
 
-void hash_grid::set(const terra::vec2& point, int64_t index)
+size_t terra::hash_grid::at(const terra::vec2& p) const
 {
-    int64_t hash = HashPos(point, this->bucket_size, this->grid_size_x);
-    if (this->hashtable[hash] > -1)
+    const size_t x = terra::math::floor<size_t>(p.x / this->cell_size);
+    const size_t y = terra::math::floor<size_t>(p.y / this->cell_size);
+
+    return this->grid[y * this->grid_width + x];
+}
+
+bool terra::hash_grid::is_cell_empty(const terra::vec2& p) const
+{
+    return this->at(p) == this->cell_empty;
+}
+
+std::vector<size_t> terra::hash_grid::get_neighbours(const terra::vec2& p) const
+{
+    std::vector<size_t> neighbours;
+
+    const size_t x_index = math::floor<size_t>(p.x / this->cell_size);
+    const size_t y_index = math::floor<size_t>(p.y / this->cell_size);
+
+    const size_t min_x = std::max<size_t>(x_index - 2, 0ull);
+    const size_t min_y = std::max<size_t>(y_index - 2, 0ull);
+    const size_t max_x = std::min<size_t>(x_index + 2, this->grid_width - 1);
+    const size_t max_y = std::min<size_t>(y_index + 2, this->grid_height - 1);
+
+    for (size_t y = min_y; y <= max_y; ++y)
     {
-        throw double_index_error();
-    }
-
-    this->hashtable[hash] = index;
-}
-
-int64_t hash_grid::at(const terra::vec2& point)
-{
-    int64_t hash = HashPos(point, this->bucket_size, this->grid_size_x);
-    return this->hashtable[hash];
-}
-
-std::vector<int64_t> hash_grid::neighbours(const terra::vec2& point)
-{
-    std::vector<int64_t> indexs;
-
-    int64_t x =
-        static_cast<int64_t>(math::floor<tfloat>(point.x) / this->bucket_size);
-    int64_t y =
-        static_cast<int64_t>(math::floor<tfloat>(point.y) / this->bucket_size);
-
-    const int64_t x0 = std::max<int64_t>(x - this->n, 0);
-    const int64_t y0 = std::max<int64_t>(y - this->n, 0);
-    const int64_t x1 = std::min<int64_t>(x + this->n + 1, this->grid_size_x);
-    const int64_t y1 = std::min<int64_t>(y + this->n + 1, this->grid_size_y);
-
-    for (y = y0; y < y1; y++)
-    {
-        for (x = x0; x < x1; x++)
+        const size_t offset = y * this->grid_width;
+        for (size_t x = min_x; x <= max_x; ++x)
         {
-            int64_t index = hashtable[(y * this->grid_size_x) + x];
-            if (index > -1)
+            size_t i = this->grid[offset + x];
+            if (i != this->cell_empty)
             {
-                indexs.push_back(index);
+                neighbours.push_back(i);
             }
         }
     }
 
-    return indexs;
+    return neighbours;
 }
