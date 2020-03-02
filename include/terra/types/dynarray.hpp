@@ -34,6 +34,7 @@
 // headers used by definition site
 #include <algorithm>
 #include <stdexcept>
+#include <string>
 
 //============================================================
 // DECLARATION
