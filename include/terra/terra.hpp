@@ -24,7 +24,7 @@
 #include "types/vec2.hpp"
 #include "types/vec3.hpp"
 
-#include "delaunator.hpp"
+#include "delaunay.hpp"
 #include "poisson_disc_sampler.hpp"
 #include "slope.hpp"
 #include "stream_power_equation.hpp"

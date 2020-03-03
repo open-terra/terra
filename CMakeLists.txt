@@ -32,8 +32,6 @@ if(TERRA_USE_OPENCL)
     find_package(OpenCL REQUIRED)
 endif()
 
-# Boost Polygon for Voronoi
-
 # Libtiff
 find_path(LIBTIFF_INCLUDE_DIR tiff.h)
 find_library(LIBTIFF_LIB tiff)
@@ -64,7 +62,7 @@ set(TERRA_SOURCES
     src/types/bitmap.cpp
     src/types/flow_graph.cpp
     src/types/hash_grid.cpp
-    src/delaunator.cpp
+    src/delaunay.cpp
     src/poisson_disc_sampler.cpp
     src/uplift.cpp
     src/voronoi.cpp
