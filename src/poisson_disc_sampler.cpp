@@ -31,18 +31,19 @@ std::vector<terra::vec2> poisson_disc_sampler::sample
     size_t height,
     tfloat min_distance,
     size_t max_attempts,
-    terra::hash_grid* hash_grid,
+    terra::hash_grid** hash_grid,
     terra::vec2 start
 )
 {
     this->width = width;
     this->height = height;
     this->min_distance = min_distance;
-    if (hash_grid == nullptr)
+
+    this->hash_grid = new terra::hash_grid(width, height, min_distance);
+    if (hash_grid != nullptr)
     {
-        hash_grid = new terra::hash_grid(width, height, min_distance);
+        *hash_grid = this->hash_grid;
     }
-    this->hash_grid = hash_grid;
 
     // with a area of 50,000 x 50,000 and r = 100.0
     // there should be ~160,000 points
@@ -68,7 +69,7 @@ std::vector<terra::vec2> poisson_disc_sampler::sample
         auto point = this->points[this->active.top()];
         this->active.pop();
 
-        for (size_t i = 0; i != max_attempts; ++i)
+        for (size_t i = 0; i < max_attempts; ++i)
         {
             auto p = this->point_around(point);
 

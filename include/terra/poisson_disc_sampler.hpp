@@ -91,7 +91,7 @@ namespace terra
                                         size_t height,
                                         tfloat min_distance,
                                         size_t max_attempts = 30,
-                                        terra::hash_grid* hash_grid = nullptr,
+                                        terra::hash_grid** hash_grid = nullptr,
                                         terra::vec2 start = {infinity,
                                                              infinity});
 
