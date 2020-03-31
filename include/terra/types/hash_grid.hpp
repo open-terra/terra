@@ -11,14 +11,11 @@ namespace terra
 {
     class hash_grid
     {
-        constexpr static size_t cell_empty = std::numeric_limits<size_t>::max();
-
         class double_index_error : public std::exception
         {
             virtual const char* what() const throw()
             {
-                return "A value already exists at this location in the "
-                       "hashtable";
+                return "A value already exists at this location";
             }
         };
 
@@ -30,6 +27,8 @@ namespace terra
         terra::dynarray<size_t> grid;
 
     public:
+        constexpr static size_t cell_empty = std::numeric_limits<size_t>::max();
+
         hash_grid();
         hash_grid(size_t width, size_t height, tfloat radius);
 
@@ -38,6 +37,6 @@ namespace terra
 
         bool is_cell_empty(const terra::vec2& p) const;
 
-        std::vector<size_t> get_neighbours(const terra::vec2& p) const;
+        std::vector<size_t> get_neighbours(const terra::vec2& p, const size_t n = 2) const;
     };
 } // namespace terra
