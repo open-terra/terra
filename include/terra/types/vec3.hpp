@@ -17,4 +17,15 @@ namespace terra
         l = r;
         r = c;
     }
+
+    constexpr terra::vec3 make_vec3(tfloat x, tfloat y, tfloat z)
+    {
+        return terra::vec3(x, y, z);
+    }
+
+    template<class T>
+    constexpr terra::vec3 make_vec3(const T& p, tfloat z)
+    {
+        return terra::vec3(p.x, p.y, z);
+    }
 } // namespace terra
