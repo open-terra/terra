@@ -19,14 +19,13 @@ namespace terra
             }
         };
 
-        const tfloat sqrt1_2 = 0.7071067811865476;
-
         tfloat cell_size;
         size_t grid_width, grid_height;
 
         terra::dynarray<size_t> grid;
 
     public:
+        constexpr static tfloat sqrt1_2 = 0.7071067811865476;
         constexpr static size_t cell_empty = std::numeric_limits<size_t>::max();
 
         hash_grid();
