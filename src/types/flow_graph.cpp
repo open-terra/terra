@@ -30,6 +30,11 @@ void flow_graph::update()
     this->update_drainage_areas();
 }
 
+const terra::undirected_graph& flow_graph::get_graph() const
+{
+    return *(this->graph);
+}
+
 struct compare
 {
     const terra::dynarray<tfloat>* heights;

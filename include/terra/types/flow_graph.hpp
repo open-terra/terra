@@ -35,6 +35,8 @@ namespace terra
 
         void update();
 
+        const terra::undirected_graph& get_graph() const;
+
     private:
         // TODO make flow graph decisions template? needs to be more dynamic,
         // because will allow for multiple methods for flow calculation, for

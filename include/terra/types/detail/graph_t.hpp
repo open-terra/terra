@@ -33,6 +33,7 @@ namespace terra::detail
             this->add_triangle({v0, v1, v2});
         }
 
+        std::list<size_t>& get_node(size_t i) const;
         std::vector<size_t> get_connected(size_t i) const;
 
         size_t num_edges() const;
@@ -91,6 +92,12 @@ namespace terra::detail
         this->add_edge({tri.v0, tri.v1});
         this->add_edge({tri.v1, tri.v2});
         this->add_edge({tri.v2, tri.v0});
+    }
+
+    template<graph_type T>
+    std::list<size_t>& graph_t<T>::get_node(size_t i) const
+    {
+        return this->nodes[i];
     }
 
     template<graph_type T>
