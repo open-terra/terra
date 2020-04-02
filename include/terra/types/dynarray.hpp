@@ -84,6 +84,7 @@ namespace terra
 
     // (1) construct by count
     //============================================================
+        dynarray();
         explicit dynarray(size_type count);
 
         template<class Alloc>
@@ -258,6 +259,11 @@ namespace terra
 
 // (1) construct by count
 //============================================================
+template<typename T>
+terra::dynarray<T>::dynarray() :
+    m_data(nullptr), m_size(0)
+{}
+
 template<typename T>
 terra::dynarray<T>::dynarray(size_type count):
     m_data(new T[count]),
