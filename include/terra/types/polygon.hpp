@@ -34,7 +34,7 @@ namespace terra
                 const auto& v0 = this->vertices[i - 1];
                 const auto& v1 = this->vertices[i];
 
-                area += area_of_tri(centre, v0, v1);
+                area += terra::triangle::area(centre, v0, v1);
             }
 
             return area;
