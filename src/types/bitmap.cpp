@@ -11,7 +11,7 @@ terra::bitmap::bitmap(size_t width,
                       size_t bits_per_sample,
                       size_t samples_per_pixel,
                       size_t num_pixels,
-                      terra::dynarray<uint8_t>& raster) : 
+                      terra::dynarray<uint8_t>& raster) :
     m_width(width), m_height(height), m_bits_per_sample(bits_per_sample),
     m_samples_per_pixel(samples_per_pixel), m_num_pixels(num_pixels),
     m_raster(std::move(raster))

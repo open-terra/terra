@@ -6,6 +6,12 @@
 
 namespace terra
 {
+    struct rgb_t
+    {
+    public:
+        uint8_t red, green, blue;
+    };
+
     struct argb_t
     {
     public:
@@ -40,10 +46,11 @@ namespace terra
                size_t num_pixels,
                terra::dynarray<uint8_t>& raster);
 
-        inline size_t width() const;
-        inline size_t height() const;
-        inline size_t bits_per_sample() const;
-        inline size_t samples_per_pixel() const;
+        inline size_t get_width() const;
+        inline size_t get_height() const;
+        inline size_t get_bits_per_sample() const;
+        inline size_t get_samples_per_pixel() const;
+        inline size_t get_num_pixels() const;
         inline size_t size() const;
 
         template<typename T = uint8_t>
@@ -53,25 +60,29 @@ namespace terra
     };
 }
 
-inline size_t terra::bitmap::width() const
+inline size_t terra::bitmap::get_width() const
 {
     return this->m_width;
 }
-inline size_t terra::bitmap::height() const
+inline size_t terra::bitmap::get_height() const
 {
     return this->m_height;
 }
-inline size_t terra::bitmap::bits_per_sample() const
+inline size_t terra::bitmap::get_bits_per_sample() const
 {
     return this->m_bits_per_sample;
 }
-inline size_t terra::bitmap::samples_per_pixel() const
+inline size_t terra::bitmap::get_samples_per_pixel() const
 {
     return this->m_samples_per_pixel;
 }
-inline size_t terra::bitmap::size() const
+inline size_t terra::bitmap::get_num_pixels() const
 {
     return this->m_num_pixels;
+}
+inline size_t terra::bitmap::size() const
+{
+    return this->m_num_pixels * this->m_samples_per_pixel;
 }
 
 template<typename T>

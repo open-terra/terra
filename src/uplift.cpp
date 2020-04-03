@@ -7,10 +7,10 @@
 using namespace terra;
 
 bitmap_uplift::bitmap_uplift(const terra::bitmap& bitmap) : 
-    width(bitmap.width()), raster(bitmap.size())
+    width(bitmap.get_width()), raster(bitmap.size())
 {
     const uint8_t* raster_view = bitmap.get();
-    std::copy(raster_view, raster_view + bitmap.size(), raster.begin());
+    std::copy(raster_view, raster_view + bitmap.size(), raster.data());
 }
 
 tfloat bitmap_uplift::at(const terra::vec2& p) const
