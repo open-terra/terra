@@ -1,3 +1,6 @@
+add_executable(terra_hydraulic examples/hydraulic_erosion.cpp)
+target_link_libraries(terra_hydraulic PRIVATE Terra)
+
 add_executable(terra_noise examples/noise.cpp)
 target_link_libraries(terra_noise PRIVATE Terra)
 

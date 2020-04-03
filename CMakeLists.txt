@@ -59,6 +59,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 set(TERRA_SOURCES
+    src/erosion/hydraulic_graph.cpp
+    src/erosion/hydraulic_grid.cpp
     src/io/image.cpp
     src/io/tiff.cpp
     src/io/wavefront_obj.cpp

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "terra_config.hpp"
-
 #include "base_types.hpp"
 
 #include "math.hpp"
+
+#include "erosion/hydraulic_graph.hpp"
 
 #include "io/image.hpp"
 #include "io/tiff.hpp"
