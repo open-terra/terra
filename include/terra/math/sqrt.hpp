@@ -10,7 +10,7 @@ namespace terra::math
     {
         return curr == prev
                    ? curr
-                   : _sqrt_newton_raphson(x, 0.5 * (curr + x / curr), curr);
+                   : _sqrt_newton_raphson(x, static_cast<tfloat>(0.5) * (curr + x / curr), curr);
     }
 
     // Constant expresion square root implementation

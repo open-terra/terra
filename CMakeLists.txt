@@ -59,8 +59,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 set(TERRA_SOURCES
+    src/io/image.cpp
     src/io/tiff.cpp
     src/io/wavefront_obj.cpp
+    src/stb/stb_impl.cpp
     src/types/bitmap.cpp
     src/types/flow_graph.cpp
     src/types/hash_grid.cpp
@@ -106,6 +108,10 @@ endif()
 target_link_libraries(Terra PUBLIC
     ${TERRA_LINK_LIBS}
 )
+
+if(BUILD_EXAMPLES)
+    include(examples/examples.cmake)
+endif()
 
 if(BUILD_TESTING)
     include(test/tests.cmake)
