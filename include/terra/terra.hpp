@@ -6,6 +6,7 @@
 
 #include "math.hpp"
 
+#include "io/image.hpp"
 #include "io/tiff.hpp"
 #include "io/wavefront_obj.hpp"
 
@@ -24,8 +25,10 @@
 #include "types/vec2.hpp"
 #include "types/vec3.hpp"
 
+#include "coloriser.hpp"
 #include "delaunator.hpp"
 #include "poisson_disc_sampler.hpp"
+#include "rasteriser.hpp"
 #include "slope.hpp"
 #include "stream_power_equation.hpp"
 #include "uplift.hpp"

@@ -9,10 +9,10 @@
 
 #include "terra/types/bitmap.hpp"
 
-terra::bitmap terra::io::tiff::load_tiff(const std::string& filepath)
+terra::bitmap terra::io::tiff::load_tiff(const std::string_view& filepath)
 {
     std::ifstream tiff_file;
-    tiff_file.open(filepath);
+    tiff_file.open(filepath.data());
 
     TIFF* tiff = TIFFStreamOpen("", &tiff_file);
     if (tiff)
@@ -37,13 +37,13 @@ terra::bitmap terra::io::tiff::load_tiff(const std::string& filepath)
         }
         else
         {
-            uint32_t scanline = TIFFScanlineSize(tiff);
+            tmsize_t scanline = TIFFScanlineSize(tiff);
             terra::dynarray<uint8_t> buffer(scanline);
-            for (size_t sample = 0; sample < spp; ++sample)
+            for (uint16_t sample = 0; sample < spp; ++sample)
             {
-                for (size_t row = 0; row < h; ++row)
+                for (uint32_t row = 0; row < h; ++row)
                 {
-                    TIFFReadScanline(tiff, buffer.data(), row);
+                    TIFFReadScanline(tiff, buffer.data(), row, sample);
                     if (bps == 8)
                     {
                         for (size_t col = 0; col < w; ++w)
