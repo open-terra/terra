@@ -3,6 +3,7 @@
 int main(int argc, char** argv)
 {
     terra::noise::ridged_noise source(2552);
+    source.set_octaves(8);
     auto noise = source.noise(23, 5, 2552, 512, 512, 1, 0.5);
 
     auto colors_bitmap = terra::io::load_image("resources/terrain_colors.png");

@@ -53,5 +53,10 @@ namespace terra::noise
 
             return noise_set;
         }
+
+        void set_octaves(size_t i)
+        {
+            this->noise_source->SetFractalOctaves(static_cast<int>(i));
+        }
     };
 } // namespace terra::noise
