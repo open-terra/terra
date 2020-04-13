@@ -46,16 +46,16 @@ tfloat terra::linear_uplift::at(const terra::vec2& p) const
     tfloat uplift = this->min;
     switch(this->orientation)
     {
-        case terra::linear_uplift::orient::up:
+        case terra::linear_uplift::orient::north:
             uplift += this->diff * (p.y / height);
             break;
-        case terra::linear_uplift::orient::down:
+        case terra::linear_uplift::orient::south:
             uplift += this->diff * (1.0f - (p.y / height));
             break;
-        case terra::linear_uplift::orient::left:
+        case terra::linear_uplift::orient::east:
             uplift += this->diff * (p.x / width);
             break;
-        case terra::linear_uplift::orient::right:
+        case terra::linear_uplift::orient::west:
             uplift += this->diff * (1.0f - (p.x / width));
             break;
     }

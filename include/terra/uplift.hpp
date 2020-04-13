@@ -47,10 +47,10 @@ namespace terra
     {
         enum struct orient : int8_t
         {
-            up = 0,
-            down,
-            left,
-            right
+            north = 0,
+            east,
+            south,
+            west
         };
 
         orient orientation;
@@ -61,7 +61,7 @@ namespace terra
                       size_t height,
                       tfloat min,
                       tfloat max,
-                      orient orientation = orient::left);
+                      orient orientation = orient::east);
 
         tfloat at(const terra::vec2& p) const;
     };
