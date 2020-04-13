@@ -17,8 +17,7 @@ namespace terra::detail
         typedef graph_edge_t<T> edge;
 
         graph_t();
-        graph_t(size_t vertex_count, size_t max_edges);
-        template<class Array = terra::dynarray<terra::triangle>>
+        template<class Array>
         graph_t(size_t node_count, const Array& triangles);
 
         void add_edge(const edge& edge);
@@ -33,45 +32,40 @@ namespace terra::detail
             this->add_triangle({v0, v1, v2});
         }
 
-        std::list<size_t>& get_node(size_t i) const;
+        edge& get_edge(size_t i);
+        const edge& get_edge(size_t i) const;
+        std::list<size_t>& get_node(size_t i);
+        const std::list<size_t>& get_node(size_t i) const;
         std::vector<size_t> get_connected(size_t i) const;
 
         size_t num_edges() const;
 
     private:
-        std::vector<std::list<size_t>> nodes;
-        std::vector<edge> edges;
+        terra::dynarray<std::list<size_t>> m_nodes;
+        std::vector<edge> m_edges;
 
         bool is_edge_duplicate(const edge& edge) const;
     };
 
     template<graph_type T>
-    graph_t<T>::graph_t() : nodes(), edges()
+    graph_t<T>::graph_t() : m_nodes(0), m_edges()
     {
-    }
-
-    template<graph_type T>
-    graph_t<T>::graph_t(size_t vertex_count, size_t max_edges) :
-        nodes(vertex_count), edges()
-    {
-        // TODO still need to free this memory later on somewhere
-        this->edges.reserve(max_edges);
     }
 
     template<graph_type T>
     template<class Array>
     graph_t<T>::graph_t(size_t node_count,
                         const Array& triangles) :
-        nodes(node_count), edges()
+        m_nodes(node_count), m_edges()
     {
-        this->edges.reserve(triangles.size());
+        this->m_edges.reserve(triangles.size());
 
         for (const terra::triangle& tri : triangles)
         {
             this->add_triangle(tri);
         }
 
-        this->edges.shrink_to_fit();
+        this->m_edges.shrink_to_fit();
     }
 
     template<graph_type T>
@@ -79,10 +73,10 @@ namespace terra::detail
     {
         if (edge.v0 != edge.v1 && !(this->is_edge_duplicate(edge)))
         {
-            const size_t edge_count = this->edges.size();
-            this->nodes[edge.v0].push_back(edge_count);
-            this->nodes[edge.v1].push_back(edge_count);
-            this->edges.push_back(edge);
+            const size_t edge_count = this->m_edges.size();
+            this->m_nodes[edge.v0].push_back(edge_count);
+            this->m_nodes[edge.v1].push_back(edge_count);
+            this->m_edges.push_back(edge);
         }
     }
 
@@ -95,20 +89,38 @@ namespace terra::detail
     }
 
     template<graph_type T>
-    std::list<size_t>& graph_t<T>::get_node(size_t i) const
+    graph_edge_t<T>& graph_t<T>::get_edge(size_t i)
     {
-        return this->nodes[i];
+        return this->m_edges[i];
+    }
+
+    template<graph_type T>
+    const graph_edge_t<T>& graph_t<T>::get_edge(size_t i) const
+    {
+        return this->m_edges[i];
+    }
+
+    template<graph_type T>
+    std::list<size_t>& graph_t<T>::get_node(size_t i)
+    {
+        return this->m_nodes[i];
+    }
+
+    template<graph_type T>
+    const std::list<size_t>& graph_t<T>::get_node(size_t i) const
+    {
+        return this->m_nodes[i];
     }
 
     template<graph_type T>
     std::vector<size_t> graph_t<T>::get_connected(size_t i) const
     {
         std::vector<size_t> connected;
-        connected.reserve(this->nodes[i].size());
+        connected.reserve(this->m_nodes[i].size());
 
-        for (const auto iedge : this->nodes[i])
+        for (const auto iedge : this->m_nodes[i])
         {
-            const auto& edge = this->edges[iedge];
+            const auto& edge = this->m_edges[iedge];
             size_t con_node = edge.v0 == i ? edge.v1 : edge.v0;
             connected.push_back(con_node);
         }
@@ -119,15 +131,15 @@ namespace terra::detail
     template<graph_type T>
     size_t graph_t<T>::num_edges() const
     {
-        return this->edges.size();
+        return this->m_edges.size();
     }
 
     template<graph_type T>
     bool graph_t<T>::is_edge_duplicate(const graph_t<T>::edge& edge) const
     {
-        for (const auto iedge : this->nodes[edge.v0])
+        for (const auto iedge : this->m_nodes[edge.v0])
         {
-            const auto& e = this->edges[iedge];
+            const auto& e = this->m_edges[iedge];
             if (e == edge)
             {
                 return true;
