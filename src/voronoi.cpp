@@ -29,7 +29,7 @@ std::vector<terra::vec2> clip_infinite_edge(
     direction.x = p0.y - p1.y;
     direction.y = p1.x - p0.x;
 
-    double side = bounds.x1 - bounds.x0;
+    double side = static_cast<double>(bounds.x1) - bounds.x0;
     double koef = side / std::max(terra::math::abs(direction.x), terra::math::abs(direction.y));
     if (edge.vertex0() == NULL)
     {
