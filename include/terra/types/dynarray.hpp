@@ -185,8 +185,11 @@ namespace terra
         /// Returns `true` if this dynarray is empty and `false` otherwise.
         auto empty() const -> bool;
 
-        /// Returns the count of elements in this dynarray.
+        /// Returns the number of elements.
         auto size() const -> size_type;
+
+        /// Returns the maximum possible number of elements .
+        auto max_size() const -> size_type;
 
     //============================================================
     // Mutate API
@@ -194,6 +197,9 @@ namespace terra
 
         /// Fills this dynarray with elements equal to the specified \value.
         void fill(T const& value);
+
+        /// Exchanges the contents of the container with those of other. Does not cause iterators and references to associate with the other container. 
+        void swap(terra::dynarray<T>& other);
 
     //============================================================
     // Iterator API
@@ -469,6 +475,11 @@ auto terra::dynarray<T>::size() const -> size_type {
     return m_size;
 }
 
+template<typename T>
+auto terra::dynarray<T>::max_size() const -> size_type {
+    return std::numeric_limits<size_t>::max();
+}
+
 //============================================================
 // Mutate API
 //============================================================
@@ -476,6 +487,12 @@ auto terra::dynarray<T>::size() const -> size_type {
 template<typename T>
 void terra::dynarray<T>::fill(T const& value) {
     std::fill(begin(), end(), value);
+}
+
+template<typename T>
+void terra::dynarray<T>::swap(terra::dynarray<T>& other) {
+    std::swap(this->m_data, other.m_data);
+    std::swap(this->m_size, other.m_size);
 }
 
 //============================================================
