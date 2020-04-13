@@ -9,6 +9,7 @@
 #include <glm/gtx/norm.hpp>
 
 #include "terra/math/floor.hpp"
+#include "terra/math/pi.hpp"
 #include "terra/math/sqrt.hpp"
 
 using namespace terra;
@@ -92,10 +93,8 @@ tfloat poisson_disc_sampler::random(tfloat range)
 
 terra::vec2 poisson_disc_sampler::point_around(terra::vec2 p)
 {
-    constexpr tfloat PI = 3.141592653589793238462643383279502884;
-
     auto radius = this->min_distance * std::sqrt(this->random(3) + 1);
-    auto angle = this->random(2 * PI);
+    auto angle = this->random(2 * terra::math::PI);
 
     p.x += std::cos(angle) * radius;
     p.y += std::sin(angle) * radius;
