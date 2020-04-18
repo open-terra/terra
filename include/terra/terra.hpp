@@ -32,5 +32,6 @@
 #include "rasteriser.hpp"
 #include "slope.hpp"
 #include "stream_power_equation.hpp"
+#include "thermal_erosion.hpp"
 #include "uplift.hpp"
 #include "voronoi.hpp"
