@@ -8,7 +8,7 @@
 #include "base_types.hpp"
 #include "math/radian.hpp"
 #include "types/dynarray.hpp"
-#include "types/flow_graph.hpp"
+#include "types/undirected_graph.hpp"
 #include "types/vec2.hpp"
 #include "utils/enumerate.hpp"
 #include "utils/reverse.hpp"
@@ -21,14 +21,14 @@ namespace terra
         thermal_erosion();
         thermal_erosion(const std::vector<terra::vec2>& points,
                         terra::dynarray<tfloat>& heights,
-                        const terra::flow_graph& graph,
+                        const terra::undirected_graph& graph,
                         tfloat talus_angle = 40.0);
 
         void update();
     private:
         const std::vector<terra::vec2>* m_points;
         terra::dynarray<tfloat>* m_heights;
-        const terra::flow_graph* m_flow_graph;
+        const terra::undirected_graph* m_graph;
         tfloat m_talus_slope;
     };
 }
@@ -36,26 +36,24 @@ namespace terra
 terra::thermal_erosion::thermal_erosion() :
     m_points(nullptr),
     m_heights(nullptr),
-    m_flow_graph(nullptr),
+    m_graph(nullptr),
     m_talus_slope(0.0)
 {
 }
 
 terra::thermal_erosion::thermal_erosion(const std::vector<terra::vec2>& points,
                                         terra::dynarray<tfloat>& heights,
-                                        const terra::flow_graph& graph,
+                                        const terra::undirected_graph& graph,
                                         tfloat talus_angle) :
     m_points(&points),
     m_heights(&heights),
-    m_flow_graph(&graph),
+    m_graph(&graph),
     m_talus_slope(std::tan(terra::math::to_radian(talus_angle)))
 {
 }
 
 void terra::thermal_erosion::update()
 {
-    const auto& graph = this->m_flow_graph->get_graph();
-
     bool changed = true;
     while (changed)
     {
@@ -63,7 +61,7 @@ void terra::thermal_erosion::update()
 
         // iterate through the graph from highest -> lowest nodes, this should
         // allow for the
-        for (auto i : terra::utils::reverse(this->m_flow_graph->sorted_nodes))
+        for (size_t i = 0; i < this->m_points->size(); ++i)
         {
             const auto ih = this->m_heights->at(i);
 
@@ -71,7 +69,7 @@ void terra::thermal_erosion::update()
             tfloat mdh = 0.0;
             std::list<std::tuple<size_t, tfloat>> deposition_nodes;
 
-            for (auto j : graph.get_connected(i))
+            for (auto j : this->m_graph->get_connected(i))
             {
                 const auto jh = this->m_heights->at(j);
                 const auto dh = ih - jh; // delta height
