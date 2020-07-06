@@ -14,7 +14,8 @@ namespace terra
     class flow_graph
     {
     public:
-        static constexpr size_t node_lake = std::numeric_limits<size_t>::max();
+        static constexpr size_t node_lake = std::numeric_limits<size_t>::max() - 1ull;
+        static constexpr size_t node_external = std::numeric_limits<size_t>::max();
 
         terra::dynarray<size_t> flow;
         std::list<size_t> lakes;
@@ -38,11 +39,8 @@ namespace terra
         const terra::undirected_graph& get_graph() const;
 
     private:
-        // TODO make flow graph decisions template? needs to be more dynamic,
-        // because will allow for multiple methods for flow calculation, for
-        // example height & surface hardness, height, shrubs, trees & surface
-        // etc. Also shall clean up this class from having as many pointers,
-        // out of the object.
+        void init_sort_nodes();
+        void init_flow();
 
         void update_sort_nodes();
         void update_drainage_areas();

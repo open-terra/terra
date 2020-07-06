@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "terra/utils/reverse.hpp"
+
 using namespace terra;
 
 flow_graph::flow_graph() :
@@ -14,13 +16,11 @@ flow_graph::flow_graph(size_t node_count,
                        const terra::undirected_graph& graph,
                        const terra::dynarray<tfloat>& areas,
                        const terra::dynarray<tfloat>& heights) :
-    drainage_areas(node_count), flow(node_count), lakes(), 
+    flow(node_count), lakes(), drainage_areas(node_count),
     sorted_nodes(node_count), graph(&graph), areas(&areas), heights(&heights)
 {
-    for (size_t i = 0; i < node_count; ++i)
-    {
-        sorted_nodes[i] = i;
-    }
+    this->init_sort_nodes();
+    this->init_flow();
 }
 
 void flow_graph::update()
@@ -35,14 +35,46 @@ const terra::undirected_graph& flow_graph::get_graph() const
     return *(this->graph);
 }
 
+void flow_graph::init_sort_nodes()
+{
+    for (size_t i = 0; i < this->sorted_nodes.size(); ++i)
+    {
+        sorted_nodes[i] = i;
+    }
+}
+
+void flow_graph::init_flow()
+{
+    std::fill(this->flow.begin(), this->flow.end(), this->node_lake);
+
+    terra::dynarray<uint8_t> edge_table(this->graph->num_edges());
+    for (size_t i = 0; i < this->heights->size(); ++i)
+    {
+        for (const auto e : this->graph->get_node(i))
+        {
+            ++edge_table[e];
+        }
+    }
+
+    for (size_t i = 0; i < edge_table.size(); ++i)
+    {
+        if (edge_table[i] < 2)
+        {
+            const auto& e = this->graph->get_edge(i);
+            this->flow[e.v0] = this->node_external;
+            this->flow[e.v1] = this->node_external;
+        }
+    }
+}
+
 struct compare
 {
     const terra::dynarray<tfloat>* heights;
 
     bool operator()(const size_t i, const size_t j)
     {
-        const tfloat ih = (*this->heights)[i];
-        const tfloat jh = (*this->heights)[j];
+        const auto ih = this->heights->at(i);
+        const auto jh = this->heights->at(j);
 
         return ih < jh;
     }
@@ -59,7 +91,7 @@ void flow_graph::update_drainage_areas()
 {
     std::fill(this->drainage_areas.begin(), this->drainage_areas.end(), 0.0);
 
-    for (const auto node : this->sorted_nodes)
+    for (const auto node : terra::utils::reverse(this->sorted_nodes))
     {
         tfloat drainage_area = this->areas->at(node);
         const tfloat nh = this->heights->at(node);
@@ -67,7 +99,6 @@ void flow_graph::update_drainage_areas()
         for (const auto con_node : this->graph->get_connected(node))
         {
             const tfloat ch = this->heights->at(con_node);
-
             if (ch > nh)
             {
                 drainage_area += this->drainage_areas[con_node];
@@ -80,12 +111,17 @@ void flow_graph::update_drainage_areas()
 
 void flow_graph::update_flow()
 {
-    for (const auto node : this->sorted_nodes)
+    for (size_t i = 0; i < this->flow.size(); ++i)
     {
-        const tfloat nh = this->heights->at(node);
+        if (this->flow[i] == this->node_external)
+        {
+            continue;
+        }
+
+        const tfloat nh = this->heights->at(i);
         auto min_node = std::make_pair(flow_graph::node_lake, nh);
 
-        for (const auto con_node : this->graph->get_connected(node))
+        for (const auto con_node : this->graph->get_connected(i))
         {
             const tfloat con_height = this->heights->at(con_node);
             if (con_height < min_node.second)
@@ -96,9 +132,9 @@ void flow_graph::update_flow()
 
         if (min_node.first == flow_graph::node_lake)
         {
-            this->lakes.push_back(min_node.first);
+            this->lakes.push_back(i);
         }
 
-        this->flow[node] = min_node.first;
+        this->flow[i] = min_node.first;
     }
 }
