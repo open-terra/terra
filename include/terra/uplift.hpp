@@ -1,12 +1,11 @@
 #pragma once
 
-#include "terra_config.hpp"
+#include <span>
 
-#include <vector>
+#include "terra_config.hpp"
 
 #include "base_types.hpp"
 #include "types/bitmap.hpp"
-#include "types/dynarray.hpp"
 #include "types/vec2.hpp"
 
 namespace terra
@@ -68,15 +67,15 @@ namespace terra
         terra::dynarray<tfloat> uplifts;
 
     private:
-        const std::vector<terra::vec2>* points;
-        terra::dynarray<tfloat>* heights;
+        const std::span<terra::vec2>* points;
+        std::span<tfloat>* heights;
 
     public:
         uplift();
         template<typename UpliftFunc>
         uplift(const UpliftFunc& uplift_func,
-               const std::vector<terra::vec2>& points,
-               terra::dynarray<tfloat>& heights,
+               const std::span<terra::vec2>& points,
+               std::span<tfloat>& heights,
                tfloat factor);
 
         void update();
@@ -103,8 +102,8 @@ terra::noise_uplift::noise_uplift(const T& noise,
 
 template<typename UpliftFunc>
 terra::uplift::uplift(const UpliftFunc& uplift_func,
-                      const std::vector<terra::vec2>& points,
-                      terra::dynarray<tfloat>& heights,
+                      const std::span<terra::vec2>& points,
+                      std::span<tfloat>& heights,
                       tfloat factor) :
     factor(factor), uplifts(points.size()), points(&points), heights(&heights)
 {

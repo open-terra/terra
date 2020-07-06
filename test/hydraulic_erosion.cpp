@@ -64,7 +64,8 @@ TEST_CASE("can simulate hydraulic erosion", "[delaunator]")
     }
 
     terra::undirected_graph graph(points.size(), tris);
-    terra::erosion::hydraulic_graph e(points, *hash_grid.get(), tris, heights, 1337);
+    terra::erosion::hydraulic_graph e(
+        std::span(points), *hash_grid.get(), tris, std::span(heights), 1337);
     e.erode(1024, terra::rect<tfloat>(1.0, 1.0, 511.0, 511.0));
 
     bool valid = true;

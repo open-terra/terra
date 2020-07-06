@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <utility>
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -21,7 +22,7 @@ namespace terra::erosion
     public:
         hydraulic_grid(size_t width,
                        size_t height,
-                       terra::dynarray<tfloat>& heights,
+                       std::span<tfloat>& heights,
                        hydraulic_config config);
 
         void erode(size_t droplets, const terra::rect<tfloat>& bounds);
@@ -31,7 +32,7 @@ namespace terra::erosion
     private:
         size_t width, height;
         terra::dynarray<terra::dynarray<std::pair<size_t, tfloat>>> m_weights;
-        terra::dynarray<tfloat>* m_heights;
+        std::span<tfloat>* m_heights;
 
         std::tuple<size_t, size_t> droplet_node(const terra::vec2& p);
         std::tuple<size_t, size_t, size_t, size_t>droplet_nodes(const terra::vec2& p, size_t x, size_t y);

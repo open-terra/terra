@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <span>
 
 #include "types/bitmap.hpp"
 #include "types/dynarray.hpp"
@@ -10,12 +11,12 @@ namespace terra
     class coloriser
     {
     public:
-        coloriser();
+        inline coloriser();
 
         template<class T>
-        terra::bitmap raster(size_t x, size_t y,
+        inline terra::bitmap raster(size_t x, size_t y,
                              T min, T max,
-                             const terra::dynarray<T>& data,
+                             const std::span<T>& data,
                              const terra::rgb_t* colors);
     };
 }
@@ -27,7 +28,7 @@ terra::coloriser::coloriser()
 template<class T>
 terra::bitmap terra::coloriser::raster(size_t x, size_t y,
                                        T min, T max,
-                                       const terra::dynarray<T>& data,
+                                       const std::span<T>& data,
                                        const terra::rgb_t* colors)
 {
     const T diff = max - min;

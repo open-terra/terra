@@ -4,9 +4,8 @@
 
 namespace terra::math
 {
-    template<typename T>
-    constexpr T lerp(T a, T b, T w)
+    constexpr tfloat lerp(tfloat a, tfloat b, tfloat w)
     {
-        return (a * (static_cast<T>(1) - w)) + (b * w);
+        return (a * (static_cast<tfloat>(1) - w)) + (b * w);
     }
 } // namespace terra::math

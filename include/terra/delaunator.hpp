@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <span>
 #include <vector>
 
 #include "base_types.hpp"

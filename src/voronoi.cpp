@@ -6,13 +6,14 @@
 #include "boost/polygon/voronoi.hpp"
 
 #include "terra/math/abs.hpp"
+#include "terra/types/dynarray.hpp"
 
 typedef boost::polygon::voronoi_diagram<double> diagram_t;
 typedef boost::polygon::voronoi_edge<double> edge_t;
 typedef boost::polygon::point_data<double> point_t;
 
 std::vector<terra::vec2> clip_infinite_edge(
-    const std::vector<terra::vec2>& points,
+    const std::span<terra::vec2>& points,
     const terra::rect<tfloat>& bounds,
     const edge_t& edge)
 {
@@ -82,9 +83,9 @@ size_t voronoi::num_vertices() const
     return this->nverts;
 }
 
-void voronoi::generate(const terra::span<terra::vec2>& points,
+void voronoi::generate(const std::span<terra::vec2>& points,
                        const terra::rect<tfloat>& bounds,
-                       terra::span<terra::polygon>& cells)
+                       std::span<terra::polygon>& cells)
 {
     terra::dynarray<point_t> vpoints(points.size());
     for (size_t i = 0; i < points.size(); ++i)

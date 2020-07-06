@@ -49,11 +49,11 @@ configure_file(
 
 # Do stuff depending on the compiler
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Wpedantic -Wunused-value -Wold-style-cast -std=c++17")
+    set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Wpedantic -Wunused-value -Wold-style-cast -std=c++2a")
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "/W4 /EHsc /std:c++17")
+    set(CMAKE_CXX_FLAGS "/W4 /EHsc /std:c++latest")
     set(CMAKE_CXX_FLAGS_DEBUG "/O0 /ZI")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2")
 endif()
@@ -82,7 +82,7 @@ add_library(Terra STATIC
 
 set_target_properties(Terra
     PROPERTIES 
-        CXX_STANDARD 17
+        CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
         CMAKE_DEBUG_POSTFIX "d"
         OUTPUT_NAME "terra"

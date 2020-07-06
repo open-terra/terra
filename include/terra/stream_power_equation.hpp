@@ -4,6 +4,7 @@
 #include <glm/gtx/norm.hpp>
 
 #include "base_types.hpp"
+#include "math/sqrt.hpp"
 #include "types/dynarray.hpp"
 #include "types/flow_graph.hpp"
 #include "types/vec2.hpp"
@@ -16,33 +17,35 @@ namespace terra
         // const tfloat n = 1.0f;
 
         tfloat k, dt;
-        const std::vector<terra::vec2>* points;
+        const std::span<terra::vec2>* points;
         const terra::flow_graph* flow_graph;
-        const terra::dynarray<tfloat>* areas;
-        const terra::dynarray<tfloat>* uplifts;
-        terra::dynarray<tfloat>* heights;
+        const std::span<tfloat>* areas;
+        const std::span<tfloat>* uplifts;
+        std::span<tfloat>* heights;
 
     public:
         stream_power_equation(tfloat k,
                               tfloat dt,
-                              const std::vector<terra::vec2>& points,
+                              const std::span<terra::vec2>& points,
                               const terra::flow_graph& flow_graph,
-                              const terra::dynarray<tfloat>& areas,
-                              const terra::dynarray<tfloat>& uplifts,
-                              terra::dynarray<tfloat>& heights) :
-            k(k),
-            dt(dt), points(&points), flow_graph(&flow_graph), areas(&areas),
-            uplifts(&uplifts), heights(&heights)
+                              const std::span<tfloat>& areas,
+                              const std::span<tfloat>& uplifts,
+                              std::span<tfloat>& heights) :
+            k(k), dt(dt), points(&points), flow_graph(&flow_graph),
+            areas(&areas), uplifts(&uplifts), heights(&heights)
         {
         }
 
         void update()
         {
-            const auto& sorted_nodes = this->flow_graph->sorted_nodes;
-            for (auto it = sorted_nodes.crbegin(); it != sorted_nodes.crend(); ++it)
+            for (const auto node : this->flow_graph->sorted_nodes)
             {
-                const size_t node = this->flow_graph->sorted_nodes[*it];
                 const size_t flow_node = this->flow_graph->flow[node];
+                if (flow_node == terra::flow_graph::node_external)
+                {
+                    continue;
+                }
+
                 this->heights->at(node) = this->solve(node, flow_node);
             }
         }
@@ -51,12 +54,14 @@ namespace terra
         inline tfloat solve(const size_t i, const size_t j)
         {
             const tfloat hi = this->heights->at(i);
-            const tfloat ai = this->areas->at(i);
+            // drainage area of i
+            const tfloat Ai = this->flow_graph->drainage_areas[i];
+            // uplift at i multiplied by the time step
             const tfloat ui = this->uplifts->at(i);
 
             if (j == terra::flow_graph::node_lake)
             {
-                return hi + (this->dt * ui);
+                return hi + ui;
             }
 
             const tfloat hj = this->heights->at(j);
@@ -64,9 +69,9 @@ namespace terra
             const tfloat dist =
                 glm::distance(this->points->at(i), this->points->at(j));
             const tfloat drainage_dist =
-                (this->k * std::pow(ai, this->m)) / dist;
-            return (hi + (this->dt * (ui + (drainage_dist * hj)))) /
-                   (1 + (drainage_dist * this->dt));
+                (this->k * terra::math::sqrt(Ai)) / dist;
+            return (hi + ui + (this->dt * (drainage_dist * hj))) /
+                   (1.0 + (drainage_dist * this->dt));
         }
     };
 } // namespace terra

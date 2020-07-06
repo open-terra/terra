@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <span>
 #include <vector>
 
 #include "math/ceil.hpp"
@@ -14,22 +15,22 @@ namespace terra
     class rasteriser
     {
     public:
-        rasteriser(const terra::dynarray<tfloat>& heights,
-                   const terra::hash_grid& hash_grid);
+        inline rasteriser(const std::span<tfloat>& heights,
+                          const terra::hash_grid& hash_grid);
 
         template<class T>
-        terra::dynarray<T> raster(size_t width, size_t height);
+        inline terra::dynarray<T> raster(size_t width, size_t height);
 
     private:
         terra::vec2 m_scale;
-        const terra::dynarray<tfloat>* m_heights;
+        const std::span<tfloat>* m_heights;
         const terra::hash_grid* m_hash_grid;
 
-        tfloat get_height_at(size_t x, size_t y) const;
+        inline tfloat get_height_at(size_t x, size_t y) const;
     };
 }
 
-terra::rasteriser::rasteriser(const terra::dynarray<tfloat>& heights,
+terra::rasteriser::rasteriser(const std::span<tfloat>& heights,
                               const terra::hash_grid& hash_grid) :
     m_heights(&heights), m_hash_grid(&hash_grid)
 {
@@ -37,7 +38,7 @@ terra::rasteriser::rasteriser(const terra::dynarray<tfloat>& heights,
 
 
 template<>
-terra::dynarray<tfloat> terra::rasteriser::raster<tfloat>(size_t width, size_t height)
+inline terra::dynarray<tfloat> terra::rasteriser::raster<tfloat>(size_t width, size_t height)
 {
     this->m_scale = terra::vec2(this->m_hash_grid->get_grid_width() / width,
                                 this->m_hash_grid->get_grid_height() / height);
@@ -63,13 +64,13 @@ terra::dynarray<T> terra::rasteriser::raster(size_t width, size_t height)
 
     constexpr T t_min = std::numeric_limits<T>::min();
     constexpr T t_max = std::numeric_limits<T>::max();
-    constexpr T t_diff = max - min;
+    T t_diff = t_max - t_min;
 
-    auto in_min = this->m_heights->at(0);
-    auto in_max = this->m_heights->at(0);
+    auto in_min = this->m_heights->data()[0];
+    auto in_max = this->m_heights->data()[0];
     for (size_t i = 1; i < this->m_heights->size(); ++i)
     {
-        const auto h = this->m_heights->at(i);
+        const auto h = this->m_heights->data()[i];
         if (h < in_min)
         {
             in_min = h;
@@ -112,7 +113,7 @@ tfloat terra::rasteriser::get_height_at(size_t x, size_t y) const
     tfloat h = 0.0;
     for (auto cell : cells)
     {
-        h += this->m_heights->at(cell);
+        h += this->m_heights->data()[cell];
     }
 
     return h / cells.size();

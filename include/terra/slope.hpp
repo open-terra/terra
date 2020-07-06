@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <vector>
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -18,17 +19,17 @@ namespace terra
         terra::dynarray<tfloat> slopes;
 
     private:
-        const std::vector<terra::vec2>* points;
-        const terra::dynarray<tfloat>* heights;
-        const terra::dynarray<size_t>* flow;
+        const std::span<terra::vec2>* points;
+        const std::span<tfloat>* heights;
+        const std::span<size_t>* flow;
 
     public:
         slope() : slopes(0), points(nullptr), heights(nullptr), flow(nullptr)
         {
         }
-        slope(const std::vector<terra::vec2>& points,
-              const terra::dynarray<tfloat>& heights,
-              const terra::dynarray<size_t>& flow) :
+        slope(const std::span<terra::vec2>& points,
+              const std::span<tfloat>& heights,
+              const std::span<size_t>& flow) :
             slopes(points.size()), points(&points), heights(&heights),
             flow(&flow)
         {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <span>
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 
@@ -17,10 +19,10 @@ namespace terra::erosion
     class hydraulic_graph
     {
     public:
-        hydraulic_graph(const std::vector<terra::vec2>& points,
+        hydraulic_graph(const std::span<terra::vec2>& points,
                         const terra::hash_grid& hash_grid,
-                        const terra::dynarray<terra::triangle>& triangles,
-                        terra::dynarray<tfloat>& heights,
+                        const std::span<terra::triangle>& triangles,
+                        std::span<tfloat>& heights,
                         size_t seed);
 
         void erode(size_t droplets, const terra::rect<tfloat>& bounds);
@@ -31,10 +33,10 @@ namespace terra::erosion
         terra::dynarray<std::list<size_t>> tri_map;
         terra::dynarray<terra::dynarray<std::pair<size_t, tfloat>>> erosion_map;
 
-        const std::vector<terra::vec2>* points;
+        const std::span<terra::vec2>* points;
         const terra::hash_grid* hash_grid;
-        terra::dynarray<tfloat>* heights;
-        const terra::dynarray<terra::triangle>* triangles;
+        std::span<tfloat>* heights;
+        const std::span<terra::triangle>* triangles;
 
         size_t droplet_node(const terra::vec2& p);
         const triangle& droplet_tri(const terra::vec2& p, size_t node);
@@ -45,12 +47,12 @@ namespace terra::erosion
 
         inline auto get_tri_points(const terra::triangle& tri)
         {
-            const auto& p0 = this->points->at(tri.v0);
-            const auto& p1 = this->points->at(tri.v1);
-            const auto& p2 = this->points->at(tri.v2);
-            const auto h0 = this->heights->at(tri.v0);
-            const auto h1 = this->heights->at(tri.v1);
-            const auto h2 = this->heights->at(tri.v2);
+            const auto& p0 = this->points->data()[tri.v0];
+            const auto& p1 = this->points->data()[tri.v1];
+            const auto& p2 = this->points->data()[tri.v2];
+            const auto h0 = this->heights->data()[tri.v0];
+            const auto h1 = this->heights->data()[tri.v1];
+            const auto h2 = this->heights->data()[tri.v2];
 
             return std::make_tuple(terra::make_vec3(p0, h0),
                                    terra::make_vec3(p1, h2),

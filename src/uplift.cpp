@@ -71,6 +71,6 @@ void uplift::update()
 {
     for (size_t i = 0; i < points->size(); ++i)
     {
-        this->heights->at(i) += factor * this->uplifts[i];
+        this->heights->data()[i] += factor * this->uplifts[i];
     }
 }
