@@ -1,3 +1,6 @@
+add_executable(terra_benchmark examples/benchmark.cpp)
+target_link_libraries(terra_benchmark PRIVATE Terra benchmark::benchmark)
+
 add_executable(terra_hydraulic examples/hydraulic_erosion.cpp)
 target_link_libraries(terra_hydraulic PRIVATE Terra)
 
