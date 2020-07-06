@@ -35,5 +35,5 @@ script:
   - cd ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
-  - cmake -DTERRA_USE_OPENCL=OFF -DBUILD_TESTING=ON .. && make
+  - cmake -DBUILD_TESTING=ON .. && make
   - ctest

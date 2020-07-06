@@ -4,11 +4,6 @@
 
 #include <vector>
 
-#ifdef TERRA_USE_OPENCL
-    #include "cl/cl2.hpp"
-    #include "compute/engine_cl.hpp"
-#endif
-
 #include "base_types.hpp"
 #include "types/bitmap.hpp"
 #include "types/dynarray.hpp"
@@ -85,9 +80,6 @@ namespace terra
                tfloat factor);
 
         void update();
-#ifdef TERRA_USE_OPENCL
-        void update(terra::compute::engine_cl& engine);
-#endif
     };
 }
 
