@@ -72,6 +72,7 @@ set(TERRA_SOURCES
     src/types/hash_grid.cpp
     src/delaunator.cpp
     src/poisson_disc_sampler.cpp
+    src/thermal_erosion.cpp
     src/uplift.cpp
     src/voronoi.cpp
 )

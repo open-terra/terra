@@ -6,11 +6,11 @@
 
 #include <catch2/catch.hpp>
 
-#include "terra/poisson_disc_sampler.hpp"
 #include "terra/delaunator.hpp"
-#include "terra/thermal_erosion.hpp"
 #include "terra/math/floor.hpp"
 #include "terra/noise/ridged_noise.hpp"
+#include "terra/poisson_disc_sampler.hpp"
+#include "terra/thermal_erosion.hpp"
 #include "terra/types/dynarray.hpp"
 #include "terra/types/flow_graph.hpp"
 #include "terra/types/vec2.hpp"
@@ -57,7 +57,7 @@ TEST_CASE("can simulate thermal erosion", "[erosion]")
     }
 
     terra::undirected_graph graph(points.size(), tris);
-    terra::thermal_erosion e(points, heights, graph, 40.0);
+    terra::thermal_erosion e(points, std::span(heights), graph, 40.0);
     e.update();
 
     bool valid = true;
