@@ -28,6 +28,7 @@
 
 #include "coloriser.hpp"
 #include "delaunator.hpp"
+#include "heightfield.hpp"
 #include "poisson_disc_sampler.hpp"
 #include "rasteriser.hpp"
 #include "slope.hpp"
