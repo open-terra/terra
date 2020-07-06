@@ -82,9 +82,9 @@ size_t voronoi::num_vertices() const
     return this->nverts;
 }
 
-void voronoi::generate(const std::vector<terra::vec2>& points,
+void voronoi::generate(const terra::span<terra::vec2>& points,
                        const terra::rect<tfloat>& bounds,
-                       terra::dynarray<terra::polygon>& cells)
+                       terra::span<terra::polygon>& cells)
 {
     terra::dynarray<point_t> vpoints(points.size());
     for (size_t i = 0; i < points.size(); ++i)
