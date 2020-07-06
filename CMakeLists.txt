@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-# detect if Catch is being bundled,
+# detect if Terra is being bundled,
 # disable testsuite in that case
 if(NOT DEFINED PROJECT_NAME)
   set(NOT_SUBPROJECT ON)
