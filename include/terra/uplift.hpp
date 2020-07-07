@@ -67,14 +67,14 @@ namespace terra
         terra::dynarray<tfloat> uplifts;
 
     private:
-        const std::span<terra::vec2>* points;
+        const std::span<const terra::vec2>* points;
         std::span<tfloat>* heights;
 
     public:
         uplift();
         template<typename UpliftFunc>
         uplift(const UpliftFunc& uplift_func,
-               const std::span<terra::vec2>& points,
+               const std::span<const terra::vec2>& points,
                std::span<tfloat>& heights,
                tfloat factor);
 
@@ -102,7 +102,7 @@ terra::noise_uplift::noise_uplift(const T& noise,
 
 template<typename UpliftFunc>
 terra::uplift::uplift(const UpliftFunc& uplift_func,
-                      const std::span<terra::vec2>& points,
+                      const std::span<const terra::vec2>& points,
                       std::span<tfloat>& heights,
                       tfloat factor) :
     factor(factor), uplifts(points.size()), points(&points), heights(&heights)

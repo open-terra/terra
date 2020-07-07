@@ -19,17 +19,17 @@ namespace terra
         terra::dynarray<tfloat> slopes;
 
     private:
-        const std::span<terra::vec2>* points;
-        const std::span<tfloat>* heights;
-        const std::span<size_t>* flow;
+        const std::span<const terra::vec2>* points;
+        const std::span<const tfloat>* heights;
+        const std::span<const size_t>* flow;
 
     public:
         slope() : slopes(0), points(nullptr), heights(nullptr), flow(nullptr)
         {
         }
-        slope(const std::span<terra::vec2>& points,
-              const std::span<tfloat>& heights,
-              const std::span<size_t>& flow) :
+        slope(const std::span<const terra::vec2>& points,
+              const std::span<const tfloat>& heights,
+              const std::span<const size_t>& flow) :
             slopes(points.size()), points(&points), heights(&heights),
             flow(&flow)
         {
@@ -39,11 +39,11 @@ namespace terra
         {
             for (size_t i = 0; i < heights->size(); ++i)
             {
-                const size_t flow_idx = flow->at(i);
+                const size_t flow_idx = this->flow->data()[i];
                 if (flow_idx != terra::flow_graph::node_lake)
                 {
-                    const auto dh = heights->at(flow_idx) - heights->at(i);
-                    const auto dist = glm::distance(points->at(flow_idx), points->at(i));
+                    const auto dh = this->heights->data()[flow_idx] - this->heights->data()[i];
+                    const auto dist = glm::distance(this->points->data()[flow_idx], this->points->data()[i]);
                     this->slopes[i] = dh / dist;
                 }
                 else

@@ -17,19 +17,19 @@ namespace terra
         // const tfloat n = 1.0f;
 
         tfloat k, dt;
-        const std::span<terra::vec2>* points;
+        const std::span<const terra::vec2>* points;
         const terra::flow_graph* flow_graph;
-        const std::span<tfloat>* areas;
-        const std::span<tfloat>* uplifts;
+        const std::span<const tfloat>* areas;
+        const std::span<const tfloat>* uplifts;
         std::span<tfloat>* heights;
 
     public:
         stream_power_equation(tfloat k,
                               tfloat dt,
-                              const std::span<terra::vec2>& points,
+                              const std::span<const terra::vec2>& points,
                               const terra::flow_graph& flow_graph,
-                              const std::span<tfloat>& areas,
-                              const std::span<tfloat>& uplifts,
+                              const std::span<const tfloat>& areas,
+                              const std::span<const tfloat>& uplifts,
                               std::span<tfloat>& heights) :
             k(k), dt(dt), points(&points), flow_graph(&flow_graph),
             areas(&areas), uplifts(&uplifts), heights(&heights)
@@ -46,28 +46,28 @@ namespace terra
                     continue;
                 }
 
-                this->heights->at(node) = this->solve(node, flow_node);
+                this->heights->data()[node] = this->solve(node, flow_node);
             }
         }
 
     private:
         inline tfloat solve(const size_t i, const size_t j)
         {
-            const tfloat hi = this->heights->at(i);
+            const tfloat hi = this->heights->data()[i];
             // drainage area of i
             const tfloat Ai = this->flow_graph->drainage_areas[i];
             // uplift at i multiplied by the time step
-            const tfloat ui = this->uplifts->at(i);
+            const tfloat ui = this->uplifts->data()[i];
 
             if (j == terra::flow_graph::node_lake)
             {
                 return hi + ui;
             }
 
-            const tfloat hj = this->heights->at(j);
+            const tfloat hj = this->heights->data()[j];
 
             const tfloat dist =
-                glm::distance(this->points->at(i), this->points->at(j));
+                glm::distance(this->points->data()[i], this->points->data()[j]);
             const tfloat drainage_dist =
                 (this->k * terra::math::sqrt(Ai)) / dist;
             return (hi + ui + (this->dt * (drainage_dist * hj))) /
