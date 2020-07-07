@@ -13,8 +13,8 @@ namespace terra
 {
     // This implements the algorithm described in 'Fast Poisson Disk Sampling in
     // Arbitrary Dimensions' by Robert Bridson. This produces a random set of
-    // terra:vec2s such that no two terra:vec2s are closer than
-    // conf.min_distance apart or further apart than twice that distance.
+    // points such that no two points are closer than min_distance apart or
+    // further apart than twice that distance.
     //
     // Parameters
     //
@@ -45,7 +45,6 @@ namespace terra
     //   a segmentation fault.
     class poisson_disc_sampler
     {
-        // TODO make use of the hash_grid type and update match or remove it.
     public:
         //   width, height - Defines the range of x as (0, width] and the range
         //                   of y as (0, height].
