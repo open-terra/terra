@@ -23,26 +23,26 @@ addons:
     - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
     - clang-9
-    - gcc-9
-    - g++-9
+    - gcc-10
+    - g++-10
     - libglm-dev
     - libboost-dev
 
 install:
   # /usr/bin/gcc points to an older compiler on Linux.
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-9" CC="gcc-9"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-10" CC="gcc-10"; fi
   # /usr/bin/gcc points to an older compiler on Linux.
   - if [ "$CXX" = "clang++" ]; then export CXX="clang++-9" CC="clang-9"; fi
   - echo ${CC}
   - echo ${CXX}
   - ${CXX} --version
-  - cmake --version
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
   - |
     CMAKE_URL="https://cmake.org/files/v3.18/cmake-3.18.0-rc3-Linux-x86_64.tar.gz"
     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+  - cmake --version
   - ../scripts/install-catch2.sh
   - ../scripts/install-fastnoise-simd.sh
   - ../scripts/install-libtiff.sh
