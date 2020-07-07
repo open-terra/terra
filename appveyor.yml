@@ -9,12 +9,10 @@ cache:
 
 install:
   - mkdir deps
-  - |
-    set CMAKE_URL="https://cmake.org/files/v3.18/cmake-3.18.0-rc3-win64-x64.zip"
-    curl -fsS %CMAKE_URL%
-    mkdir deps\cmake
-    7z e cmake-3.18.0-rc3-win64-x64.zip -o%APPVEYOR_BUILD_FOLDER%\deps\cmake
-    set PATH=%APPVEYOR_BUILD_FOLDER%\deps\cmake;%PATH%
+  - curl -fsS "https://cmake.org/files/v3.18/cmake-3.18.0-rc3-win64-x64.zip"
+  - mkdir deps\cmake
+  - 7z e cmake-3.18.0-rc3-win64-x64.zip -o%APPVEYOR_BUILD_FOLDER%\deps\cmake
+  - set PATH=%APPVEYOR_BUILD_FOLDER%\deps\cmake;%PATH%
   - echo (cmake --version)
   - vcpkg install Catch2:x64-windows
   - vcpkg install glm:x64-windows
