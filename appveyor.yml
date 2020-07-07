@@ -10,8 +10,8 @@ cache:
 install:
   - mkdir deps
   - |
-    $CMAKE_URL = "https://github.com/Kitware/CMake/releases/download/v3.18.0-rc3/cmake-3.18.0-rc3-win64-x64.zip"
-    curl -fsS $CMAKE_URL
+    set CMAKE_URL="https://cmake.org/files/v3.18/cmake-3.18.0-rc3-win64-x64.zip"
+    curl -fsS %CMAKE_URL%
     mkdir deps\cmake
     7z e cmake-3.18.0-rc3-win64-x64.zip -o%APPVEYOR_BUILD_FOLDER%\deps\cmake
     set PATH=%APPVEYOR_BUILD_FOLDER%\deps\cmake;%PATH%
