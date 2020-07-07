@@ -9,7 +9,6 @@
 #include "math/radian.hpp"
 #include "types/undirected_graph.hpp"
 #include "types/vec2.hpp"
-#include "utils/enumerate.hpp"
 #include "utils/reverse.hpp"
 
 namespace terra
