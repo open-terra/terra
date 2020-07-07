@@ -10,16 +10,33 @@ os: linux
 dist: bionic
 
 # Compiler selection
-compiler: gcc
+compiler:
+- gcc
+- clang
 
 addons:
   apt:
     update: true
+    sources:
+    - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+      key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+    - sourceline: 'ppa:ubuntu-toolchain-r/test'
     packages:
+    - clang-9
+    - gcc-9
+    - g++-9
     - libglm-dev
     - libboost-dev
 
 install:
+  # /usr/bin/gcc points to an older compiler on Linux.
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-9" CC="gcc-9"; fi
+  # /usr/bin/gcc points to an older compiler on Linux.
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-9" CC="clang-9"; fi
+  - echo ${CC}
+  - echo ${CXX}
+  - ${CXX} --version
+  - cmake --version
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
   - |
