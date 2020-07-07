@@ -32,7 +32,7 @@ install:
   # /usr/bin/gcc points to an older compiler on Linux.
   - if [ "$CXX" = "g++" ]; then export CXX="g++-10" CC="gcc-10"; fi
   # /usr/bin/gcc points to an older compiler on Linux.
-  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-9" CC="clang-9"; fi
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-10" CC="clang-10"; fi
   - echo ${CC}
   - echo ${CXX}
   - ${CXX} --version
