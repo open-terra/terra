@@ -19,9 +19,9 @@ namespace terra::erosion
     class hydraulic_graph
     {
     public:
-        hydraulic_graph(const std::span<terra::vec2>& points,
+        hydraulic_graph(const std::span<const terra::vec2>& points,
                         const terra::hash_grid& hash_grid,
-                        const std::span<terra::triangle>& triangles,
+                        const std::span<const terra::triangle>& triangles,
                         std::span<tfloat>& heights,
                         size_t seed);
 
@@ -33,10 +33,10 @@ namespace terra::erosion
         terra::dynarray<std::list<size_t>> tri_map;
         terra::dynarray<terra::dynarray<std::pair<size_t, tfloat>>> erosion_map;
 
-        const std::span<terra::vec2>* points;
+        const std::span<const terra::vec2>* points;
         const terra::hash_grid* hash_grid;
+        const std::span<const terra::triangle>* triangles;
         std::span<tfloat>* heights;
-        const std::span<terra::triangle>* triangles;
 
         size_t droplet_node(const terra::vec2& p);
         const triangle& droplet_tri(const terra::vec2& p, size_t node);

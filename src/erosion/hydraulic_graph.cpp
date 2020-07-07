@@ -6,9 +6,9 @@
 #include "terra/math/sqrt.hpp"
 
 terra::erosion::hydraulic_graph::hydraulic_graph(
-    const std::span<terra::vec2>& points,
+    const std::span<const terra::vec2>& points,
     const terra::hash_grid& hash_grid,
-    const std::span<terra::triangle>& triangles,
+    const std::span<const terra::triangle>& triangles,
     std::span<tfloat>& heights,
     size_t seed) :
     m_config(),

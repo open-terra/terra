@@ -19,7 +19,7 @@ namespace terra
         std::vector<size_t> halfedges;
         size_t hull_start;
     private:
-        const std::vector<terra::vec2>* coords;
+        const std::span<const terra::vec2>* coords;
         std::vector<size_t> hull_prev;
         std::vector<size_t> hull_next;
         std::vector<size_t> hull_tri;
@@ -31,7 +31,7 @@ namespace terra
     public:
         delaunator();
 
-        void triangulate(const std::vector<terra::vec2>& in_coords);
+        void triangulate(const std::span<const terra::vec2>& in_coords);
         tfloat get_hull_area();
 
     private:
