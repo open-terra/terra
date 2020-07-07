@@ -15,7 +15,7 @@
 #include "terra/types/flow_graph.hpp"
 #include "terra/types/vec2.hpp"
 
-TEST_CASE("can simulate hydraulic erosion", "[delaunator]")
+TEST_CASE("can simulate hydraulic erosion", "[erosion]")
 {
     std::vector<terra::vec2> points;
     std::unique_ptr<terra::hash_grid> hash_grid;
@@ -65,7 +65,7 @@ TEST_CASE("can simulate hydraulic erosion", "[delaunator]")
 
     terra::undirected_graph graph(points.size(), tris);
     terra::erosion::hydraulic_graph e(
-        points, *hash_grid.get(), tris, std::span(heights), 1337);
+        points, *hash_grid.get(), std::span(tris), std::span(heights), 1337);
     e.erode(1024, terra::rect<tfloat>(1.0, 1.0, 511.0, 511.0));
 
     bool valid = true;
