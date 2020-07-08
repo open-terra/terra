@@ -36,7 +36,7 @@ namespace terra
 template<class Array> requires terra::Container<Array, tfloat>
 terra::rasteriser::rasteriser(const Array& heights,
                               const terra::hash_grid& hash_grid) :
-    m_heights(terra::to_span<tfloat>(heights)), m_hash_grid(&hash_grid)
+    m_scale(0.0), m_heights(terra::to_span<tfloat>(heights)), m_hash_grid(&hash_grid)
 {
 }
 
