@@ -38,10 +38,10 @@ namespace terra
 
 template<class ArrayVec, class ArrayPolygon>
 requires terra::Container<ArrayVec, terra::vec2>&&
-         terra::Container<ArrayPolygon, terra::polygon> void
-terra::voronoi::generate(const ArrayVec& points,
-                         const terra::rect<tfloat>& bounds,
-                         ArrayPolygon& cells)
+         terra::Container<ArrayPolygon, terra::polygon>
+void terra::voronoi::generate(const ArrayVec& points,
+                              const terra::rect<tfloat>& bounds,
+                              ArrayPolygon& cells)
 {
     this->_generate(terra::to_span<const terra::vec2>(points),
                     bounds,
