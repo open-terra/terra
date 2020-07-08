@@ -130,7 +130,7 @@ namespace terra
         auto operator=(dynarray const& other) -> dynarray &;
 
         /// Move-Assigns from the specified \other dynarray instance.
-        auto operator=(dynarray && other) -> dynarray &;
+        auto operator=(dynarray && other) noexcept -> dynarray &;
 
         /// Copy-Assigns from the specified \list initializer_list instance.
         /// Throws an invalid_argument exception when the sizes of both
@@ -368,7 +368,7 @@ auto terra::dynarray<T>::operator=(dynarray const& other) -> dynarray & {
 }
 
 template<typename T>
-auto terra::dynarray<T>::operator=(dynarray && other) -> dynarray & {
+auto terra::dynarray<T>::operator=(dynarray && other) noexcept -> dynarray & {
     std::swap(m_data, other.m_data);
     std::swap(m_size, other.m_size);
     return *this;
