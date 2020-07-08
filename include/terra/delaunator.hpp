@@ -5,6 +5,8 @@
 #include <vector>
 
 #include "base_types.hpp"
+#include "concepts.hpp"
+#include "concepts_helpers.hpp"
 #include "types/vec2.hpp"
 
 namespace terra
@@ -19,7 +21,7 @@ namespace terra
         std::vector<size_t> halfedges;
         size_t hull_start;
     private:
-        const std::span<const terra::vec2>* coords;
+        std::span<const terra::vec2> coords;
         std::vector<size_t> hull_prev;
         std::vector<size_t> hull_next;
         std::vector<size_t> hull_tri;
@@ -31,10 +33,12 @@ namespace terra
     public:
         delaunator();
 
-        void triangulate(const std::span<const terra::vec2>& in_coords);
+        template<class T> requires terra::Container<T, terra::vec2>
+        inline void triangulate(const T& points);
         tfloat get_hull_area();
 
     private:
+        void triangulate(const std::span<const terra::vec2>& points);
         size_t legalize(size_t a);
         size_t hash_key(const terra::vec2& vec) const;
         size_t add_triangle(size_t i0,
@@ -46,3 +50,9 @@ namespace terra
         void link(size_t a, size_t b);
     };
 } // namespace terra
+
+template<class T> requires terra::Container<T, terra::vec2>
+inline void terra::delaunator::triangulate(const T& points)
+{
+    this->triangulate(terra::to_span<const terra::vec2>(points));
+}

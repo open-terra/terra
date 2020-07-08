@@ -3,6 +3,7 @@
 #include <limits>
 #include <span>
 
+#include "concepts.hpp"
 #include "types/bitmap.hpp"
 #include "types/dynarray.hpp"
 
@@ -13,10 +14,12 @@ namespace terra
     public:
         inline heightfield();
 
-        template<class T>
-        inline terra::bitmap raster(size_t x, size_t y,
-                             T min, T max,
-                             const std::span<T>& data);
+        template<class T, class U> requires terra::Container<U, T>
+        inline terra::bitmap raster(size_t x,
+                                    size_t y,
+                                    T min,
+                                    T max,
+                                    const U& data);
     };
 }
 
@@ -24,10 +27,12 @@ terra::heightfield::heightfield()
 {
 }
 
-template<class T>
-terra::bitmap terra::heightfield::raster(size_t x, size_t y,
-                                         T min, T max,
-                                         const std::span<T>& data)
+template<class T, class U> requires terra::Container<U, T>
+terra::bitmap terra::heightfield::raster(size_t x,
+                                         size_t y,
+                                         T min, 
+                                         T max,
+                                         const U& data)
 {
     const T diff = max - min;
 

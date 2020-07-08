@@ -57,7 +57,7 @@ TEST_CASE("can simulate thermal erosion", "[erosion]")
     }
 
     terra::undirected_graph graph(points.size(), tris);
-    terra::thermal_erosion e(points, std::span(heights), graph, 40.0);
+    terra::thermal_erosion e(points, heights, graph, 40.0);
     e.update();
 
     bool valid = true;

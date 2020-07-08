@@ -67,15 +67,17 @@ namespace terra
         terra::dynarray<tfloat> uplifts;
 
     private:
-        const std::span<const terra::vec2>* points;
-        std::span<tfloat>* heights;
+        const std::span<const terra::vec2> points;
+        std::span<tfloat> heights;
 
     public:
         uplift();
-        template<typename UpliftFunc>
+        template<typename UpliftFunc, class ArrayVec, class ArrayReal>
+        requires terra::Container<ArrayVec, terra::vec2> &&
+                 terra::Container<ArrayReal, tfloat>
         uplift(const UpliftFunc& uplift_func,
-               const std::span<const terra::vec2>& points,
-               std::span<tfloat>& heights,
+               const ArrayVec& points,
+               ArrayReal& heights,
                tfloat factor);
 
         void update();
@@ -100,12 +102,16 @@ terra::noise_uplift::noise_uplift(const T& noise,
         noise.noise(0, 0, 0, noise_width, noise_height, 1, noise_scale);
 }
 
-template<typename UpliftFunc>
+template<typename UpliftFunc, class ArrayVec, class ArrayReal>
+requires terra::Container<ArrayVec, terra::vec2>&&
+         terra::Container<ArrayReal, tfloat>
 terra::uplift::uplift(const UpliftFunc& uplift_func,
-                      const std::span<const terra::vec2>& points,
-                      std::span<tfloat>& heights,
+                      const ArrayVec& points,
+                      ArrayReal& heights,
                       tfloat factor) :
-    factor(factor), uplifts(points.size()), points(&points), heights(&heights)
+    factor(factor), uplifts(points.size()),
+    points(terra::to_span<const terra::vec2>(points)),
+    heights(terra::to_span<tfloat>(heights))
 {
     for (size_t i = 0; i < points.size(); ++i)
     {

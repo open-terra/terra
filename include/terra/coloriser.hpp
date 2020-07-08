@@ -3,6 +3,7 @@
 #include <limits>
 #include <span>
 
+#include "concepts.hpp"
 #include "types/bitmap.hpp"
 #include "types/dynarray.hpp"
 
@@ -13,11 +14,12 @@ namespace terra
     public:
         inline coloriser();
 
-        template<class T>
-        inline terra::bitmap raster(size_t x, size_t y,
-                             T min, T max,
-                             const std::span<T>& data,
-                             const terra::rgb_t* colors);
+        template<class T, class U> requires terra::Container<U, T>
+        inline terra::bitmap raster(size_t x,
+                                    size_t y,
+                                    T min, T max,
+                                    const U& data,
+                                    const terra::rgb_t* colors);
     };
 }
 
@@ -25,10 +27,11 @@ terra::coloriser::coloriser()
 {
 }
 
-template<class T>
-terra::bitmap terra::coloriser::raster(size_t x, size_t y,
+template<class T, class U> requires terra::Container<U, T>
+terra::bitmap terra::coloriser::raster(size_t x, 
+                                       size_t y,
                                        T min, T max,
-                                       const std::span<T>& data,
+                                       const U& data,
                                        const terra::rgb_t* colors)
 {
     const T diff = max - min;

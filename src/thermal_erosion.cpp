@@ -1,21 +1,10 @@
 #include "terra/thermal_erosion.hpp"
 
 terra::thermal_erosion::thermal_erosion() :
-    m_points(nullptr),
-    m_heights(nullptr),
+    m_points(),
+    m_heights(),
     m_graph(nullptr),
     m_talus_slope(0.0)
-{
-}
-
-terra::thermal_erosion::thermal_erosion(const std::span<terra::vec2>& points,
-                                        std::span<tfloat>& heights,
-                                        const terra::undirected_graph& graph,
-                                        tfloat talus_angle) :
-    m_points(&points),
-    m_heights(&heights),
-    m_graph(&graph),
-    m_talus_slope(std::tan(terra::math::to_radian(talus_angle)))
 {
 }
 
@@ -28,9 +17,9 @@ void terra::thermal_erosion::update()
 
         // iterate through the graph from highest -> lowest nodes, this should
         // allow for the
-        for (size_t i = 0; i < this->m_points->size(); ++i)
+        for (size_t i = 0; i < this->m_points.size(); ++i)
         {
-            const auto ih = this->m_heights->data()[i];
+            const auto ih = this->m_heights[i];
 
             tfloat dh_sum = 0.0;
             tfloat mdh = 0.0;
@@ -38,7 +27,7 @@ void terra::thermal_erosion::update()
 
             for (auto j : this->m_graph->get_connected(i))
             {
-                const auto jh = this->m_heights->data()[j];
+                const auto jh = this->m_heights[j];
                 const auto dh = ih - jh; // delta height
                 if (dh <= 0.0)
                 {
@@ -50,8 +39,8 @@ void terra::thermal_erosion::update()
                     mdh = dh;
                 }
 
-                const auto& pi = this->m_points->data()[i];
-                const auto& pj = this->m_points->data()[j];
+                const auto& pi = this->m_points[i];
+                const auto& pj = this->m_points[j];
                 const auto dist = glm::distance(pi, pj);
                 const auto slope = dh / dist;
                 if (slope >= this->m_talus_slope)
@@ -67,11 +56,11 @@ void terra::thermal_erosion::update()
             }
 
             const auto deposit_amount = mdh / 2.0;
-            this->m_heights->data()[i] -= deposit_amount;
+            this->m_heights[i] -= deposit_amount;
 
             for (auto [j, dh] : deposition_nodes)
             {
-                this->m_heights->data()[j] += deposit_amount * (dh / dh_sum);
+                this->m_heights[j] += deposit_amount * (dh / dh_sum);
             }
 
             changed = true;

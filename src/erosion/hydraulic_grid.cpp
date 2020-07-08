@@ -9,14 +9,7 @@
 #include "terra/math/lerp.hpp"
 #include "terra/math/sqrt.hpp"
 
-terra::erosion::hydraulic_grid::hydraulic_grid
-(
-    size_t width,
-    size_t height,
-    std::span<tfloat>& heights,
-    terra::erosion::hydraulic_config config
-) :
-    m_config(config), width(width), height(height), m_weights(heights.size()), m_heights(&heights)
+void terra::erosion::hydraulic_grid::init()
 {
     const size_t iradius = terra::math::ceil<size_t>(this->m_config.erosion_radius);
     const auto radius = this->m_config.erosion_radius;

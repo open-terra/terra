@@ -4,6 +4,8 @@
 #include <span>
 #include <vector>
 
+#include "concepts.hpp"
+#include "concepts_helpers.hpp"
 #include "math/ceil.hpp"
 #include "math/floor.hpp"
 #include "types/dynarray.hpp"
@@ -15,7 +17,8 @@ namespace terra
     class rasteriser
     {
     public:
-        inline rasteriser(const std::span<tfloat>& heights,
+        template<class Array> requires terra::Container<Array, tfloat>
+        inline rasteriser(const Array& heights,
                           const terra::hash_grid& hash_grid);
 
         template<class T>
@@ -23,16 +26,17 @@ namespace terra
 
     private:
         terra::vec2 m_scale;
-        const std::span<tfloat>* m_heights;
+        const std::span<const tfloat> m_heights;
         const terra::hash_grid* m_hash_grid;
 
         inline tfloat get_height_at(size_t x, size_t y) const;
     };
 }
 
-terra::rasteriser::rasteriser(const std::span<tfloat>& heights,
+template<class Array> requires terra::Container<Array, tfloat>
+terra::rasteriser::rasteriser(const Array& heights,
                               const terra::hash_grid& hash_grid) :
-    m_heights(&heights), m_hash_grid(&hash_grid)
+    m_heights(terra::to_span<tfloat>(heights)), m_hash_grid(&hash_grid)
 {
 }
 
@@ -66,11 +70,11 @@ terra::dynarray<T> terra::rasteriser::raster(size_t width, size_t height)
     constexpr T t_max = std::numeric_limits<T>::max();
     T t_diff = t_max - t_min;
 
-    auto in_min = this->m_heights->data()[0];
-    auto in_max = this->m_heights->data()[0];
-    for (size_t i = 1; i < this->m_heights->size(); ++i)
+    auto in_min = this->m_heights[0];
+    auto in_max = this->m_heights[0];
+    for (size_t i = 1; i < this->m_heights.size(); ++i)
     {
-        const auto h = this->m_heights->data()[i];
+        const auto h = this->m_heights[i];
         if (h < in_min)
         {
             in_min = h;
@@ -113,7 +117,7 @@ tfloat terra::rasteriser::get_height_at(size_t x, size_t y) const
     tfloat h = 0.0;
     for (auto cell : cells)
     {
-        h += this->m_heights->data()[cell];
+        h += this->m_heights[cell];
     }
 
     return h / cells.size();

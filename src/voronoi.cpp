@@ -13,7 +13,7 @@ typedef boost::polygon::voronoi_edge<double> edge_t;
 typedef boost::polygon::point_data<double> point_t;
 
 std::vector<terra::vec2> clip_infinite_edge(
-    const std::span<terra::vec2>& points,
+    const std::span<const terra::vec2>& points,
     const terra::rect<tfloat>& bounds,
     const edge_t& edge)
 {
@@ -83,9 +83,9 @@ size_t voronoi::num_vertices() const
     return this->nverts;
 }
 
-void voronoi::generate(const std::span<terra::vec2>& points,
-                       const terra::rect<tfloat>& bounds,
-                       std::span<terra::polygon>& cells)
+void voronoi::_generate(const std::span<const terra::vec2>& points,
+                        const terra::rect<tfloat>& bounds,
+                        std::span<terra::polygon>& cells)
 {
     terra::dynarray<point_t> vpoints(points.size());
     for (size_t i = 0; i < points.size(); ++i)

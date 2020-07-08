@@ -5,43 +5,31 @@
 #include "terra/math/ceil.hpp"
 #include "terra/math/sqrt.hpp"
 
-terra::erosion::hydraulic_graph::hydraulic_graph(
-    const std::span<const terra::vec2>& points,
-    const terra::hash_grid& hash_grid,
-    const std::span<const terra::triangle>& triangles,
-    std::span<tfloat>& heights,
-    size_t seed) :
-    m_config(),
-    tri_map(points.size()),
-    erosion_map(points.size()),
-    points(&points),
-    hash_grid(&hash_grid),
-    heights(&heights),
-    triangles(&triangles)
+void terra::erosion::hydraulic_graph::init()
 {
-    for (size_t i = 0; i < this->triangles->size(); ++i)
+    for (size_t i = 0; i < this->triangles.size(); ++i)
     {
-        const auto& tri = this->triangles->data()[i];
+        const auto& tri = this->triangles[i];
         for (auto j : tri.get_vert_idx())
         {
             this->tri_map[j].push_back(i);
         }
     }
 
-    size_t neighbours_radius =
-        terra::math::ceil<size_t>(this->m_config.erosion_radius /
-                                  this->hash_grid->sqrt1_2);
+    size_t neighbours_radius = terra::math::ceil<size_t>(
+        this->m_config.erosion_radius / this->hash_grid->sqrt1_2);
 
-    for (size_t i = 0; i < this->points->size(); ++i)
+    for (size_t i = 0; i < this->points.size(); ++i)
     {
-        const auto& p = this->points->data()[i];
+        const auto& p = this->points[i];
         auto neighbours = this->hash_grid->get_neighbours(p, neighbours_radius);
-        this->erosion_map[i] = terra::dynarray<std::pair<size_t, tfloat>>(neighbours.size());
+        this->erosion_map[i] =
+            terra::dynarray<std::pair<size_t, tfloat>>(neighbours.size());
 
         tfloat total_weight = 0.0;
         for (size_t j = 0; j < neighbours.size(); ++j)
         {
-            const auto& pn = this->points->data()[neighbours[j]];
+            const auto& pn = this->points[neighbours[j]];
 
             auto weight = glm::distance(p, pn) / this->m_config.erosion_radius;
             this->erosion_map[i][j] = std::make_pair(neighbours[j], weight);
@@ -130,9 +118,9 @@ void terra::erosion::hydraulic_graph::erode(size_t droplets,
                 auto d2 = glm::distance(np2, np);
                 auto total = d0 + d1 + d2;
 
-                this->heights->data()[ntri.v0] += amount_to_deposit * (d0 / total);
-                this->heights->data()[ntri.v1] += amount_to_deposit * (d1 / total);
-                this->heights->data()[ntri.v2] += amount_to_deposit * (d2 / total);
+                this->heights[ntri.v0] += amount_to_deposit * (d0 / total);
+                this->heights[ntri.v1] += amount_to_deposit * (d1 / total);
+                this->heights[ntri.v2] += amount_to_deposit * (d2 / total);
             }
             else
             {
@@ -143,11 +131,11 @@ void terra::erosion::hydraulic_graph::erode(size_t droplets,
                 for (const auto& n : this->erosion_map[nn])
                 {
                     auto weighed_erode_amount = amount_to_erode * n.second;
-                    auto ds = this->heights->data()[n.first] < weighed_erode_amount ?
-                        this->heights->data()[n.first] :
+                    auto ds = this->heights[n.first] < weighed_erode_amount ?
+                        this->heights[n.first] :
                         weighed_erode_amount;
 
-                    this->heights->data()[n.first] -= ds;
+                    this->heights[n.first] -= ds;
                     sediment += ds;
                 }
             }
@@ -178,7 +166,7 @@ size_t terra::erosion::hydraulic_graph::droplet_node(const terra::vec2& p)
         for (auto n : this->hash_grid->get_neighbours(p, 2))
         {
             // get the squared distance
-            tfloat nd = glm::distance2(p, this->points->data()[n]);
+            tfloat nd = glm::distance2(p, this->points[n]);
             if (nd < min.second)
             {
                 min = std::make_pair(n, nd);
@@ -203,11 +191,11 @@ const terra::triangle& terra::erosion::hydraulic_graph::droplet_tri
 {
     for (auto t : this->tri_map[node])
     {
-        const auto& tri = this->triangles->data()[t];
+        const auto& tri = this->triangles[t];
 
-        const auto& p0 = this->points->data()[tri.v0];
-        const auto& p1 = this->points->data()[tri.v1];
-        const auto& p2 = this->points->data()[tri.v2];
+        const auto& p0 = this->points[tri.v0];
+        const auto& p1 = this->points[tri.v1];
+        const auto& p2 = this->points[tri.v2];
         if (terra::triangle::point_within(p0, p1, p2, p))
         {
             return tri;

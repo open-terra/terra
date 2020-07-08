@@ -63,14 +63,14 @@ tfloat terra::linear_uplift::at(const terra::vec2& p) const
     return uplift;
 }
 
-uplift::uplift() : factor(0.0f), uplifts(0), points(nullptr), heights(nullptr)
+uplift::uplift() : factor(0.0f), uplifts(0), points(), heights()
 {
 }
 
 void uplift::update()
 {
-    for (size_t i = 0; i < points->size(); ++i)
+    for (size_t i = 0; i < this->points.size(); ++i)
     {
-        this->heights->data()[i] += factor * this->uplifts[i];
+        this->heights[i] += factor * this->uplifts[i];
     }
 }

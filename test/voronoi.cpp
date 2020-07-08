@@ -35,9 +35,7 @@ TEST_CASE("can partition correctly", "[delaunator]")
 {
     terra::dynarray<terra::polygon> cells(vertices.size());
     terra::voronoi v;
-    v.generate(std::span(vertices.data(), vertices.size()),
-               {-1.0, 8.0, -1.0, 8.0},
-               std::span(cells));
+    v.generate(vertices, {-1.0, 8.0, -1.0, 8.0}, cells);
 
     REQUIRE(v.num_cells() == vertices.size());
 }
