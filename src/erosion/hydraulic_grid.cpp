@@ -134,10 +134,10 @@ void terra::erosion::hydraulic_grid::erode(size_t droplets,
                 // bilinear interpolation
                 // Deposition is not distributed over a radius (like erosion) so
                 // that it can fill small pits
-                this->m_heights->data()[n00] += amount_to_deposit * (1 - dw.x) * (1 - dw.y);
-                this->m_heights->data()[n01] += amount_to_deposit * dw.x * (1 - dw.y);
-                this->m_heights->data()[n10] += amount_to_deposit * (1 - dw.x) * dw.y;
-                this->m_heights->data()[n11] += amount_to_deposit * dw.x * dw.y;
+                this->m_heights[n00] += amount_to_deposit * (1 - dw.x) * (1 - dw.y);
+                this->m_heights[n01] += amount_to_deposit * dw.x * (1 - dw.y);
+                this->m_heights[n10] += amount_to_deposit * (1 - dw.x) * dw.y;
+                this->m_heights[n11] += amount_to_deposit * dw.x * dw.y;
             }
             else
             {
@@ -148,11 +148,11 @@ void terra::erosion::hydraulic_grid::erode(size_t droplets,
                 for (const auto& n : this->m_weights[n00])
                 {
                     auto weighed_erode_amount = amount_to_erode * n.second;
-                    auto ds = this->m_heights->data()[n.first] < weighed_erode_amount ?
-                        this->m_heights->data()[n.first] :
+                    auto ds = this->m_heights[n.first] < weighed_erode_amount ?
+                        this->m_heights[n.first] :
                         weighed_erode_amount;
 
-                    this->m_heights->data()[n.first] -= ds;
+                    this->m_heights[n.first] -= ds;
                     sediment += ds;
                 }
             }
@@ -215,10 +215,10 @@ tfloat terra::erosion::hydraulic_grid::droplet_height
     size_t n11
 )
 {
-    const auto h00 = this->m_heights->data()[n00];
-    const auto h01 = this->m_heights->data()[n01];
-    const auto h10 = this->m_heights->data()[n10];
-    const auto h11 = this->m_heights->data()[n11];
+    const auto h00 = this->m_heights[n00];
+    const auto h01 = this->m_heights[n01];
+    const auto h10 = this->m_heights[n10];
+    const auto h11 = this->m_heights[n11];
 
     const auto h00_01 = terra::math::lerp(h00, h01, weights.x);
     const auto h10_11 = terra::math::lerp(h10, h11, weights.x);
@@ -235,10 +235,10 @@ terra::vec2 terra::erosion::hydraulic_grid::droplet_gradient
     size_t n11
 )
 {
-    const auto h00 = this->m_heights->data()[n00];
-    const auto h01 = this->m_heights->data()[n01];
-    const auto h10 = this->m_heights->data()[n10];
-    const auto h11 = this->m_heights->data()[n11];
+    const auto h00 = this->m_heights[n00];
+    const auto h01 = this->m_heights[n01];
+    const auto h10 = this->m_heights[n10];
+    const auto h11 = this->m_heights[n11];
 
     const tfloat gx = ((h10 - h11) * (1.f - weights.x)) +
                       ((h00 - h01) * weights.x);
