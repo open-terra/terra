@@ -139,7 +139,7 @@ delaunator::delaunator() :
 {
 }
 
-void delaunator::triangulate(const std::span<const terra::vec2>& in_coords)
+void delaunator::_triangulate(const std::span<const terra::vec2>& in_coords)
 {
     this->coords = in_coords;
     size_t n = this->coords.size();

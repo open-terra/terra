@@ -38,7 +38,7 @@ namespace terra
         tfloat get_hull_area();
 
     private:
-        void triangulate(const std::span<const terra::vec2>& points);
+        void _triangulate(const std::span<const terra::vec2>& points);
         size_t legalize(size_t a);
         size_t hash_key(const terra::vec2& vec) const;
         size_t add_triangle(size_t i0,
@@ -54,5 +54,5 @@ namespace terra
 template<class T> requires terra::Container<T, terra::vec2>
 inline void terra::delaunator::triangulate(const T& points)
 {
-    this->triangulate(terra::to_span<const terra::vec2>(points));
+    this->_triangulate(terra::to_span<const terra::vec2>(points));
 }
