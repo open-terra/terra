@@ -4,20 +4,18 @@
 
 #include "terra/math/floor.hpp"
 
-using namespace terra;
-
-bitmap_uplift::bitmap_uplift(const terra::bitmap& bitmap) : 
+terra::bitmap_uplift::bitmap_uplift(const terra::bitmap& bitmap) : 
     width(bitmap.get_width()), raster(bitmap.size())
 {
     const uint8_t* raster_view = bitmap.get();
     std::copy(raster_view, raster_view + bitmap.size(), raster.data());
 }
 
-tfloat bitmap_uplift::at(const terra::vec2& p) const
+tfloat terra::bitmap_uplift::at(const terra::vec2& p) const
 {
     // TODO probably use something other than a floor here.
-    const size_t px = math::floor<size_t>(p.x);
-    const size_t py = math::floor<size_t>(p.y);
+    const size_t px = terra::math::floor<size_t>(p.x);
+    const size_t py = terra::math::floor<size_t>(p.y);
     const uint8_t val = this->raster[(py * width) + px];
     return static_cast<tfloat>(val) / std::numeric_limits<uint8_t>::max();
 }
@@ -26,8 +24,10 @@ tfloat terra::noise_uplift::at(const terra::vec2& p) const
 {
     // TODO probably use something other than a floor here.
     auto point = p * this->scale;
-    const size_t px = std::min(math::floor<size_t>(point.x), this->width - 1);
-    const size_t py = std::min(math::floor<size_t>(point.y), this->height - 1);
+    const size_t px =
+        std::min(terra::math::floor<size_t>(point.x), this->width - 1);
+    const size_t py =
+        std::min(terra::math::floor<size_t>(point.y), this->height - 1);
     return this->noise_map[(py * this->width) + px];
 }
 
@@ -63,11 +63,11 @@ tfloat terra::linear_uplift::at(const terra::vec2& p) const
     return uplift;
 }
 
-uplift::uplift() : factor(0.0f), uplifts(0), points(), heights()
+terra::uplift::uplift() : factor(0.0f), uplifts(0), points(), heights()
 {
 }
 
-void uplift::update()
+void terra::uplift::update()
 {
     for (size_t i = 0; i < this->points.size(); ++i)
     {

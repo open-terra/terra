@@ -5,6 +5,8 @@
 #include "terra_config.hpp"
 
 #include "base_types.hpp"
+#include "concepts.hpp"
+#include "concepts_helpers.hpp"
 #include "types/bitmap.hpp"
 #include "types/vec2.hpp"
 
