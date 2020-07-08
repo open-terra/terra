@@ -31,13 +31,13 @@ namespace terra
         size_t ncells, nedges, nverts;
 
         void _generate(const std::span<const terra::vec2>& points,
-                      const terra::rect<tfloat>& bounds,
-                      std::span<terra::polygon>& cells);
+                       const terra::rect<tfloat>& bounds,
+                       std::span<terra::polygon> cells);
     };
 }
 
 template<class ArrayVec, class ArrayPolygon>
-requires terra::Container<ArrayVec, terra::vec2>&&
+requires terra::Container<ArrayVec, terra::vec2> &&
          terra::Container<ArrayPolygon, terra::polygon>
 void terra::voronoi::generate(const ArrayVec& points,
                               const terra::rect<tfloat>& bounds,
