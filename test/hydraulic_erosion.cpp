@@ -22,7 +22,7 @@ TEST_CASE("can simulate hydraulic erosion", "[erosion]")
     {
         terra::hash_grid* temp_grid = nullptr;
         terra::poisson_disc_sampler p;
-        points = p.sample(512, 512, 1.0, 30, &temp_grid);
+        points = p.sample(512, 512, 2.0, 30, &temp_grid);
 
         hash_grid = std::unique_ptr<terra::hash_grid>(temp_grid);
     }
