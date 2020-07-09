@@ -21,7 +21,7 @@ A shifted honey comb to be partitioned
   \__/  \__/
      \__/
 */
-static std::array<terra::vec2, 26> vertices = {
+static std::array<terra::vec2, 24> vertices = {
     terra::vec2(2.568f,  6.288f), terra::vec2(4.205f,  5.642f), 
     terra::vec2(0.624f,  5.343f), terra::vec2(1.874f,  4.937f), terra::vec2(4.693f, 4.841f), terra::vec2(6.008f, 5.022f), 
     terra::vec2(0.347f,  4.065f), terra::vec2(3.363f,  3.721f), terra::vec2(3.752f, 4.135f), terra::vec2(6.505f, 3.656f), 
@@ -35,7 +35,7 @@ TEST_CASE("can partition correctly", "[delaunator]")
 {
     terra::dynarray<terra::polygon> cells(vertices.size());
     terra::voronoi v;
-    v.generate(vertices, {-1.0, 8.0, -1.0, 8.0}, cells);
+    v.generate(vertices, terra::rect<tfloat>(-1.0, -1.0, 8.0, 8.0), cells);
 
     REQUIRE(v.num_cells() == vertices.size());
 }
