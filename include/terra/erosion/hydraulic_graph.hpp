@@ -63,7 +63,7 @@ namespace terra::erosion
 
             return std::make_tuple(terra::make_vec3(p0, h0),
                                    terra::make_vec3(p1, h2),
-                                   terra::make_vec3(p1, h2));
+                                   terra::make_vec3(p2, h2));
         }
     };
 }
