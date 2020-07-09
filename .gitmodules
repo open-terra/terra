@@ -1,0 +1,4 @@
+[submodule "deps/delaunator-cpp"]
+	path = deps/delaunator-cpp
+	url = https://github.com/c0rp3n/delaunator-cpp.git
+	branch = concept-support

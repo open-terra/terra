@@ -92,7 +92,9 @@ set_target_properties(Terra
 target_include_directories(Terra PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    PRIVATE ${LIBTIFF_INCLUDE_DIR}
+    PRIVATE
+        ${LIBTIFF_INCLUDE_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/deps/delaunator-cpp/include
 )
 
 set(TERRA_LINK_LIBS

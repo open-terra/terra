@@ -23,9 +23,9 @@ TEST_CASE("can simulate thermal erosion", "[erosion]")
     terra::dynarray<terra::triangle> tris;
     {
         terra::delaunator d;
-        d.triangulate(points);
+        auto _tris = d.triangulate(points);
 
-        tris = terra::dynarray<terra::triangle>(d.triangles.size() / 3);
+        tris = terra::dynarray<terra::triangle>(_tris.size() / 3);
         for (size_t i = 0; i < tris.size(); ++i)
         {
             size_t index = i * 3;
@@ -33,9 +33,9 @@ TEST_CASE("can simulate thermal erosion", "[erosion]")
             const size_t p1 = index + 1;
             const size_t p2 = index + 2;
 
-            const size_t v0 = d.triangles[p0];
-            const size_t v1 = d.triangles[p1];
-            const size_t v2 = d.triangles[p2];
+            const size_t v0 = _tris[p0];
+            const size_t v1 = _tris[p1];
+            const size_t v2 = _tris[p2];
 
             tris[i] = terra::triangle(v0, v1, v2);
         }
