@@ -66,6 +66,10 @@ void terra::erosion::hydraulic_graph::erode(size_t droplets,
 
         // find the triangle that the point lies within
         auto tri = this->droplet_tri(p, dn);
+        if (tri == INVALID_TRY)
+        {
+            continue;
+        }
         auto [p0, p1, p2] = this->get_tri_points(tri);
 
         // find the height of the water drop
@@ -95,6 +99,10 @@ void terra::erosion::hydraulic_graph::erode(size_t droplets,
 
             // find the triangle that the point lies within
             auto ntri = this->droplet_tri(p, nn);
+            if (ntri == INVALID_TRY)
+            {
+                break;
+            }
             auto [np0, np1, np2] = this->get_tri_points(ntri);
 
             // find the height of the water drop
@@ -203,6 +211,7 @@ const terra::triangle& terra::erosion::hydraulic_graph::droplet_tri
     }
 
     // should throw as there should always be a triangle present
+    return terra::triangle(INVALID_NODE, INVALID_NODE, INVALID_NODE);
 }
 
 tfloat terra::erosion::hydraulic_graph::droplet_height(const terra::vec3& p0,

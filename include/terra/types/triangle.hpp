@@ -90,3 +90,8 @@ namespace terra
         }
     };
 }
+
+constexpr bool operator==(const terra::triangle& l, const terra::triangle& r)
+{
+    return (l.v0 == r.v0) && (l.v1 == r.v1) && (l.v2 == r.v2);
+}

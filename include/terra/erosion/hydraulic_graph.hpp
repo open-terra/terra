@@ -21,6 +21,10 @@ namespace terra::erosion
     class hydraulic_graph
     {
     public:
+        static constexpr auto INVALID_NODE = std::numeric_limits<size_t>::max();
+        static constexpr auto INVALID_TRY =
+            terra::triangle(INVALID_NODE, INVALID_NODE, INVALID_NODE);
+
         template<class ArrayVec, class ArrayTriangle, class ArrayReal>
         requires terra::Container<ArrayVec, terra::vec2> &&
                  terra::Container<ArrayTriangle, terra::triangle>&&
