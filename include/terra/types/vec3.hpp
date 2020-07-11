@@ -3,6 +3,8 @@
 #define GLM_FORCE_XYZW_ONLY
 #include <glm/vec3.hpp>
 
+#include "vec2.hpp"
+
 namespace terra
 {
 #ifdef TERRA_USE_DOUBLE
@@ -23,8 +25,7 @@ namespace terra
         return terra::vec3(x, y, z);
     }
 
-    template<class T>
-    constexpr terra::vec3 make_vec3(const T& p, tfloat z)
+    constexpr terra::vec3 make_vec3(const vec2& p, tfloat z)
     {
         return terra::vec3(p.x, p.y, z);
     }
