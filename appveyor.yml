@@ -11,8 +11,7 @@ install:
   - mkdir deps
   - appveyor DownloadFile "https://cmake.org/files/v3.18/cmake-3.18.0-rc3-win64-x64.msi"
   - mkdir deps\cmake
-  - msiexec /i %APPVEYOR_BUILD_FOLDER%\cmake-3.18.0-rc3-win64-x64.msi /qn
-  - set PATH=%APPVEYOR_BUILD_FOLDER%\deps\cmake;%PATH%
+  - msiexec /i %APPVEYOR_BUILD_FOLDER%\cmake-3.18.0-rc3-win64-x64.msi /passive /qn
   - echo (cmake --version)
   - vcpkg install Catch2:x64-windows
   - vcpkg install glm:x64-windows
