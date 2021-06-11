@@ -15,6 +15,17 @@ project(Terra
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(cmake/CPM.cmake)
+
+CPMAddPackage(
+  NAME Format.cmake
+  VERSION 1.6
+  GITHUB_REPOSITORY TheLartians/Format.cmake
+  OPTIONS # enable cmake formatting (optional)
+          "FORMAT_CHECK_CMAKE ON"
+          # path to exclude (optional, supports regular expressions)
+          "CMAKE_FORMAT_EXCLUDE cmake/CPM.cmake"
+)
 
 if(BUILD_EXAMPLES)
     # benchmark needed for testing
@@ -26,20 +37,12 @@ if(BUILD_TESTING)
     find_package(Catch2 CONFIG REQUIRED)
 endif()
 
-# GLM used for vecN types
-find_package(glm CONFIG REQUIRED)
+option(TERRA_USE_GLM "Whether to use GLM." ON)
 
-# FastNoiseSIMD for 3d noise functions
-find_package(FastNoiseSIMD CONFIG REQUIRED)
-
-# Boost Polygon for Voronoi
-
-# Libtiff
-find_path(LIBTIFF_INCLUDE_DIR tiff.h)
-find_library(LIBTIFF_LIB tiff)
-find_library(LIBTIFF_XX_LIB tiffxx)
-
-option(TERRA_USE_DOUBLE "Whether to use double precision floating point values." OFF)
+if(TERRA_USE_GLM)
+    # GLM used for vecN types
+    find_package(glm CONFIG REQUIRED)
+endif()
 
 configure_file(
     ${CMAKE_CURRENT_LIST_DIR}/cmake/terra_config.hpp.in
@@ -47,70 +50,12 @@ configure_file(
     @ONLY
 )
 
-# Do stuff depending on the compiler
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "-W -Wall -Wextra -Wpedantic -Wunused-value -Wold-style-cast -std=c++2a")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(CMAKE_CXX_FLAGS "/W4 /EHsc /std:c++latest")
-    set(CMAKE_CXX_FLAGS_DEBUG "/O0 /ZI")
-    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2")
-endif()
+add_library(Terra INTERFACE)
 
-set(TERRA_SOURCES
-    src/erosion/hydraulic_graph.cpp
-    src/erosion/hydraulic_grid.cpp
-    src/io/image.cpp
-    src/io/tiff.cpp
-    src/io/wavefront_obj.cpp
-    src/noise/erosive_noise.cpp
-    src/noise/sdnoise1234.cpp
-    src/stb/stb_impl.cpp
-    src/types/bitmap.cpp
-    src/types/flow_graph.cpp
-    src/types/hash_grid.cpp
-    src/delaunator.cpp
-    src/poisson_disc_sampler.cpp
-    src/thermal_erosion.cpp
-    src/uplift.cpp
-    src/voronoi.cpp
-)
-
-add_library(Terra STATIC
-    ${TERRA_SOURCES}
-)
-
-set_target_properties(Terra
-    PROPERTIES 
-        CXX_STANDARD 20
-        CXX_STANDARD_REQUIRED ON
-        CMAKE_DEBUG_POSTFIX "d"
-        OUTPUT_NAME "terra"
-)
-
-target_include_directories(Terra PUBLIC
+target_include_directories(Terra INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    PRIVATE
-        ${LIBTIFF_INCLUDE_DIR}
-        ${CMAKE_CURRENT_LIST_DIR}/deps/delaunator-cpp/include
 )
-
-set(TERRA_LINK_LIBS
-    glm
-    FastNoiseSIMD
-    ${LIBTIFF_LIB}
-    ${LIBTIFF_XX_LIB}
-)
-
-target_link_libraries(Terra PUBLIC
-    ${TERRA_LINK_LIBS}
-)
-
-if(BUILD_EXAMPLES)
-    include(examples/examples.cmake)
-endif()
 
 if(BUILD_TESTING)
     include(test/tests.cmake)
@@ -128,20 +73,15 @@ if(NOT_SUBPROJECT)
     )
 
     # create and install an export set for Terra target as Terra
-    install(
-        TARGETS Terra EXPORT TerraTargets
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    )
-
+    install(TARGETS Terra EXPORT TerraTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
     install(EXPORT TerraTargets DESTINATION ${Terra_CMAKE_CONFIG_DESTINATION})
 
     write_basic_package_version_file(
-      "${CMAKE_CURRENT_BINARY_DIR}/TerraConfigVersion.cmake"
-      COMPATIBILITY SameMajorVersion
+        "${CMAKE_CURRENT_BINARY_DIR}/TerraConfigVersion.cmake"
+        COMPATIBILITY SameMajorVersion
     )
 
-    install(TARGETS Terra LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
     install(DIRECTORY "include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
     install(

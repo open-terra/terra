@@ -1,20 +1,31 @@
 #pragma once
 
-#include "../base_types.hpp"
+#include "../concepts.hpp"
 #include "pi.hpp"
 
 namespace terra::math
 {
-    static constexpr tfloat deg_to_rad = PI / static_cast<tfloat>(180.0); 
-    static constexpr tfloat rad_to_deg = static_cast<tfloat>(180.0) / PI;
-
-    constexpr tfloat to_radian(tfloat x)
+    template<Real R>
+    static constexpr R deg_to_rad()
     {
-        return x * deg_to_rad;
+        return PI() / static_cast<R>(180.0);
     }
 
-    constexpr tfloat to_degrees(tfloat x)
+    template<Real R>
+    static constexpr R rad_to_deg()
     {
-        return x * rad_to_deg;
+        return static_cast<R>(180.0) / PI()
     }
-}
+
+    template<Real R>
+    constexpr R to_radian(R x)
+    {
+        return x * deg_to_rad();
+    }
+
+    template<Real R>
+    constexpr R to_degrees(R x)
+    {
+        return x * rad_to_deg();
+    }
+} // namespace terra::math

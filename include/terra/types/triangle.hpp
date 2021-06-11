@@ -6,10 +6,6 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/normal.hpp>
 
-#include "../base_types.hpp"
-#include "vec2.hpp"
-#include "vec3.hpp"
-
 namespace terra
 {
     struct triangle
@@ -53,7 +49,7 @@ namespace terra
                                            const terra::vec2& p2,
                                            const terra::vec2& p)
         {
-            /* 
+            /*
             * Function takes the point and the triangle's vertices. It finds the area
             * of  the passed triangle (p0 p1 p2), and then the areas of the three
             * triangles (p p1 p2), (p p0 p2), and (p p0 p1). If the sum of these three

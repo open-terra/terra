@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../utils/template_helpers.hpp"
 #include "detail/graph_t.hpp"
 
 namespace terra

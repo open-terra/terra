@@ -44,8 +44,6 @@ install:
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
   - cmake --version
   - ../scripts/install-catch2.sh
-  - ../scripts/install-fastnoise-simd.sh
-  - ../scripts/install-libtiff.sh
 
 # Build steps
 script:

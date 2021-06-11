@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../base_types.hpp"
+#include "../concepts.hpp"
 
 namespace terra::math
 {
-    constexpr tfloat lerp(tfloat a, tfloat b, tfloat w)
+    template<Real R>
+    constexpr R lerp(R a, R b, R w)
     {
-        return (a * (static_cast<tfloat>(1) - w)) + (b * w);
+        return (a * (static_cast<R>(1) - w)) + (b * w);
     }
 } // namespace terra::math

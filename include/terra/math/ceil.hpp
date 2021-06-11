@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../base_types.hpp"
+#include "../concepts.hpp"
 
 namespace terra::math
 {
-    template<typename T>
-    constexpr T ceil(tfloat x)
+    template<Integral T, Real R>
+    constexpr T ceil(R x)
     {
         T xi = static_cast<T>(x);
         return x > xi ? xi + 1 : xi;

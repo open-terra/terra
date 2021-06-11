@@ -1,8 +1,12 @@
 #pragma once
 
-#include "../base_types.hpp"
+#include "../concepts.hpp"
 
 namespace terra::math
 {
-    static constexpr tfloat PI = static_cast<tfloat>(3.141592653589793238462643383279502884);
+    template<Real R>
+    static constexpr R PI()
+    {
+        return static_cast<R>(3.141592653589793238462643383279502884);
+    }
 }

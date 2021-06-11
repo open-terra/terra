@@ -14,6 +14,6 @@ namespace terra::math
     {
         const U quot = x / y;
         const U rem = x % y;
-        return { quot, rem };
+        return {quot, rem};
     }
 } // namespace terra::math

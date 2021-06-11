@@ -1,10 +1,7 @@
 #include "terra/types/flow_graph.hpp"
 
 #include <algorithm>
-
-#include "terra/utils/reverse.hpp"
-
-using namespace terra;
+#include <ranges>
 
 flow_graph::flow_graph() :
     drainage_areas(0), flow(0), lakes(), sorted_nodes(0), graph(nullptr),
@@ -14,8 +11,8 @@ flow_graph::flow_graph() :
 
 flow_graph::flow_graph(size_t node_count,
                        const terra::undirected_graph& graph,
-                       const terra::dynarray<tfloat>& areas,
-                       const terra::dynarray<tfloat>& heights) :
+                       const std::vector<tfloat>& areas,
+                       const std::vector<tfloat>& heights) :
     flow(node_count), lakes(), drainage_areas(node_count),
     sorted_nodes(node_count), graph(&graph), areas(&areas), heights(&heights)
 {
@@ -47,7 +44,7 @@ void flow_graph::init_flow()
 {
     std::fill(this->flow.begin(), this->flow.end(), this->node_lake);
 
-    terra::dynarray<uint8_t> edge_table(this->graph->num_edges());
+    std::vector<uint8_t> edge_table(this->graph->num_edges());
     for (size_t i = 0; i < this->heights->size(); ++i)
     {
         for (const auto e : this->graph->get_node(i))
@@ -69,7 +66,7 @@ void flow_graph::init_flow()
 
 struct compare
 {
-    const terra::dynarray<tfloat>* heights;
+    const std::vector<tfloat>* heights;
 
     bool operator()(const size_t i, const size_t j)
     {
@@ -91,7 +88,7 @@ void flow_graph::update_drainage_areas()
 {
     std::fill(this->drainage_areas.begin(), this->drainage_areas.end(), 0.0);
 
-    for (const auto node : terra::utils::reverse(this->sorted_nodes))
+    for (const auto node : std::ranges::reverse_view{this->sorted_nodes})
     {
         tfloat drainage_area = this->areas->at(node);
         const tfloat nh = this->heights->at(node);

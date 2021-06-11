@@ -14,7 +14,7 @@ namespace terra
     template<class T>
     concept Real = std::is_floating_point<T>::value;
 
-    template <typename T, typename U>
+    template<typename T, typename U>
     concept Container = requires(T a)
     {
         std::data(a);
@@ -28,7 +28,7 @@ namespace terra
         std::data(a);
         std::size(a);
     }
-    && Integral<T>;
+    &&Integral<T>;
 
     template<typename T>
     concept RealContainer = requires(T a)
@@ -36,5 +36,14 @@ namespace terra
         std::data(a);
         std::size(a);
     }
-    && Real<T>;
-}
+    &&Real<T>;
+
+    template<typename T>
+    concept Vec2 = requires(typename T::point_type p)
+    {
+        typename T::value_type;
+        T::get_x(p);
+        T::get_y(p);
+        T::get_dist2(p, p);
+    };
+} // namespace terra

@@ -2,23 +2,26 @@
 
 #include <limits>
 
-#include "../base_types.hpp"
+#include "../concepts.hpp"
 
 namespace terra::math
 {
-    constexpr tfloat _sqrt_newton_raphson(tfloat x, tfloat curr, tfloat prev)
+    template<Real R>
+    constexpr R _sqrt_newton_raphson(R x, R curr, R prev)
     {
         return curr == prev
                    ? curr
-                   : _sqrt_newton_raphson(x, static_cast<tfloat>(0.5) * (curr + x / curr), curr);
+                   : _sqrt_newton_raphson(
+                         x, static_cast<R>(0.5) * (curr + x / curr), curr);
     }
 
     // Constant expresion square root implementation
     // https://stackoverflow.com/questions/8622256/in-c11-is-sqrt-defined-as-constexpr
-    constexpr tfloat sqrt(tfloat x)
+    template<Real R>
+    constexpr R sqrt(R x)
     {
-        return (x >= 0 && x < std::numeric_limits<tfloat>::infinity())
+        return (x >= 0 && x < std::numeric_limits<R>::infinity())
                    ? _sqrt_newton_raphson(x, x, 0)
-                   : std::numeric_limits<tfloat>::quiet_NaN();
+                   : std::numeric_limits<R>::quiet_NaN();
     }
 } // namespace terra::math
